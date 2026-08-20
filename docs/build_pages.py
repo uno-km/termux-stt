@@ -156,8 +156,10 @@ def build_index():
             <p class="subtitle" data-i18n="home.subtitle">Whisper.cpp, Vosk, and Sherpa-ONNX unified with Speaker Diarization and 0 external ML dependencies on Termux.</p>
 
                                                 <div class="badges-bar" style="display:flex; flex-wrap:wrap; gap:8px; margin: 14px 0;">
-                <a href="https://pypi.org/project/termux-stt/" target="_blank"><img src="https://img.shields.io/pypi/v/termux-stt.svg?color=blue" alt="PyPI Version"></a>
-                <a href="https://www.npmjs.com/package/termux-stt" target="_blank"><img src="https://img.shields.io/npm/v/termux-stt.svg?color=red" alt="npm Version"></a>
+                <a href="https://pypi.org/project/termux-stt/" target="_blank"><img src="https://img.shields.io/pypi/v/termux-stt.svg?style=flat-square&color=blue" alt="PyPI Version"></a>
+                <a href="https://pypi.org/project/termux-stt/" target="_blank"><img src="https://img.shields.io/badge/PyPI%20Downloads-active-0088ff?style=flat-square&logo=pypi&logoColor=white" alt="PyPI Downloads"></a>
+                <a href="https://www.npmjs.com/package/termux-stt" target="_blank"><img src="https://img.shields.io/npm/v/termux-stt.svg?style=flat-square&color=red" alt="npm Version"></a>
+                <a href="https://www.npmjs.com/package/termux-stt" target="_blank"><img src="https://img.shields.io/badge/npm%20Downloads-active-cb3837?style=flat-square&logo=npm&logoColor=white" alt="npm Downloads"></a>
                 <img src="https://img.shields.io/badge/Python-3.8%20%7C%203.9%20%7C%203.10%20%7C%203.11%20%7C%203.12-3776ab?style=flat-square&logo=python&logoColor=white" alt="Python Version">
                 <img src="https://img.shields.io/badge/Node.js-16%20%7C%2018%20%7C%2020%20%7C%2022-339933?style=flat-square&logo=nodedotjs&logoColor=white" alt="Node Version">
                 <img src="https://img.shields.io/badge/Platform-Android%20Termux%20(ARM64)-00887A?style=flat-square&logo=android&logoColor=white" alt="Platform">

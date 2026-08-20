@@ -16,9 +16,9 @@
 
 <p align="center">
   <a href="https://pypi.org/project/termux-stt/"><img src="https://img.shields.io/pypi/v/termux-stt.svg?style=for-the-badge&color=0088ff&logo=pypi&logoColor=white" alt="PyPI Version" /></a>
-  <a href="https://pypi.org/project/termux-stt/"><img src="https://img.shields.io/pypi/dm/termux-stt?style=for-the-badge&color=004499&logo=pypi&logoColor=white&label=PyPI%20Downloads" alt="PyPI Downloads" /></a>
+  <a href="https://pypi.org/project/termux-stt/"><img src="https://img.shields.io/badge/PyPI%20Downloads-active-0088ff?style=for-the-badge&logo=pypi&logoColor=white" alt="PyPI Downloads" /></a>
   <a href="https://www.npmjs.com/package/termux-stt"><img src="https://img.shields.io/npm/v/termux-stt.svg?style=for-the-badge&color=cb3837&logo=npm&logoColor=white" alt="npm Version" /></a>
-  <a href="https://www.npmjs.com/package/termux-stt"><img src="https://img.shields.io/npm/dm/termux-stt?style=for-the-badge&color=ff5722&logo=npm&logoColor=white&label=npm%20Downloads" alt="npm Downloads" /></a>
+  <a href="https://www.npmjs.com/package/termux-stt"><img src="https://img.shields.io/badge/npm%20Downloads-active-cb3837?style=for-the-badge&logo=npm&logoColor=white" alt="npm Downloads" /></a>
 </p>
 
 <p align="center">
