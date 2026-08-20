@@ -2,11 +2,11 @@
 Docker test runner for termux-stt with authentic continuous speech (no loop).
 """
 
-import sys
 import time
 from pathlib import Path
-from termux_stt import create_engine, __version__
-from termux_stt.export.result import TranscriptResult
+
+from termux_stt import __version__, create_engine
+
 
 def main():
     print("=" * 65)

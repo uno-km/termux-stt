@@ -66,7 +66,7 @@ def get_head_meta(title, description):
     <script src="assets/i18n-translations.js" defer></script>"""
 
 def get_header(active_page):
-    return f"""    <header>
+    return """    <header>
         <a href="index.html" class="header-brand">
             <img src="favicon.svg" alt="termux-stt Logo">
             <h1 data-i18n="common.brand">termux-stt</h1>
@@ -92,16 +92,16 @@ def get_sidebar(active_page):
         ('benchmarks.html', 'common.nav.benchmarks', 'Benchmarks & Hardware'),
         ('versions.html', 'common.nav.versions', 'Version Archive')
     ]
-    
+
     sidebar_html = """        <nav class="sidebar">
             <h3 data-i18n="common.nav.overview">Overview</h3>
             <ul>"""
-    
+
     for href, i18n_key, title in pages:
         active_class = ' class="active"' if href == active_page else ''
         sidebar_html += f"""
                 <li><a href="{href}"{active_class} data-i18n="{i18n_key}">{title}</a></li>"""
-    
+
     sidebar_html += """
             </ul>
             <h3>AI Agent Protocol &amp; Feeds</h3>
