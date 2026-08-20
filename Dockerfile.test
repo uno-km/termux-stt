@@ -14,16 +14,21 @@ RUN apt-get update && apt-get install -y \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-# Build whisper.cpp
+# Build and install whisper.cpp
 WORKDIR /tmp
 RUN git clone --depth 1 https://github.com/ggml-org/whisper.cpp.git && \
     cd whisper.cpp && \
-    cmake -B build -DCMAKE_BUILD_TYPE=Release && \
+    cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local && \
     cmake --build build -j$(nproc) && \
-    mkdir -p /root/.local/bin /usr/local/bin && \
-    (cp build/bin/whisper-cli /root/.local/bin/whisper-cpp || cp build/bin/main /root/.local/bin/whisper-cpp) && \
-    (cp build/bin/whisper-cli /usr/local/bin/whisper-cpp || cp build/bin/main /usr/local/bin/whisper-cpp) && \
+    cmake --install build && \
+    (cp build/bin/whisper-cli /usr/local/bin/whisper-cpp || true) && \
+    (cp build/bin/main /usr/local/bin/whisper-cpp || true) && \
+    mkdir -p /root/.local/bin && \
+    cp /usr/local/bin/whisper-cpp /root/.local/bin/whisper-cpp && \
+    ldconfig && \
     cd / && rm -rf /tmp/whisper.cpp
+
+ENV LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
 
 WORKDIR /app
 COPY . /app

@@ -10,6 +10,7 @@ from typing import Optional
 
 __all__ = ["preprocess", "ensure_wav_format", "validate_audio"]
 
+
 def validate_audio(path: str) -> bool:
     """
     Validate audio size and length.
@@ -22,23 +23,32 @@ def validate_audio(path: str) -> bool:
         return False
     return True
 
-def preprocess(input_path: str, output_path: Optional[str] = None) -> str:
+
+def preprocess(
+    input_path: str,
+    output_path: Optional[str] = None,
+    target_sr: int = 16000,
+    force_mono: bool = True,
+) -> str:
     """
     Convert audio to 16kHz, 1 channel, PCM s16le WAV.
     """
     if not os.path.exists(input_path):
         raise FileNotFoundError(f"Input file not found: {input_path}")
 
+    # If the file is already a valid 16kHz mono WAV and no specific output_path requested,
+    # we can use ensure_wav_format or convert to a safe temp WAV
     if output_path is None:
         fd, output_path = tempfile.mkstemp(suffix=".wav", prefix="termux_stt_")
         os.close(fd)
 
+    channels = "1" if force_mono else "2"
     cmd = [
         "ffmpeg",
         "-y",
         "-i", input_path,
-        "-ac", "1",
-        "-ar", "16000",
+        "-ac", channels,
+        "-ar", str(target_sr),
         "-c:a", "pcm_s16le",
         "-v", "quiet",
         output_path
@@ -51,6 +61,7 @@ def preprocess(input_path: str, output_path: Optional[str] = None) -> str:
         if os.path.exists(output_path):
             os.remove(output_path)
         raise RuntimeError(f"FFmpeg conversion failed: {e}")
+
 
 def ensure_wav_format(path: str) -> str:
     """
@@ -76,6 +87,6 @@ def ensure_wav_format(path: str) -> str:
                 str(stream.get("sample_rate")) == "16000"):
                 return path
     except Exception:
-        pass # fallback to preprocess
+        pass  # fallback to preprocess
     
     return preprocess(path)

@@ -41,23 +41,25 @@ class WhisperEngine(Engine):
     # ------------------------------------------------------------------
 
     def _get_binary_path(self) -> str:
-        """Locate the ``whisper-cpp`` binary."""
+        """Locate the ``whisper.cpp`` binary (whisper-cli or whisper-cpp)."""
         import shutil
-        for name in ["whisper-cpp", "whisper-cli", "main"]:
+        for name in ["whisper-cli", "whisper-cpp", "main"]:
             found = shutil.which(name)
             if found:
                 return found
 
         candidates = [
+            Path("/usr/local/bin/whisper-cli"),
+            Path.home() / ".local" / "bin" / "whisper-cli",
             Path.home() / ".local" / "bin" / "whisper-cpp",
             Path("/usr/local/bin/whisper-cpp"),
+            Path("/data/data/com.termux/files/home/.local/bin/whisper-cli"),
             Path("/data/data/com.termux/files/home/.local/bin/whisper-cpp"),
-            Path.home() / ".local" / "bin" / "main",  # legacy name
         ]
         for p in candidates:
             if p.exists():
                 return str(p)
-        # Fall back – caller will get a clear error from subprocess
+        # Fall back
         return str(candidates[0])
 
     # ------------------------------------------------------------------
@@ -132,6 +134,25 @@ class WhisperEngine(Engine):
                 os.remove(json_file)
             except OSError:
                 pass
+
+        # Fallback: parse stdout directly if JSON was missing or empty
+        if not segments and result.stdout:
+            import re
+            pattern = re.compile(r"\[(\d{2}):(\d{2}):([\d\.]+)\s*-->\s*(\d{2}):(\d{2}):([\d\.]+)\]\s*(.*)")
+            for line in result.stdout.splitlines():
+                m = pattern.search(line)
+                if m:
+                    h1, m1, s1, h2, m2, s2, txt = m.groups()
+                    t0 = int(h1) * 3600 + int(m1) * 60 + float(s1)
+                    t1 = int(h2) * 3600 + int(m2) * 60 + float(s2)
+                    txt = txt.strip()
+                    if txt:
+                        segments.append(Segment(start=t0, end=t1, text=txt))
+            if segments:
+                full_text = " ".join(s.text for s in segments)
+            elif result.stdout.strip():
+                full_text = result.stdout.strip()
+                segments = [Segment(start=0.0, end=0.0, text=full_text)]
 
         return TranscriptResult(
             text=full_text,
