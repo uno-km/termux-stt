@@ -95,17 +95,17 @@
             </ul>
         </nav>
         <main class="content">
-            <h1 class="page-title">Installation Guide</h1>
-            <p class="page-subtitle">Setup termux-stt in Android Termux environment with zero compilation headaches.</p>
+            <h1 class="page-title" data-i18n="installation.title">Installation Guide</h1>
+            <p class="page-subtitle" data-i18n="installation.subtitle">Setup termux-stt in Android Termux environment with zero compilation headaches.</p>
 
-            <h2>Prerequisites in Termux</h2>
+            <h2 data-i18n="installation.prereqTitle">Prerequisites in Termux</h2>
             <pre><code># Update Termux packages
 pkg update && pkg upgrade -y
 
 # Install essential dependencies
 pkg install -y python ffmpeg git cmake make clang libandroid-wordexp</code></pre>
 
-            <h2>Package Installation</h2>
+            <h2 data-i18n="installation.pkgTitle">Package Installation</h2>
             <div class="tabs-container">
                 <div class="tabs-header">
                     <button class="tab-btn active" data-tab="pip-inst">Python</button>
@@ -131,14 +131,14 @@ bash scripts/install_whisper_cpp.sh</code></pre>
                 </div>
             </div>
 
-            <h2>Android Environment Tweaks (Recommended)</h2>
+            <h2 data-i18n="installation.androidTweaksTitle">Android Environment Tweaks (Recommended)</h2>
             <div class="alert alert-warning">
                 <strong>Phantom Process Killer Fix (Android 12+):</strong><br>
                 Execute this command via ADB from PC to prevent Android from killing long-running STT processes:
                 <pre><code>adb shell "/system/bin/device_config put activity_manager max_phantom_processes 2147483647"</code></pre>
             </div>
 
-            <h2>Verification</h2>
+            <h2 data-i18n="installation.verifyTitle">Verification</h2>
             <pre><code># Run built-in system diagnostics
 termux-stt doctor</code></pre>
         </main>

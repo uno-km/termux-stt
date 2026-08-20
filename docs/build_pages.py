@@ -302,17 +302,17 @@ def build_installation():
     <div class="layout">
 {get_sidebar("installation.html")}
         <main class="content">
-            <h1 class="page-title">Installation Guide</h1>
-            <p class="page-subtitle">Setup termux-stt in Android Termux environment with zero compilation headaches.</p>
+            <h1 class="page-title" data-i18n="installation.title">Installation Guide</h1>
+            <p class="page-subtitle" data-i18n="installation.subtitle">Setup termux-stt in Android Termux environment with zero compilation headaches.</p>
 
-            <h2>Prerequisites in Termux</h2>
+            <h2 data-i18n="installation.prereqTitle">Prerequisites in Termux</h2>
             <pre><code># Update Termux packages
 pkg update && pkg upgrade -y
 
 # Install essential dependencies
 pkg install -y python ffmpeg git cmake make clang libandroid-wordexp</code></pre>
 
-            <h2>Package Installation</h2>
+            <h2 data-i18n="installation.pkgTitle">Package Installation</h2>
             <div class="tabs-container">
                 <div class="tabs-header">
                     <button class="tab-btn active" data-tab="pip-inst">Python</button>
@@ -338,14 +338,14 @@ bash scripts/install_whisper_cpp.sh</code></pre>
                 </div>
             </div>
 
-            <h2>Android Environment Tweaks (Recommended)</h2>
+            <h2 data-i18n="installation.androidTweaksTitle">Android Environment Tweaks (Recommended)</h2>
             <div class="alert alert-warning">
                 <strong>Phantom Process Killer Fix (Android 12+):</strong><br>
                 Execute this command via ADB from PC to prevent Android from killing long-running STT processes:
                 <pre><code>adb shell "/system/bin/device_config put activity_manager max_phantom_processes 2147483647"</code></pre>
             </div>
 
-            <h2>Verification</h2>
+            <h2 data-i18n="installation.verifyTitle">Verification</h2>
             <pre><code># Run built-in system diagnostics
 termux-stt doctor</code></pre>
         </main>
@@ -365,10 +365,10 @@ def build_quickstart():
     <div class="layout">
 {get_sidebar("quickstart.html")}
         <main class="content">
-            <h1 class="page-title">Quickstart & Recipes</h1>
-            <p class="page-subtitle">Production-ready code snippets for common audio transcription workflows.</p>
+            <h1 class="page-title" data-i18n="quickstart.title">Quickstart & Recipes</h1>
+            <p class="page-subtitle" data-i18n="quickstart.subtitle">Production-ready code snippets for common audio transcription workflows.</p>
 
-            <h2>Recipe 1: Simple File Transcription</h2>
+            <h2 data-i18n="quickstart.r1Title">Recipe 1: Simple File Transcription</h2>
             <pre><code>from termux_stt import create_engine
 
 # Initialize Whisper engine
@@ -381,7 +381,7 @@ print("Text:", result.text)
 print("Language:", result.language)
 print("Duration:", result.duration)</code></pre>
 
-            <h2>Recipe 2: Realtime Microphone Streaming</h2>
+            <h2 data-i18n="quickstart.r2Title">Recipe 2: Realtime Microphone Streaming</h2>
             <pre><code>from termux_stt import create_engine
 
 engine = create_engine("whisper", model="tiny", lang="ko")
@@ -390,7 +390,7 @@ print("Speak into your device microphone (Ctrl+C to stop)...")
 for segment in engine.stream_mic(duration=30.0):
     print(f"[{{segment.start:.1f}}s - {{segment.end:.1f}}s] {{segment.text}}")</code></pre>
 
-            <h2>Recipe 3: Speaker Diarization (Meeting Minutes)</h2>
+            <h2 data-i18n="quickstart.r3Title">Recipe 3: Speaker Diarization (Meeting Minutes)</h2>
             <pre><code>from termux_stt import create_engine
 
 # Hybrid engine automatically clusters 128d X-Vectors
@@ -407,7 +407,7 @@ with open("meeting.srt", "w", encoding="utf-8") as f:
 with open("meeting.rttm", "w", encoding="utf-8") as f:
     f.write(result.to_rttm())</code></pre>
 
-            <h2>Recipe 4: Batch Processing Directory</h2>
+            <h2 data-i18n="quickstart.r4Title">Recipe 4: Batch Processing Directory</h2>
             <pre><code>import os
 from pathlib import Path
 from termux_stt import create_engine
@@ -438,10 +438,10 @@ def build_models():
     <div class="layout">
 {get_sidebar("models.html")}
         <main class="content">
-            <h1 class="page-title">Model Hub & Registry</h1>
-            <p class="page-subtitle">Curated lightweight on-device models with automatic downloading and SHA-256 integrity checks.</p>
+            <h1 class="page-title" data-i18n="models.title">Model Hub & Registry</h1>
+            <p class="page-subtitle" data-i18n="models.subtitle">Curated lightweight on-device models with automatic downloading and SHA-256 integrity checks.</p>
 
-            <h2>Whisper Models (GGML Quantized)</h2>
+            <h2 data-i18n="models.whisperTitle">Whisper Models (GGML Quantized)</h2>
             <table>
                 <thead>
                     <tr>
@@ -489,7 +489,7 @@ def build_models():
                 </tbody>
             </table>
 
-            <h2>Vosk Models (X-Vector & STT)</h2>
+            <h2 data-i18n="models.voskTitle">Vosk Models (X-Vector & STT)</h2>
             <table>
                 <thead>
                     <tr>
@@ -515,7 +515,7 @@ def build_models():
                 </tbody>
             </table>
 
-            <h2>Sherpa-ONNX Models</h2>
+            <h2 data-i18n="models.sherpaTitle">Sherpa-ONNX Models</h2>
             <table>
                 <thead>
                     <tr>
@@ -547,7 +547,7 @@ def build_models():
                 </tbody>
             </table>
 
-            <h2>CLI Model Management</h2>
+            <h2 data-i18n="models.cliTitle">CLI Model Management</h2>
             <pre><code># List installed models
 termux-stt models list
 
@@ -573,8 +573,8 @@ def build_advanced_params():
     <div class="layout">
 {get_sidebar("advanced-parameters.html")}
         <main class="content">
-            <h1 class="page-title">Advanced Parameters</h1>
-            <p class="page-subtitle">Detailed handbook for fine-tuning performance, latency, and hardware utilization.</p>
+            <h1 class="page-title" data-i18n="advancedParams.title">Advanced Parameters</h1>
+            <p class="page-subtitle" data-i18n="advancedParams.subtitle">Detailed handbook for fine-tuning performance, latency, and hardware utilization.</p>
 
             <h2>EngineConfig Parameters</h2>
             <table>
@@ -664,8 +664,8 @@ def build_api_reference():
     <div class="layout">
 {get_sidebar("api-reference.html")}
         <main class="content">
-            <h1 class="page-title">100% Full API Reference</h1>
-            <p class="page-subtitle">Exhaustive specification for all public functions, classes, and types.</p>
+            <h1 class="page-title" data-i18n="apiReference.title">100% Full API Reference</h1>
+            <p class="page-subtitle" data-i18n="apiReference.subtitle">Exhaustive specification for all public functions, classes, and types.</p>
 
             <h2>Factory Function: <code>create_engine()</code></h2>
             <pre><code>def create_engine(
@@ -741,10 +741,10 @@ def build_benchmarks():
     <div class="layout">
 {get_sidebar("benchmarks.html")}
         <main class="content">
-            <h1 class="page-title">Benchmarks & Hardware Profile</h1>
-            <p class="page-subtitle">Real measured benchmarks on Samsung Galaxy A35 (Exynos 1380 5G, 6GB LPDDR4X RAM).</p>
+            <h1 class="page-title" data-i18n="benchmarks.title">Benchmarks & Hardware Profile</h1>
+            <p class="page-subtitle" data-i18n="benchmarks.subtitle">Real measured benchmarks on Samsung Galaxy A35 (Exynos 1380 5G, 6GB LPDDR4X RAM).</p>
 
-            <h2>Comprehensive Engine Benchmark Matrix</h2>
+            <h2 data-i18n="benchmarks.matrixTitle">Comprehensive Engine Benchmark Matrix</h2>
             <table>
                 <thead>
                     <tr>
@@ -808,7 +808,7 @@ def build_benchmarks():
                 </tbody>
             </table>
 
-            <h2>Key Empirical Findings</h2>
+            <h2 data-i18n="benchmarks.findingsTitle">Key Empirical Findings</h2>
             <ul>
                 <li><strong>Golden Balance:</strong> The Hybrid Pipeline (Vosk 128d X-Vector + Whisper Base STT + Pure Python K-Means) delivers 94%+ speaker alignment while using less than 400 MB RAM.</li>
                 <li><strong>Subprocess Isolation:</strong> Zero host process crashes even during aggressive stress testing on large audio files.</li>
@@ -831,10 +831,10 @@ def build_versions():
     <div class="layout">
 {get_sidebar("versions.html")}
         <main class="content">
-            <h1 class="page-title">Version Archive</h1>
-            <p class="page-subtitle">Release history and upgrade guides for termux-stt.</p>
+            <h1 class="page-title" data-i18n="versions.title">Version Archive</h1>
+            <p class="page-subtitle" data-i18n="versions.subtitle">Release history and upgrade guides for termux-stt.</p>
 
-            <h2>v1.0.0 (Initial Public Release) - 2026-08-20</h2>
+            <h2 data-i18n="versions.v100Title">v1.0.0 (Initial Public Release) - 2026-08-20</h2>
             <ul>
                 <li><strong>Unified Multi-Engine Architecture:</strong> Single <code>create_engine()</code> API for whisper.cpp, vosk, and sherpa-onnx.</li>
                 <li><strong>Pure-Python Speaker Diarization:</strong> Custom K-Means and Cosine Distance matrix without numpy/sklearn dependencies.</li>

@@ -95,10 +95,10 @@
             </ul>
         </nav>
         <main class="content">
-            <h1 class="page-title">Quickstart & Recipes</h1>
-            <p class="page-subtitle">Production-ready code snippets for common audio transcription workflows.</p>
+            <h1 class="page-title" data-i18n="quickstart.title">Quickstart & Recipes</h1>
+            <p class="page-subtitle" data-i18n="quickstart.subtitle">Production-ready code snippets for common audio transcription workflows.</p>
 
-            <h2>Recipe 1: Simple File Transcription</h2>
+            <h2 data-i18n="quickstart.r1Title">Recipe 1: Simple File Transcription</h2>
             <pre><code>from termux_stt import create_engine
 
 # Initialize Whisper engine
@@ -111,7 +111,7 @@ print("Text:", result.text)
 print("Language:", result.language)
 print("Duration:", result.duration)</code></pre>
 
-            <h2>Recipe 2: Realtime Microphone Streaming</h2>
+            <h2 data-i18n="quickstart.r2Title">Recipe 2: Realtime Microphone Streaming</h2>
             <pre><code>from termux_stt import create_engine
 
 engine = create_engine("whisper", model="tiny", lang="ko")
@@ -120,7 +120,7 @@ print("Speak into your device microphone (Ctrl+C to stop)...")
 for segment in engine.stream_mic(duration=30.0):
     print(f"[{segment.start:.1f}s - {segment.end:.1f}s] {segment.text}")</code></pre>
 
-            <h2>Recipe 3: Speaker Diarization (Meeting Minutes)</h2>
+            <h2 data-i18n="quickstart.r3Title">Recipe 3: Speaker Diarization (Meeting Minutes)</h2>
             <pre><code>from termux_stt import create_engine
 
 # Hybrid engine automatically clusters 128d X-Vectors
@@ -137,7 +137,7 @@ with open("meeting.srt", "w", encoding="utf-8") as f:
 with open("meeting.rttm", "w", encoding="utf-8") as f:
     f.write(result.to_rttm())</code></pre>
 
-            <h2>Recipe 4: Batch Processing Directory</h2>
+            <h2 data-i18n="quickstart.r4Title">Recipe 4: Batch Processing Directory</h2>
             <pre><code>import os
 from pathlib import Path
 from termux_stt import create_engine
