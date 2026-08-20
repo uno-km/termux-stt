@@ -19,6 +19,7 @@ dev = ["pytest", "ruff", "mypy"]
 
 [project.scripts]
 termux-stt = "termux_stt.cli.main:main"
+termux-stt-install = "termux_stt.platform.installer:main"
 
 [project.urls]
 Homepage = "https://github.com/uno-km/termux-stt"

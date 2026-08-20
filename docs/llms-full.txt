@@ -1,0 +1,13 @@
+# termux-stt - Full Architecture & API Specification
+
+## 1. Overview
+termux-stt is an on-device Speech-to-Text (STT) and Speaker Diarization framework engineered specifically for the Android Termux environment.
+
+## 2. Supported Engines
+- whisper.cpp: High accuracy GGML-quantized STT
+- vosk: Ultra-lightweight Kaldi-based STT & 128d X-Vector speaker embedding
+- sherpa-onnx: Next-gen Kaldi ONNX runtime for streaming & offline STT
+- hybrid: Vosk X-Vector + Whisper STT + Pure Python K-Means
+
+## 3. Pure Python Math
+Clustering and similarity calculation are implemented in pure Python to eliminate large native ML dependencies (numpy, scipy, scikit-learn).

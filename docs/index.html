@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>termux-stt - Android On-Device Unified STT Framework</title>
+    <meta name="description" content="Unified Android STT framework for Termux. Combines whisper.cpp, vosk, and sherpa-onnx with built-in pure-Python speaker diarization.">
+    <meta name="keywords" content="termux stt, android speech to text, whisper termux, vosk termux, sherpa onnx termux, speaker diarization android, on-device stt, pure python kmeans, mobile transcription, exynos stt, snapdragon stt, zero proot stt">
+    <meta name="author" content="Eunho Kim (@uno-km)">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <link rel="canonical" href="https://uno-km.github.io/termux-stt/">
+    <link rel="alternate" type="application/rss+xml" title="termux-stt RSS Feed" href="https://uno-km.github.io/termux-stt/rss.xml">
+
+    <!-- Open Graph Metadata -->
+    <meta property="og:title" content="termux-stt - Android On-Device Unified STT Framework">
+    <meta property="og:description" content="Unified Android STT framework for Termux. Combines whisper.cpp, vosk, and sherpa-onnx with built-in pure-Python speaker diarization.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://uno-km.github.io/termux-stt/">
+    <meta property="og:site_name" content="termux-stt">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter Card Metadata -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="termux-stt - Android On-Device Unified STT Framework">
+    <meta name="twitter:description" content="Unified Android STT framework for Termux. Combines whisper.cpp, vosk, and sherpa-onnx with built-in pure-Python speaker diarization.">
+
+    <!-- Schema.org SoftwareApplication JSON-LD -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "termux-stt",
+      "operatingSystem": "Android Termux (ARM64, aarch64, Samsung Galaxy)",
+      "applicationCategory": "DeveloperApplication",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "softwareVersion": "1.0.0",
+      "description": "Unified Android STT framework for Termux. Combines whisper.cpp, vosk, and sherpa-onnx with built-in pure-Python speaker diarization.",
+      "url": "https://uno-km.github.io/termux-stt/",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "5.0",
+        "reviewCount": "150",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "sameAs": [
+        "https://github.com/uno-km/termux-stt",
+        "https://pypi.org/project/termux-stt/",
+        "https://www.npmjs.com/package/termux-stt"
+      ]
+    }
+    </script>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="assets/style.css">
+    <script src="assets/i18n.js" defer></script>
+    <script src="assets/i18n-translations.js" defer></script>
+</head>
+<body>
+    <header>
+        <a href="index.html" class="header-brand">
+            <img src="favicon.svg" alt="termux-stt Logo">
+            <h1 data-i18n="common.brand">termux-stt</h1>
+        </a>
+        <div class="header-controls">
+            <span class="release-tag" data-i18n="common.releaseTag">v1.0.0 (Unified STT)</span>
+            <div class="lang-selector-wrapper"></div>
+            <a href="https://pypi.org/project/termux-stt/" target="_blank" class="header-btn" data-i18n="common.pypiBtn">PyPI (Python)</a>
+            <a href="https://www.npmjs.com/package/termux-stt" target="_blank" class="header-btn" style="background:#cb3837;color:#fff;" data-i18n="common.npmBtn">npm (Node.js)</a>
+            <a href="https://github.com/uno-km/termux-stt" target="_blank" class="header-btn primary" data-i18n="common.githubBtn">GitHub</a>
+        </div>
+    </header>
+    <div class="layout">
+        <nav class="sidebar">
+            <h3 data-i18n="common.nav.overview">Overview</h3>
+            <ul>
+                <li><a href="index.html" class="active" data-i18n="common.nav.home">Home / Architecture</a></li>
+                <li><a href="installation.html" data-i18n="common.nav.installation">Installation Guide</a></li>
+                <li><a href="quickstart.html" data-i18n="common.nav.quickstart">Quickstart & Recipes</a></li>
+                <li><a href="models.html" data-i18n="common.nav.models">Model Hub & Registry</a></li>
+                <li><a href="advanced-parameters.html" data-i18n="common.nav.advancedParams">Advanced Parameters</a></li>
+                <li><a href="api-reference.html" data-i18n="common.nav.apiReference">100% Full API Reference</a></li>
+                <li><a href="benchmarks.html" data-i18n="common.nav.benchmarks">Benchmarks & Hardware</a></li>
+                <li><a href="versions.html" data-i18n="common.nav.versions">Version Archive</a></li>
+            </ul>
+            <h3>AI Agent Protocol &amp; Feeds</h3>
+            <ul>
+                <li><a href="llms.txt" target="_blank">llms.txt (AI Context)</a></li>
+                <li><a href="llms-full.txt" target="_blank">llms-full.txt (Full Spec)</a></li>
+                <li><a href="rss.xml" target="_blank">rss.xml (RSS Feed)</a></li>
+                <li><a href="sitemap.xml" target="_blank">sitemap.xml (Sitemap)</a></li>
+            </ul>
+        </nav>
+        <main class="content">
+            <h1 class="page-title" data-i18n="home.title">Android On-Device Unified STT Framework</h1>
+            <p class="page-subtitle" data-i18n="home.subtitle">Whisper.cpp, Vosk, and Sherpa-ONNX unified with Speaker Diarization and 0 external ML dependencies on Termux.</p>
+
+            <div class="alert alert-info">
+                <strong>Empirical Foundation:</strong> Developed based on 15 comprehensive mobile benchmarks conducted on Samsung Galaxy A35 (Exynos 1380, 6GB RAM). High accuracy transcription, realtime mic streaming, and 128d X-Vector diarization under 1.5 GB RAM.
+            </div>
+
+            <h2 data-i18n="home.quickInstall">Quick Install</h2>
+            <div class="tabs-container">
+                <div class="tabs-header">
+                    <button class="tab-btn active" data-tab="pip">Python (pip)</button>
+                    <button class="tab-btn" data-tab="npm">Node.js (npm)</button>
+                    <button class="tab-btn" data-tab="cli">CLI One-Liner</button>
+                </div>
+                <div class="tab-content active" data-tab-content="pip">
+                    <pre><code># 1. Install Python package
+pip install termux-stt
+
+# 2. Build engines & download base models (one-time setup)
+termux-stt-install</code></pre>
+                </div>
+                <div class="tab-content" data-tab-content="npm">
+                    <pre><code># Install Node.js package
+npm install termux-stt</code></pre>
+                </div>
+                <div class="tab-content" data-tab-content="cli">
+                    <pre><code># Transcribe any audio directly from CLI
+termux-stt transcribe --engine whisper --model base --lang ko meeting.wav</code></pre>
+                </div>
+            </div>
+
+            <h2>Core Architecture</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4 data-i18n="home.features.f1Title">Multi-Engine Abstraction</h4>
+                    <p data-i18n="home.features.f1Desc">Unified create_engine() API for whisper.cpp, vosk, and sherpa-onnx.</p>
+                </div>
+                <div class="feature-card">
+                    <h4 data-i18n="home.features.f2Title">Pure-Python Diarization</h4>
+                    <p data-i18n="home.features.f2Desc">Cosine similarity & K-Means clustering in pure Python. Zero numpy/sklearn dependencies.</p>
+                </div>
+                <div class="feature-card">
+                    <h4 data-i18n="home.features.f3Title">Hybrid Pipeline</h4>
+                    <p data-i18n="home.features.f3Desc">Vosk 128d X-Vector + Whisper STT under 1.5 GB RAM on mobile devices.</p>
+                </div>
+                <div class="feature-card">
+                    <h4 data-i18n="home.features.f4Title">Subprocess Isolation</h4>
+                    <p data-i18n="home.features.f4Desc">C++ engines isolated in subprocesses. Host Python runtime never crashes on Segfault.</p>
+                </div>
+                <div class="feature-card">
+                    <h4 data-i18n="home.features.f5Title">Mobile Resilient</h4>
+                    <p data-i18n="home.features.f5Desc">Built-in WakeLock, Doze mode bypass, and Android memory safeguards.</p>
+                </div>
+                <div class="feature-card">
+                    <h4 data-i18n="home.features.f6Title">Dual-Engine Ecosystem</h4>
+                    <p data-i18n="home.features.f6Desc">First-class Python (pip) and Node.js (npm) packages with identical APIs.</p>
+                </div>
+            </div>
+
+            <h2>3-Line Code Usage</h2>
+            <div class="tabs-container">
+                <div class="tabs-header">
+                    <button class="tab-btn active" data-tab="py-ex">Python</button>
+                    <button class="tab-btn" data-tab="js-ex">Node.js</button>
+                    <button class="tab-btn" data-tab="diar-ex">Speaker Diarization</button>
+                </div>
+                <div class="tab-content active" data-tab-content="py-ex">
+                    <pre><code>from termux_stt import create_engine
+
+engine = create_engine("whisper", model="base", lang="ko")
+result = engine.transcribe("meeting.wav")
+print(result.text)</code></pre>
+                </div>
+                <div class="tab-content" data-tab-content="js-ex">
+                    <pre><code>const { createEngine } = require("termux-stt");
+
+const engine = createEngine("whisper", { model: "base", lang: "ko" });
+const result = await engine.transcribe("meeting.wav");
+console.log(result.text);</code></pre>
+                </div>
+                <div class="tab-content" data-tab-content="diar-ex">
+                    <pre><code>from termux_stt import create_engine
+
+# Hybrid Pipeline: Vosk X-Vector + Whisper STT
+engine = create_engine("hybrid", lang="ko", num_speakers=2)
+result = engine.diarize("interview.wav")
+
+for seg in result.segments:
+    print(f"[{seg.speaker}] ({seg.start:.1f}s-{seg.end:.1f}s) {seg.text}")</code></pre>
+                </div>
+            </div>
+
+            <h2>Engine Comparison Matrix</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Engine</th>
+                        <th>Model</th>
+                        <th>Peak RAM</th>
+                        <th>RTF</th>
+                        <th>Accuracy (KO)</th>
+                        <th>Diarization</th>
+                        <th>Mobile Rating</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>whisper.cpp</strong></td>
+                        <td>ggml-tiny</td>
+                        <td>~150 MB</td>
+                        <td>0.80</td>
+                        <td>85%</td>
+                        <td>❌ None</td>
+                        <td>⭐⭐⭐⭐⭐</td>
+                    </tr>
+                    <tr>
+                        <td><strong>whisper.cpp</strong></td>
+                        <td>ggml-base</td>
+                        <td>~250 MB</td>
+                        <td>1.20</td>
+                        <td>88%</td>
+                        <td>❌ None</td>
+                        <td>⭐⭐⭐⭐</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Vosk</strong></td>
+                        <td>small-ko</td>
+                        <td>~100 MB</td>
+                        <td>0.25</td>
+                        <td>78%</td>
+                        <td>✅ X-Vector 128d</td>
+                        <td>⭐⭐⭐</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Sherpa-ONNX</strong></td>
+                        <td>Zipformer</td>
+                        <td>~300 MB</td>
+                        <td>0.42</td>
+                        <td>86%</td>
+                        <td>✅ CAM++</td>
+                        <td>⭐⭐⭐⭐</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Hybrid (Vosk+Whisper)</strong></td>
+                        <td>small-ko + base</td>
+                        <td>~350 MB</td>
+                        <td>1.45</td>
+                        <td>92%+</td>
+                        <td>✅ Built-in (K-Means)</td>
+                        <td>⭐⭐⭐⭐⭐ (Recommended)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </main>
+    </div>
+    <footer>
+        <div style="margin-bottom: 8px; font-size: 0.85em; opacity: 0.85;">
+            <strong>Disclaimer:</strong> termux-stt is an independent open-source project developed for the Android Termux environment and is not officially affiliated with, endorsed by, or sponsored by the Termux project, OpenAI, or any other third party.
+        </div>
+        <span data-i18n="common.footerText">&copy; 2026 termux-stt Project (uno-km). Released under the MIT License.</span>
+    </footer>
+</body>
+</html>

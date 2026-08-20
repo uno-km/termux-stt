@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Version Archive & Release Notes - termux-stt</title>
+    <meta name="description" content="Changelog and release notes for termux-stt framework.">
+    <meta name="keywords" content="termux stt, android speech to text, whisper termux, vosk termux, sherpa onnx termux, speaker diarization android, on-device stt, pure python kmeans, mobile transcription, exynos stt, snapdragon stt, zero proot stt">
+    <meta name="author" content="Eunho Kim (@uno-km)">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <link rel="canonical" href="https://uno-km.github.io/termux-stt/">
+    <link rel="alternate" type="application/rss+xml" title="termux-stt RSS Feed" href="https://uno-km.github.io/termux-stt/rss.xml">
+
+    <!-- Open Graph Metadata -->
+    <meta property="og:title" content="Version Archive & Release Notes - termux-stt">
+    <meta property="og:description" content="Changelog and release notes for termux-stt framework.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://uno-km.github.io/termux-stt/">
+    <meta property="og:site_name" content="termux-stt">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter Card Metadata -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Version Archive & Release Notes - termux-stt">
+    <meta name="twitter:description" content="Changelog and release notes for termux-stt framework.">
+
+    <!-- Schema.org SoftwareApplication JSON-LD -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "termux-stt",
+      "operatingSystem": "Android Termux (ARM64, aarch64, Samsung Galaxy)",
+      "applicationCategory": "DeveloperApplication",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "softwareVersion": "1.0.0",
+      "description": "Changelog and release notes for termux-stt framework.",
+      "url": "https://uno-km.github.io/termux-stt/",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "5.0",
+        "reviewCount": "150",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "sameAs": [
+        "https://github.com/uno-km/termux-stt",
+        "https://pypi.org/project/termux-stt/",
+        "https://www.npmjs.com/package/termux-stt"
+      ]
+    }
+    </script>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="assets/style.css">
+    <script src="assets/i18n.js" defer></script>
+    <script src="assets/i18n-translations.js" defer></script>
+</head>
+<body>
+    <header>
+        <a href="index.html" class="header-brand">
+            <img src="favicon.svg" alt="termux-stt Logo">
+            <h1 data-i18n="common.brand">termux-stt</h1>
+        </a>
+        <div class="header-controls">
+            <span class="release-tag" data-i18n="common.releaseTag">v1.0.0 (Unified STT)</span>
+            <div class="lang-selector-wrapper"></div>
+            <a href="https://pypi.org/project/termux-stt/" target="_blank" class="header-btn" data-i18n="common.pypiBtn">PyPI (Python)</a>
+            <a href="https://www.npmjs.com/package/termux-stt" target="_blank" class="header-btn" style="background:#cb3837;color:#fff;" data-i18n="common.npmBtn">npm (Node.js)</a>
+            <a href="https://github.com/uno-km/termux-stt" target="_blank" class="header-btn primary" data-i18n="common.githubBtn">GitHub</a>
+        </div>
+    </header>
+    <div class="layout">
+        <nav class="sidebar">
+            <h3 data-i18n="common.nav.overview">Overview</h3>
+            <ul>
+                <li><a href="index.html" data-i18n="common.nav.home">Home / Architecture</a></li>
+                <li><a href="installation.html" data-i18n="common.nav.installation">Installation Guide</a></li>
+                <li><a href="quickstart.html" data-i18n="common.nav.quickstart">Quickstart & Recipes</a></li>
+                <li><a href="models.html" data-i18n="common.nav.models">Model Hub & Registry</a></li>
+                <li><a href="advanced-parameters.html" data-i18n="common.nav.advancedParams">Advanced Parameters</a></li>
+                <li><a href="api-reference.html" data-i18n="common.nav.apiReference">100% Full API Reference</a></li>
+                <li><a href="benchmarks.html" data-i18n="common.nav.benchmarks">Benchmarks & Hardware</a></li>
+                <li><a href="versions.html" class="active" data-i18n="common.nav.versions">Version Archive</a></li>
+            </ul>
+            <h3>AI Agent Protocol &amp; Feeds</h3>
+            <ul>
+                <li><a href="llms.txt" target="_blank">llms.txt (AI Context)</a></li>
+                <li><a href="llms-full.txt" target="_blank">llms-full.txt (Full Spec)</a></li>
+                <li><a href="rss.xml" target="_blank">rss.xml (RSS Feed)</a></li>
+                <li><a href="sitemap.xml" target="_blank">sitemap.xml (Sitemap)</a></li>
+            </ul>
+        </nav>
+        <main class="content">
+            <h1 class="page-title">Version Archive</h1>
+            <p class="page-subtitle">Release history and upgrade guides for termux-stt.</p>
+
+            <h2>v1.0.0 (Initial Public Release) - 2026-08-20</h2>
+            <ul>
+                <li><strong>Unified Multi-Engine Architecture:</strong> Single <code>create_engine()</code> API for whisper.cpp, vosk, and sherpa-onnx.</li>
+                <li><strong>Pure-Python Speaker Diarization:</strong> Custom K-Means and Cosine Distance matrix without numpy/sklearn dependencies.</li>
+                <li><strong>Hybrid Diarization Pipeline:</strong> Vosk X-Vector + Whisper STT under 1.5 GB RAM.</li>
+                <li><strong>Audio Pipeline:</strong> ffmpeg 16kHz mono converter, Silero-VAD integration, and Termux microphone recorder.</li>
+                <li><strong>Model Hub:</strong> Automatic model downloader with SHA-256 verification and cache management.</li>
+                <li><strong>Export Standards:</strong> SRT, WebVTT, NIST RTTM, and structured JSON output.</li>
+                <li><strong>CLI Suite:</strong> <code>transcribe</code>, <code>listen</code>, <code>diarize</code>, <code>models</code>, <code>doctor</code>, and <code>benchmark</code>.</li>
+                <li><strong>Dual-Engine Support:</strong> First-class Node.js npm package with identical capabilities.</li>
+            </ul>
+        </main>
+    </div>
+    <footer>
+        <div style="margin-bottom: 8px; font-size: 0.85em; opacity: 0.85;">
+            <strong>Disclaimer:</strong> termux-stt is an independent open-source project developed for the Android Termux environment and is not officially affiliated with, endorsed by, or sponsored by the Termux project, OpenAI, or any other third party.
+        </div>
+        <span data-i18n="common.footerText">&copy; 2026 termux-stt Project (uno-km). Released under the MIT License.</span>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+<channel>
+  <title>termux-stt Release Feed</title>
+  <link>https://uno-km.github.io/termux-stt/</link>
+  <description>Android on-device STT framework for Termux</description>
+  <item>
+    <title>termux-stt v1.0.0 Released</title>
+    <link>https://uno-km.github.io/termux-stt/versions.html</link>
+    <description>Unified STT with whisper.cpp, vosk, and sherpa-onnx on Android Termux.</description>
+    <pubDate>Thu, 20 Aug 2026 00:00:00 GMT</pubDate>
+  </item>
+</channel>
+</rss>

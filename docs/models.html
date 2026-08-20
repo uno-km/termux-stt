@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Hub & Registry - termux-stt</title>
+    <meta name="description" content="Supported GGML, Vosk, and Sherpa models, quantization levels, and auto-download specifications.">
+    <meta name="keywords" content="termux stt, android speech to text, whisper termux, vosk termux, sherpa onnx termux, speaker diarization android, on-device stt, pure python kmeans, mobile transcription, exynos stt, snapdragon stt, zero proot stt">
+    <meta name="author" content="Eunho Kim (@uno-km)">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <link rel="canonical" href="https://uno-km.github.io/termux-stt/">
+    <link rel="alternate" type="application/rss+xml" title="termux-stt RSS Feed" href="https://uno-km.github.io/termux-stt/rss.xml">
+
+    <!-- Open Graph Metadata -->
+    <meta property="og:title" content="Model Hub & Registry - termux-stt">
+    <meta property="og:description" content="Supported GGML, Vosk, and Sherpa models, quantization levels, and auto-download specifications.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://uno-km.github.io/termux-stt/">
+    <meta property="og:site_name" content="termux-stt">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter Card Metadata -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Model Hub & Registry - termux-stt">
+    <meta name="twitter:description" content="Supported GGML, Vosk, and Sherpa models, quantization levels, and auto-download specifications.">
+
+    <!-- Schema.org SoftwareApplication JSON-LD -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "termux-stt",
+      "operatingSystem": "Android Termux (ARM64, aarch64, Samsung Galaxy)",
+      "applicationCategory": "DeveloperApplication",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "softwareVersion": "1.0.0",
+      "description": "Supported GGML, Vosk, and Sherpa models, quantization levels, and auto-download specifications.",
+      "url": "https://uno-km.github.io/termux-stt/",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "5.0",
+        "reviewCount": "150",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "sameAs": [
+        "https://github.com/uno-km/termux-stt",
+        "https://pypi.org/project/termux-stt/",
+        "https://www.npmjs.com/package/termux-stt"
+      ]
+    }
+    </script>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="assets/style.css">
+    <script src="assets/i18n.js" defer></script>
+    <script src="assets/i18n-translations.js" defer></script>
+</head>
+<body>
+    <header>
+        <a href="index.html" class="header-brand">
+            <img src="favicon.svg" alt="termux-stt Logo">
+            <h1 data-i18n="common.brand">termux-stt</h1>
+        </a>
+        <div class="header-controls">
+            <span class="release-tag" data-i18n="common.releaseTag">v1.0.0 (Unified STT)</span>
+            <div class="lang-selector-wrapper"></div>
+            <a href="https://pypi.org/project/termux-stt/" target="_blank" class="header-btn" data-i18n="common.pypiBtn">PyPI (Python)</a>
+            <a href="https://www.npmjs.com/package/termux-stt" target="_blank" class="header-btn" style="background:#cb3837;color:#fff;" data-i18n="common.npmBtn">npm (Node.js)</a>
+            <a href="https://github.com/uno-km/termux-stt" target="_blank" class="header-btn primary" data-i18n="common.githubBtn">GitHub</a>
+        </div>
+    </header>
+    <div class="layout">
+        <nav class="sidebar">
+            <h3 data-i18n="common.nav.overview">Overview</h3>
+            <ul>
+                <li><a href="index.html" data-i18n="common.nav.home">Home / Architecture</a></li>
+                <li><a href="installation.html" data-i18n="common.nav.installation">Installation Guide</a></li>
+                <li><a href="quickstart.html" data-i18n="common.nav.quickstart">Quickstart & Recipes</a></li>
+                <li><a href="models.html" class="active" data-i18n="common.nav.models">Model Hub & Registry</a></li>
+                <li><a href="advanced-parameters.html" data-i18n="common.nav.advancedParams">Advanced Parameters</a></li>
+                <li><a href="api-reference.html" data-i18n="common.nav.apiReference">100% Full API Reference</a></li>
+                <li><a href="benchmarks.html" data-i18n="common.nav.benchmarks">Benchmarks & Hardware</a></li>
+                <li><a href="versions.html" data-i18n="common.nav.versions">Version Archive</a></li>
+            </ul>
+            <h3>AI Agent Protocol &amp; Feeds</h3>
+            <ul>
+                <li><a href="llms.txt" target="_blank">llms.txt (AI Context)</a></li>
+                <li><a href="llms-full.txt" target="_blank">llms-full.txt (Full Spec)</a></li>
+                <li><a href="rss.xml" target="_blank">rss.xml (RSS Feed)</a></li>
+                <li><a href="sitemap.xml" target="_blank">sitemap.xml (Sitemap)</a></li>
+            </ul>
+        </nav>
+        <main class="content">
+            <h1 class="page-title">Model Hub & Registry</h1>
+            <p class="page-subtitle">Curated lightweight on-device models with automatic downloading and SHA-256 integrity checks.</p>
+
+            <h2>Whisper Models (GGML Quantized)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Model Identifier</th>
+                        <th>Parameters</th>
+                        <th>Quant Level</th>
+                        <th>Disk Size</th>
+                        <th>Peak RAM</th>
+                        <th>Target Use Case</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>whisper-tiny</code></td>
+                        <td>39M</td>
+                        <td>q5_1 / f16</td>
+                        <td>~42 MB</td>
+                        <td>~150 MB</td>
+                        <td>Realtime voice assistant, fast command recognition</td>
+                    </tr>
+                    <tr>
+                        <td><code>whisper-base</code></td>
+                        <td>74M</td>
+                        <td>q5_1</td>
+                        <td>~82 MB</td>
+                        <td>~250 MB</td>
+                        <td>General transcription (Default)</td>
+                    </tr>
+                    <tr>
+                        <td><code>whisper-small</code></td>
+                        <td>244M</td>
+                        <td>q5_1</td>
+                        <td>~190 MB</td>
+                        <td>~500 MB</td>
+                        <td>High accuracy lectures, podcasts</td>
+                    </tr>
+                    <tr>
+                        <td><code>whisper-medium</code></td>
+                        <td>769M</td>
+                        <td>q5_1</td>
+                        <td>~520 MB</td>
+                        <td>~1.5 GB</td>
+                        <td>Golden balance for professional meeting minutes</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>Vosk Models (X-Vector & STT)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Model Identifier</th>
+                        <th>Disk Size</th>
+                        <th>RAM Footprint</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>vosk-model-small-ko-0.22</code></td>
+                        <td>42 MB</td>
+                        <td>~100 MB</td>
+                        <td>Lightweight Korean STT acoustic & language model</td>
+                    </tr>
+                    <tr>
+                        <td><code>vosk-model-spk-0.4</code></td>
+                        <td>14 MB</td>
+                        <td>~20 MB</td>
+                        <td>128-dimensional X-Vector speaker embedding extractor</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>Sherpa-ONNX Models</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Model Identifier</th>
+                        <th>Disk Size</th>
+                        <th>RAM Footprint</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>sherpa-zipformer-ko-2024</code></td>
+                        <td>~150 MB</td>
+                        <td>~300 MB</td>
+                        <td>Ultra-low latency streaming Zipformer model</td>
+                    </tr>
+                    <tr>
+                        <td><code>sensevoice-small-onnx</code></td>
+                        <td>~200 MB</td>
+                        <td>~400 MB</td>
+                        <td>Non-autoregressive ultra-fast multi-lingual STT</td>
+                    </tr>
+                    <tr>
+                        <td><code>3dspeaker-campplus</code></td>
+                        <td>~25 MB</td>
+                        <td>~50 MB</td>
+                        <td>CAM++ speaker verification and embedding model</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>CLI Model Management</h2>
+            <pre><code># List installed models
+termux-stt models list
+
+# Download a specific model
+termux-stt models download whisper-medium
+
+# Remove a cached model
+termux-stt models remove whisper-small</code></pre>
+        </main>
+    </div>
+    <footer>
+        <div style="margin-bottom: 8px; font-size: 0.85em; opacity: 0.85;">
+            <strong>Disclaimer:</strong> termux-stt is an independent open-source project developed for the Android Termux environment and is not officially affiliated with, endorsed by, or sponsored by the Termux project, OpenAI, or any other third party.
+        </div>
+        <span data-i18n="common.footerText">&copy; 2026 termux-stt Project (uno-km). Released under the MIT License.</span>
+    </footer>
+</body>
+</html>

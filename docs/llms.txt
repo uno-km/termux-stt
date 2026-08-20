@@ -1,0 +1,32 @@
+# termux-stt
+> Android On-Device Unified STT Framework for Termux
+
+## Core Features
+- Unified create_engine() interface for whisper.cpp, vosk, and sherpa-onnx
+- Built-in speaker diarization via pure-Python K-Means and Vosk 128d X-Vectors
+- Zero external ML dependencies (no numpy, no sklearn, no torch)
+- Subprocess crash isolation and Android mobile safeguards (WakeLock, Doze bypass)
+
+## Python Quickstart
+```python
+from termux_stt import create_engine
+
+# STT only
+engine = create_engine("whisper", model="base", lang="ko")
+result = engine.transcribe("audio.wav")
+print(result.text)
+
+# STT + Speaker Diarization
+engine = create_engine("hybrid", lang="ko", num_speakers=2)
+result = engine.diarize("meeting.wav")
+for seg in result.segments:
+    print(f"[{seg.speaker}] {seg.text}")
+```
+
+## Node.js Quickstart
+```javascript
+const { createEngine } = require("termux-stt");
+const engine = createEngine("whisper", { model: "base", lang: "ko" });
+const result = await engine.transcribe("audio.wav");
+console.log(result.text);
+```
