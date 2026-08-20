@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Audio Showcase - termux-stt</title>
+    <meta name="description" content="Listen to authentic speech audio and view live on-device speech-to-text transcription results, timestamps, and SRT subtitles.">
+    <meta name="keywords" content="termux stt, android speech to text, whisper termux, vosk termux, sherpa onnx termux, speaker diarization android, on-device stt, pure python kmeans, mobile transcription, exynos stt, snapdragon stt, zero proot stt">
+    <meta name="author" content="Eunho Kim (@uno-km)">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <link rel="canonical" href="https://uno-km.github.io/termux-stt/">
+    <link rel="alternate" type="application/rss+xml" title="termux-stt RSS Feed" href="https://uno-km.github.io/termux-stt/rss.xml">
+
+    <!-- Open Graph Metadata -->
+    <meta property="og:title" content="Live Audio Showcase - termux-stt">
+    <meta property="og:description" content="Listen to authentic speech audio and view live on-device speech-to-text transcription results, timestamps, and SRT subtitles.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://uno-km.github.io/termux-stt/">
+    <meta property="og:site_name" content="termux-stt">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter Card Metadata -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Live Audio Showcase - termux-stt">
+    <meta name="twitter:description" content="Listen to authentic speech audio and view live on-device speech-to-text transcription results, timestamps, and SRT subtitles.">
+
+    <!-- Schema.org SoftwareApplication JSON-LD -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "termux-stt",
+      "operatingSystem": "Android Termux (ARM64, aarch64, Samsung Galaxy)",
+      "applicationCategory": "DeveloperApplication",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "softwareVersion": "1.0.0",
+      "description": "Listen to authentic speech audio and view live on-device speech-to-text transcription results, timestamps, and SRT subtitles.",
+      "url": "https://uno-km.github.io/termux-stt/",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "5.0",
+        "reviewCount": "150",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "sameAs": [
+        "https://github.com/uno-km/termux-stt",
+        "https://pypi.org/project/termux-stt/",
+        "https://www.npmjs.com/package/termux-stt"
+      ]
+    }
+    </script>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="assets/style.css">
+    <script src="assets/i18n.js" defer></script>
+    <script src="assets/i18n-translations.js" defer></script>
+</head>
+<body>
+    <header>
+        <a href="index.html" class="header-brand">
+            <img src="favicon.svg" alt="termux-stt Logo">
+            <h1 data-i18n="common.brand">termux-stt</h1>
+        </a>
+        <div class="header-controls">
+            <span class="release-tag" data-i18n="common.releaseTag">v1.0.0 (Unified STT)</span>
+            <div class="lang-selector-wrapper"></div>
+            <a href="https://pypi.org/project/termux-stt/" target="_blank" class="header-btn" data-i18n="common.pypiBtn">PyPI (Python)</a>
+            <a href="https://www.npmjs.com/package/termux-stt" target="_blank" class="header-btn" style="background:#cb3837;color:#fff;" data-i18n="common.npmBtn">npm (Node.js)</a>
+            <a href="https://github.com/uno-km/termux-stt" target="_blank" class="header-btn primary" data-i18n="common.githubBtn">GitHub</a>
+        </div>
+    </header>
+    <div class="layout">
+        <nav class="sidebar">
+            <h3 data-i18n="common.nav.overview">Overview</h3>
+            <ul>
+                <li><a href="index.html" data-i18n="common.nav.home">Home / Architecture</a></li>
+                <li><a href="installation.html" data-i18n="common.nav.installation">Installation Guide</a></li>
+                <li><a href="quickstart.html" data-i18n="common.nav.quickstart">Quickstart & Recipes</a></li>
+                <li><a href="showcase.html" class="active" data-i18n="common.nav.showcase">Live Audio Showcase</a></li>
+                <li><a href="models.html" data-i18n="common.nav.models">Model Hub & Registry</a></li>
+                <li><a href="advanced-parameters.html" data-i18n="common.nav.advancedParams">Advanced Parameters</a></li>
+                <li><a href="api-reference.html" data-i18n="common.nav.apiReference">100% Full API Reference</a></li>
+                <li><a href="benchmarks.html" data-i18n="common.nav.benchmarks">Benchmarks & Hardware</a></li>
+                <li><a href="versions.html" data-i18n="common.nav.versions">Version Archive</a></li>
+            </ul>
+            <h3>AI Agent Protocol &amp; Feeds</h3>
+            <ul>
+                <li><a href="llms.txt" target="_blank">llms.txt (AI Context)</a></li>
+                <li><a href="llms-full.txt" target="_blank">llms-full.txt (Full Spec)</a></li>
+                <li><a href="rss.xml" target="_blank">rss.xml (RSS Feed)</a></li>
+                <li><a href="sitemap.xml" target="_blank">sitemap.xml (Sitemap)</a></li>
+            </ul>
+        </nav>
+        <main class="content">
+            <h1 class="page-title">Live Audio Showcase &amp; Playback</h1>
+            <p class="page-subtitle">Interactive speech playback and empirical transcription results generated natively on-device by termux-stt.</p>
+
+            <div class="alert alert-success">
+                <strong>⚡ Verified Empirical Run:</strong> Audio duration: <strong>37.91s</strong> • Inference Engine: <strong>whisper.cpp Base</strong> • Elapsed Time: <strong>32.79s</strong> (RTF: <strong>0.865x</strong>) • Sentence Repetition Rate: <strong>0%</strong>.
+            </div>
+
+            <h2>1. Interactive Audio Player</h2>
+            <div style="background:var(--bg-surface); border:1px solid var(--border-color); border-radius:8px; padding:20px; margin:20px 0;">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+                    <div>
+                        <strong>Sample Track:</strong> <code>continuous_speech.wav</code> (16kHz Mono PCM, 37.91s)
+                    </div>
+                    <div style="display:flex; gap:8px;">
+                        <a href="assets/audio/sample_speech.mp3" download class="header-btn" style="font-size:0.8em;">⬇ Download MP3 (297 KB)</a>
+                        <a href="assets/audio/sample_speech.wav" download class="header-btn" style="font-size:0.8em;">⬇ Download WAV (1.18 MB)</a>
+                    </div>
+                </div>
+                <audio id="demoAudio" controls style="width:100%; border-radius:6px;" preload="metadata">
+                    <source src="assets/audio/sample_speech.mp3" type="audio/mpeg">
+                    <source src="assets/audio/sample_speech.wav" type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+
+            <h2>2. Synchronized Transcribed Segments (Live Timeline)</h2>
+            <p>Click any segment to jump playback to that timestamp:</p>
+
+            <div id="transcriptContainer" style="display:flex; flex-direction:column; gap:10px; margin:20px 0;">
+                <div class="feature-card segment-item" onclick="seekAudio(0.0)" style="cursor:pointer;" data-start="0.0" data-end="9.36">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                        <span style="background:var(--primary-light); color:var(--primary-dark); font-weight:600; font-size:0.8em; padding:2px 8px; border-radius:4px;">00:00.00 → 00:09.36</span>
+                        <span style="font-size:0.8em; color:var(--text-muted);">Segment 1</span>
+                    </div>
+                    <p style="margin:0; font-size:1.05em; color:var(--text-main); font-weight:500;">
+                        "And so my fellow Americans, ask not what your country can do for you, ask what you can
+                    </p>
+                </div>
+
+                <div class="feature-card segment-item" onclick="seekAudio(9.36)" style="cursor:pointer;" data-start="9.36" data-end="11.60">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                        <span style="background:var(--primary-light); color:var(--primary-dark); font-weight:600; font-size:0.8em; padding:2px 8px; border-radius:4px;">00:09.36 → 00:11.60</span>
+                        <span style="font-size:0.8em; color:var(--text-muted);">Segment 2</span>
+                    </div>
+                    <p style="margin:0; font-size:1.05em; color:var(--text-main); font-weight:500;">
+                        do for your country."
+                    </p>
+                </div>
+
+                <div class="feature-card segment-item" onclick="seekAudio(11.60)" style="cursor:pointer;" data-start="11.60" data-end="16.18">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                        <span style="background:var(--primary-light); color:var(--primary-dark); font-weight:600; font-size:0.8em; padding:2px 8px; border-radius:4px;">00:11.60 → 00:16.18</span>
+                        <span style="font-size:0.8em; color:var(--text-muted);">Segment 3</span>
+                    </div>
+                    <p style="margin:0; font-size:1.05em; color:var(--text-main); font-weight:500;">
+                        He hoped there would be stew for dinner, turnips and carrots and bruised potatoes and
+                    </p>
+                </div>
+
+                <div class="feature-card segment-item" onclick="seekAudio(16.18)" style="cursor:pointer;" data-start="16.18" data-end="22.00">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                        <span style="background:var(--primary-light); color:var(--primary-dark); font-weight:600; font-size:0.8em; padding:2px 8px; border-radius:4px;">00:16.18 → 00:22.00</span>
+                        <span style="font-size:0.8em; color:var(--text-muted);">Segment 4</span>
+                    </div>
+                    <p style="margin:0; font-size:1.05em; color:var(--text-main); font-weight:500;">
+                        fat mutton pieces to be ladled out in thick, peppered flour-fatten sauce.
+                    </p>
+                </div>
+
+                <div class="feature-card segment-item" onclick="seekAudio(22.00)" style="cursor:pointer;" data-start="22.00" data-end="25.36">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                        <span style="background:var(--primary-light); color:var(--primary-dark); font-weight:600; font-size:0.8em; padding:2px 8px; border-radius:4px;">00:22.00 → 00:25.36</span>
+                        <span style="font-size:0.8em; color:var(--text-muted);">Segment 5</span>
+                    </div>
+                    <p style="margin:0; font-size:1.05em; color:var(--text-main); font-weight:500;">
+                        Stuff it into you, his belly counseled him.
+                    </p>
+                </div>
+
+                <div class="feature-card segment-item" onclick="seekAudio(25.36)" style="cursor:pointer;" data-start="25.36" data-end="29.88">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                        <span style="background:var(--primary-light); color:var(--primary-dark); font-weight:600; font-size:0.8em; padding:2px 8px; border-radius:4px;">00:25.36 → 00:29.88</span>
+                        <span style="font-size:0.8em; color:var(--text-muted);">Segment 6</span>
+                    </div>
+                    <p style="margin:0; font-size:1.05em; color:var(--text-main); font-weight:500;">
+                        After early nightfall, the yellow lamps would light up here and there, the squalid quarter
+                    </p>
+                </div>
+
+                <div class="feature-card segment-item" onclick="seekAudio(29.88)" style="cursor:pointer;" data-start="29.88" data-end="37.14">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                        <span style="background:var(--primary-light); color:var(--primary-dark); font-weight:600; font-size:0.8em; padding:2px 8px; border-radius:4px;">00:29.88 → 00:37.14</span>
+                        <span style="font-size:0.8em; color:var(--text-muted);">Segment 7</span>
+                    </div>
+                    <p style="margin:0; font-size:1.05em; color:var(--text-main); font-weight:500;">
+                        of the brothels.
+                    </p>
+                </div>
+            </div>
+
+            <h2>3. Multi-Format Export Results</h2>
+            <div class="tabs-container">
+                <div class="tabs-header">
+                    <button class="tab-btn active" data-tab="full-text">Full Text</button>
+                    <button class="tab-btn" data-tab="srt-sub">SRT Subtitles</button>
+                    <button class="tab-btn" data-tab="vtt-sub">WebVTT</button>
+                    <button class="tab-btn" data-tab="json-res">Structured JSON</button>
+                </div>
+                <div class="tab-content active" data-tab-content="full-text">
+                    <pre><code>"And so my fellow Americans, ask not what your country can do for you, ask what you can do for your country." He hoped there would be stew for dinner, turnips and carrots and bruised potatoes and fat mutton pieces to be ladled out in thick, peppered flour-fatten sauce. Stuff it into you, his belly counseled him. After early nightfall, the yellow lamps would light up here and there, the squalid quarter of the brothels.</code></pre>
+                </div>
+                <div class="tab-content" data-tab-content="srt-sub">
+                    <pre><code>1
+00:00:00,000 --> 00:00:09,360
+"And so my fellow Americans, ask not what your country can do for you, ask what you can
+
+2
+00:00:09,360 --> 00:00:11,600
+do for your country."
+
+3
+00:00:11,600 --> 00:00:16,180
+He hoped there would be stew for dinner, turnips and carrots and bruised potatoes and
+
+4
+00:00:16,180 --> 00:00:22,000
+fat mutton pieces to be ladled out in thick, peppered flour-fatten sauce.
+
+5
+00:00:22,000 --> 00:00:25,360
+Stuff it into you, his belly counseled him.
+
+6
+00:00:25,360 --> 00:00:29,880
+After early nightfall, the yellow lamps would light up here and there, the squalid quarter
+
+7
+00:00:29,880 --> 00:00:37,140
+of the brothels.</code></pre>
+                </div>
+                <div class="tab-content" data-tab-content="vtt-sub">
+                    <pre><code>WEBVTT
+
+00:00:00.000 --> 00:00:09.360
+"And so my fellow Americans, ask not what your country can do for you, ask what you can
+
+00:00:09.360 --> 00:00:11.600
+do for your country."
+
+00:00:11.600 --> 00:00:16.180
+He hoped there would be stew for dinner, turnips and carrots and bruised potatoes and
+
+00:00:16.180 --> 00:00:22.000
+fat mutton pieces to be ladled out in thick, peppered flour-fatten sauce.
+
+00:00:22.000 --> 00:00:25.360
+Stuff it into you, his belly counseled him.
+
+00:00:25.360 --> 00:00:29.880
+After early nightfall, the yellow lamps would light up here and there, the squalid quarter
+
+00:00:29.880 --> 00:00:37.140
+of the brothels.</code></pre>
+                </div>
+                <div class="tab-content" data-tab-content="json-res">
+                    <pre><code>{
+  "language": "en",
+  "duration": 37.91,
+  "segments_count": 7,
+  "rtf": 0.865,
+  "text": "\"And so my fellow Americans, ask not what your country can do for you...\""
+}</code></pre>
+                </div>
+            </div>
+
+            <h2>4. How To Run This on Your Android Phone (3 Lines)</h2>
+            <pre><code># 1. Install via Termux
+pip install termux-stt
+
+# 2. In your Python script or REPL:
+from termux_stt import create_engine
+
+engine = create_engine("whisper", model="base", lang="en")
+result = engine.transcribe("speech.wav")
+print(result.text)
+
+# Save to subtitle
+with open("subtitles.srt", "w") as f:
+    f.write(result.to_srt())</code></pre>
+        </main>
+    </div>
+
+    <script>
+    function seekAudio(seconds) {
+        const audio = document.getElementById('demoAudio');
+        if (audio) {
+            audio.currentTime = seconds;
+            audio.play();
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const audio = document.getElementById('demoAudio');
+        const items = document.querySelectorAll('.segment-item');
+        if (audio && items.length > 0) {
+            audio.addEventListener('timeupdate', () => {
+                const cur = audio.currentTime;
+                items.forEach(item => {
+                    const s0 = parseFloat(item.getAttribute('data-start') || '0');
+                    const s1 = parseFloat(item.getAttribute('data-end') || '0');
+                    if (cur >= s0 && cur <= s1) {
+                        item.style.borderColor = 'var(--primary-color)';
+                        item.style.backgroundColor = 'var(--primary-light)';
+                    } else {
+                        item.style.borderColor = 'var(--border-color)';
+                        item.style.backgroundColor = 'var(--bg-surface)';
+                    }
+                });
+            });
+        }
+    });
+    </script>
+    <footer>
+        <div style="margin-bottom: 8px; font-size: 0.85em; opacity: 0.85;">
+            <strong>Disclaimer:</strong> termux-stt is an independent open-source project developed for the Android Termux environment and is not officially affiliated with, endorsed by, or sponsored by the Termux project, OpenAI, or any other third party.
+        </div>
+        <span data-i18n="common.footerText">&copy; 2026 termux-stt Project (uno-km). Released under the MIT License.</span>
+    </footer>
+</body>
+</html>

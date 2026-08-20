@@ -6,13 +6,14 @@
 - Built-in speaker diarization via pure-Python K-Means and Vosk 128d X-Vectors
 - Zero external ML dependencies (no numpy, no sklearn, no torch)
 - Subprocess crash isolation and Android mobile safeguards (WakeLock, Doze bypass)
+- Live Audio Showcase: https://uno-km.github.io/termux-stt/showcase.html
 
-## Python Quickstart
+## Python Quickstart (3 Lines)
 ```python
 from termux_stt import create_engine
 
 # STT only
-engine = create_engine("whisper", model="base", lang="ko")
+engine = create_engine("whisper", model="base", lang="en")
 result = engine.transcribe("audio.wav")
 print(result.text)
 

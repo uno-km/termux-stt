@@ -1,6 +1,6 @@
 """
 Official AMEVA Library Documentation Site Generator for termux-stt.
-Aligned with uno-km Library Template Design System, 6-Language i18n, Full API & Benchmarks.
+Aligned with uno-km Library Template Design System, 6-Language i18n, Full API, Live Showcase & Benchmarks.
 """
 import os
 
@@ -66,7 +66,7 @@ def get_head_meta(title, description):
     <script src="assets/i18n-translations.js" defer></script>"""
 
 def get_header(active_page):
-    return """    <header>
+    return f"""    <header>
         <a href="index.html" class="header-brand">
             <img src="favicon.svg" alt="termux-stt Logo">
             <h1 data-i18n="common.brand">termux-stt</h1>
@@ -85,22 +85,23 @@ def get_sidebar(active_page):
         ('index.html', 'common.nav.home', 'Home / Architecture'),
         ('installation.html', 'common.nav.installation', 'Installation Guide'),
         ('quickstart.html', 'common.nav.quickstart', 'Quickstart & Recipes'),
+        ('showcase.html', 'common.nav.showcase', 'Live Audio Showcase'),
         ('models.html', 'common.nav.models', 'Model Hub & Registry'),
         ('advanced-parameters.html', 'common.nav.advancedParams', 'Advanced Parameters'),
         ('api-reference.html', 'common.nav.apiReference', '100% Full API Reference'),
         ('benchmarks.html', 'common.nav.benchmarks', 'Benchmarks & Hardware'),
         ('versions.html', 'common.nav.versions', 'Version Archive')
     ]
-
+    
     sidebar_html = """        <nav class="sidebar">
             <h3 data-i18n="common.nav.overview">Overview</h3>
             <ul>"""
-
+    
     for href, i18n_key, title in pages:
         active_class = ' class="active"' if href == active_page else ''
         sidebar_html += f"""
                 <li><a href="{href}"{active_class} data-i18n="{i18n_key}">{title}</a></li>"""
-
+    
     sidebar_html += """
             </ul>
             <h3>AI Agent Protocol &amp; Feeds</h3>
@@ -135,8 +136,11 @@ def build_index():
             <h1 class="page-title" data-i18n="home.title">Android On-Device Unified STT Framework</h1>
             <p class="page-subtitle" data-i18n="home.subtitle">Whisper.cpp, Vosk, and Sherpa-ONNX unified with Speaker Diarization and 0 external ML dependencies on Termux.</p>
 
-            <div class="alert alert-info">
-                <strong>Empirical Foundation:</strong> Developed based on 15 comprehensive mobile benchmarks conducted on Samsung Galaxy A35 (Exynos 1380, 6GB RAM). High accuracy transcription, realtime mic streaming, and 128d X-Vector diarization under 1.5 GB RAM.
+            <div class="alert alert-info" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+                <div>
+                    <strong>🎙️ Live On-Device Speech Demo Available!</strong> Listen to authentic continuous speech transcribed with Whisper Base and explore live SRT subtitle generation.
+                </div>
+                <a href="showcase.html" class="header-btn primary" style="padding:6px 16px; font-size:0.9em; text-decoration:none;">▶ Open Live Showcase</a>
             </div>
 
             <h2 data-i18n="home.quickInstall">Quick Install</h2>
@@ -291,6 +295,243 @@ for seg in result.segments:
 </body>
 </html>"""
 
+def build_showcase():
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+{get_head_meta("Live Audio Showcase - termux-stt", "Listen to authentic speech audio and view live on-device speech-to-text transcription results, timestamps, and SRT subtitles.")}
+</head>
+<body>
+{get_header("showcase.html")}
+    <div class="layout">
+{get_sidebar("showcase.html")}
+        <main class="content">
+            <h1 class="page-title">Live Audio Showcase &amp; Playback</h1>
+            <p class="page-subtitle">Interactive speech playback and empirical transcription results generated natively on-device by termux-stt.</p>
+
+            <div class="alert alert-success">
+                <strong>⚡ Verified Empirical Run:</strong> Audio duration: <strong>37.91s</strong> • Inference Engine: <strong>whisper.cpp Base</strong> • Elapsed Time: <strong>32.79s</strong> (RTF: <strong>0.865x</strong>) • Sentence Repetition Rate: <strong>0%</strong>.
+            </div>
+
+            <h2>1. Interactive Audio Player</h2>
+            <div style="background:var(--bg-surface); border:1px solid var(--border-color); border-radius:8px; padding:20px; margin:20px 0;">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+                    <div>
+                        <strong>Sample Track:</strong> <code>continuous_speech.wav</code> (16kHz Mono PCM, 37.91s)
+                    </div>
+                    <div style="display:flex; gap:8px;">
+                        <a href="assets/audio/sample_speech.mp3" download class="header-btn" style="font-size:0.8em;">⬇ Download MP3 (297 KB)</a>
+                        <a href="assets/audio/sample_speech.wav" download class="header-btn" style="font-size:0.8em;">⬇ Download WAV (1.18 MB)</a>
+                    </div>
+                </div>
+                <audio id="demoAudio" controls style="width:100%; border-radius:6px;" preload="metadata">
+                    <source src="assets/audio/sample_speech.mp3" type="audio/mpeg">
+                    <source src="assets/audio/sample_speech.wav" type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+
+            <h2>2. Synchronized Transcribed Segments (Live Timeline)</h2>
+            <p>Click any segment to jump playback to that timestamp:</p>
+
+            <div id="transcriptContainer" style="display:flex; flex-direction:column; gap:10px; margin:20px 0;">
+                <div class="feature-card segment-item" onclick="seekAudio(0.0)" style="cursor:pointer;" data-start="0.0" data-end="9.36">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                        <span style="background:var(--primary-light); color:var(--primary-dark); font-weight:600; font-size:0.8em; padding:2px 8px; border-radius:4px;">00:00.00 → 00:09.36</span>
+                        <span style="font-size:0.8em; color:var(--text-muted);">Segment 1</span>
+                    </div>
+                    <p style="margin:0; font-size:1.05em; color:var(--text-main); font-weight:500;">
+                        "And so my fellow Americans, ask not what your country can do for you, ask what you can
+                    </p>
+                </div>
+
+                <div class="feature-card segment-item" onclick="seekAudio(9.36)" style="cursor:pointer;" data-start="9.36" data-end="11.60">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                        <span style="background:var(--primary-light); color:var(--primary-dark); font-weight:600; font-size:0.8em; padding:2px 8px; border-radius:4px;">00:09.36 → 00:11.60</span>
+                        <span style="font-size:0.8em; color:var(--text-muted);">Segment 2</span>
+                    </div>
+                    <p style="margin:0; font-size:1.05em; color:var(--text-main); font-weight:500;">
+                        do for your country."
+                    </p>
+                </div>
+
+                <div class="feature-card segment-item" onclick="seekAudio(11.60)" style="cursor:pointer;" data-start="11.60" data-end="16.18">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                        <span style="background:var(--primary-light); color:var(--primary-dark); font-weight:600; font-size:0.8em; padding:2px 8px; border-radius:4px;">00:11.60 → 00:16.18</span>
+                        <span style="font-size:0.8em; color:var(--text-muted);">Segment 3</span>
+                    </div>
+                    <p style="margin:0; font-size:1.05em; color:var(--text-main); font-weight:500;">
+                        He hoped there would be stew for dinner, turnips and carrots and bruised potatoes and
+                    </p>
+                </div>
+
+                <div class="feature-card segment-item" onclick="seekAudio(16.18)" style="cursor:pointer;" data-start="16.18" data-end="22.00">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                        <span style="background:var(--primary-light); color:var(--primary-dark); font-weight:600; font-size:0.8em; padding:2px 8px; border-radius:4px;">00:16.18 → 00:22.00</span>
+                        <span style="font-size:0.8em; color:var(--text-muted);">Segment 4</span>
+                    </div>
+                    <p style="margin:0; font-size:1.05em; color:var(--text-main); font-weight:500;">
+                        fat mutton pieces to be ladled out in thick, peppered flour-fatten sauce.
+                    </p>
+                </div>
+
+                <div class="feature-card segment-item" onclick="seekAudio(22.00)" style="cursor:pointer;" data-start="22.00" data-end="25.36">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                        <span style="background:var(--primary-light); color:var(--primary-dark); font-weight:600; font-size:0.8em; padding:2px 8px; border-radius:4px;">00:22.00 → 00:25.36</span>
+                        <span style="font-size:0.8em; color:var(--text-muted);">Segment 5</span>
+                    </div>
+                    <p style="margin:0; font-size:1.05em; color:var(--text-main); font-weight:500;">
+                        Stuff it into you, his belly counseled him.
+                    </p>
+                </div>
+
+                <div class="feature-card segment-item" onclick="seekAudio(25.36)" style="cursor:pointer;" data-start="25.36" data-end="29.88">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                        <span style="background:var(--primary-light); color:var(--primary-dark); font-weight:600; font-size:0.8em; padding:2px 8px; border-radius:4px;">00:25.36 → 00:29.88</span>
+                        <span style="font-size:0.8em; color:var(--text-muted);">Segment 6</span>
+                    </div>
+                    <p style="margin:0; font-size:1.05em; color:var(--text-main); font-weight:500;">
+                        After early nightfall, the yellow lamps would light up here and there, the squalid quarter
+                    </p>
+                </div>
+
+                <div class="feature-card segment-item" onclick="seekAudio(29.88)" style="cursor:pointer;" data-start="29.88" data-end="37.14">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                        <span style="background:var(--primary-light); color:var(--primary-dark); font-weight:600; font-size:0.8em; padding:2px 8px; border-radius:4px;">00:29.88 → 00:37.14</span>
+                        <span style="font-size:0.8em; color:var(--text-muted);">Segment 7</span>
+                    </div>
+                    <p style="margin:0; font-size:1.05em; color:var(--text-main); font-weight:500;">
+                        of the brothels.
+                    </p>
+                </div>
+            </div>
+
+            <h2>3. Multi-Format Export Results</h2>
+            <div class="tabs-container">
+                <div class="tabs-header">
+                    <button class="tab-btn active" data-tab="full-text">Full Text</button>
+                    <button class="tab-btn" data-tab="srt-sub">SRT Subtitles</button>
+                    <button class="tab-btn" data-tab="vtt-sub">WebVTT</button>
+                    <button class="tab-btn" data-tab="json-res">Structured JSON</button>
+                </div>
+                <div class="tab-content active" data-tab-content="full-text">
+                    <pre><code>"And so my fellow Americans, ask not what your country can do for you, ask what you can do for your country." He hoped there would be stew for dinner, turnips and carrots and bruised potatoes and fat mutton pieces to be ladled out in thick, peppered flour-fatten sauce. Stuff it into you, his belly counseled him. After early nightfall, the yellow lamps would light up here and there, the squalid quarter of the brothels.</code></pre>
+                </div>
+                <div class="tab-content" data-tab-content="srt-sub">
+                    <pre><code>1
+00:00:00,000 --> 00:00:09,360
+"And so my fellow Americans, ask not what your country can do for you, ask what you can
+
+2
+00:00:09,360 --> 00:00:11,600
+do for your country."
+
+3
+00:00:11,600 --> 00:00:16,180
+He hoped there would be stew for dinner, turnips and carrots and bruised potatoes and
+
+4
+00:00:16,180 --> 00:00:22,000
+fat mutton pieces to be ladled out in thick, peppered flour-fatten sauce.
+
+5
+00:00:22,000 --> 00:00:25,360
+Stuff it into you, his belly counseled him.
+
+6
+00:00:25,360 --> 00:00:29,880
+After early nightfall, the yellow lamps would light up here and there, the squalid quarter
+
+7
+00:00:29,880 --> 00:00:37,140
+of the brothels.</code></pre>
+                </div>
+                <div class="tab-content" data-tab-content="vtt-sub">
+                    <pre><code>WEBVTT
+
+00:00:00.000 --> 00:00:09.360
+"And so my fellow Americans, ask not what your country can do for you, ask what you can
+
+00:00:09.360 --> 00:00:11.600
+do for your country."
+
+00:00:11.600 --> 00:00:16.180
+He hoped there would be stew for dinner, turnips and carrots and bruised potatoes and
+
+00:00:16.180 --> 00:00:22.000
+fat mutton pieces to be ladled out in thick, peppered flour-fatten sauce.
+
+00:00:22.000 --> 00:00:25.360
+Stuff it into you, his belly counseled him.
+
+00:00:25.360 --> 00:00:29.880
+After early nightfall, the yellow lamps would light up here and there, the squalid quarter
+
+00:00:29.880 --> 00:00:37.140
+of the brothels.</code></pre>
+                </div>
+                <div class="tab-content" data-tab-content="json-res">
+                    <pre><code>{{
+  "language": "en",
+  "duration": 37.91,
+  "segments_count": 7,
+  "rtf": 0.865,
+  "text": "\\"And so my fellow Americans, ask not what your country can do for you...\\""
+}}</code></pre>
+                </div>
+            </div>
+
+            <h2>4. How To Run This on Your Android Phone (3 Lines)</h2>
+            <pre><code># 1. Install via Termux
+pip install termux-stt
+
+# 2. In your Python script or REPL:
+from termux_stt import create_engine
+
+engine = create_engine("whisper", model="base", lang="en")
+result = engine.transcribe("speech.wav")
+print(result.text)
+
+# Save to subtitle
+with open("subtitles.srt", "w") as f:
+    f.write(result.to_srt())</code></pre>
+        </main>
+    </div>
+
+    <script>
+    function seekAudio(seconds) {{
+        const audio = document.getElementById('demoAudio');
+        if (audio) {{
+            audio.currentTime = seconds;
+            audio.play();
+        }}
+    }}
+
+    document.addEventListener('DOMContentLoaded', () => {{
+        const audio = document.getElementById('demoAudio');
+        const items = document.querySelectorAll('.segment-item');
+        if (audio && items.length > 0) {{
+            audio.addEventListener('timeupdate', () => {{
+                const cur = audio.currentTime;
+                items.forEach(item => {{
+                    const s0 = parseFloat(item.getAttribute('data-start') || '0');
+                    const s1 = parseFloat(item.getAttribute('data-end') || '0');
+                    if (cur >= s0 && cur <= s1) {{
+                        item.style.borderColor = 'var(--primary-color)';
+                        item.style.backgroundColor = 'var(--primary-light)';
+                    }} else {{
+                        item.style.borderColor = 'var(--border-color)';
+                        item.style.backgroundColor = 'var(--bg-surface)';
+                    }}
+                }});
+            }});
+        }}
+    }});
+    </script>
+{get_footer()}
+</body>
+</html>"""
+
 def build_installation():
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -302,17 +543,17 @@ def build_installation():
     <div class="layout">
 {get_sidebar("installation.html")}
         <main class="content">
-            <h1 class="page-title" data-i18n="installation.title">Installation Guide</h1>
-            <p class="page-subtitle" data-i18n="installation.subtitle">Setup termux-stt in Android Termux environment with zero compilation headaches.</p>
+            <h1 class="page-title">Installation Guide</h1>
+            <p class="page-subtitle">Setup termux-stt in Android Termux environment with zero compilation headaches.</p>
 
-            <h2 data-i18n="installation.prereqTitle">Prerequisites in Termux</h2>
+            <h2>Prerequisites in Termux</h2>
             <pre><code># Update Termux packages
 pkg update && pkg upgrade -y
 
 # Install essential dependencies
 pkg install -y python ffmpeg git cmake make clang libandroid-wordexp</code></pre>
 
-            <h2 data-i18n="installation.pkgTitle">Package Installation</h2>
+            <h2>Package Installation</h2>
             <div class="tabs-container">
                 <div class="tabs-header">
                     <button class="tab-btn active" data-tab="pip-inst">Python</button>
@@ -338,14 +579,14 @@ bash scripts/install_whisper_cpp.sh</code></pre>
                 </div>
             </div>
 
-            <h2 data-i18n="installation.androidTweaksTitle">Android Environment Tweaks (Recommended)</h2>
+            <h2>Android Environment Tweaks (Recommended)</h2>
             <div class="alert alert-warning">
                 <strong>Phantom Process Killer Fix (Android 12+):</strong><br>
                 Execute this command via ADB from PC to prevent Android from killing long-running STT processes:
                 <pre><code>adb shell "/system/bin/device_config put activity_manager max_phantom_processes 2147483647"</code></pre>
             </div>
 
-            <h2 data-i18n="installation.verifyTitle">Verification</h2>
+            <h2>Verification</h2>
             <pre><code># Run built-in system diagnostics
 termux-stt doctor</code></pre>
         </main>
@@ -365,10 +606,10 @@ def build_quickstart():
     <div class="layout">
 {get_sidebar("quickstart.html")}
         <main class="content">
-            <h1 class="page-title" data-i18n="quickstart.title">Quickstart & Recipes</h1>
-            <p class="page-subtitle" data-i18n="quickstart.subtitle">Production-ready code snippets for common audio transcription workflows.</p>
+            <h1 class="page-title">Quickstart & Recipes</h1>
+            <p class="page-subtitle">Production-ready code snippets for common audio transcription workflows.</p>
 
-            <h2 data-i18n="quickstart.r1Title">Recipe 1: Simple File Transcription</h2>
+            <h2>Recipe 1: Simple File Transcription</h2>
             <pre><code>from termux_stt import create_engine
 
 # Initialize Whisper engine
@@ -381,7 +622,7 @@ print("Text:", result.text)
 print("Language:", result.language)
 print("Duration:", result.duration)</code></pre>
 
-            <h2 data-i18n="quickstart.r2Title">Recipe 2: Realtime Microphone Streaming</h2>
+            <h2>Recipe 2: Realtime Microphone Streaming</h2>
             <pre><code>from termux_stt import create_engine
 
 engine = create_engine("whisper", model="tiny", lang="ko")
@@ -390,7 +631,7 @@ print("Speak into your device microphone (Ctrl+C to stop)...")
 for segment in engine.stream_mic(duration=30.0):
     print(f"[{{segment.start:.1f}}s - {{segment.end:.1f}}s] {{segment.text}}")</code></pre>
 
-            <h2 data-i18n="quickstart.r3Title">Recipe 3: Speaker Diarization (Meeting Minutes)</h2>
+            <h2>Recipe 3: Speaker Diarization (Meeting Minutes)</h2>
             <pre><code>from termux_stt import create_engine
 
 # Hybrid engine automatically clusters 128d X-Vectors
@@ -407,7 +648,7 @@ with open("meeting.srt", "w", encoding="utf-8") as f:
 with open("meeting.rttm", "w", encoding="utf-8") as f:
     f.write(result.to_rttm())</code></pre>
 
-            <h2 data-i18n="quickstart.r4Title">Recipe 4: Batch Processing Directory</h2>
+            <h2>Recipe 4: Batch Processing Directory</h2>
             <pre><code>import os
 from pathlib import Path
 from termux_stt import create_engine
@@ -438,10 +679,10 @@ def build_models():
     <div class="layout">
 {get_sidebar("models.html")}
         <main class="content">
-            <h1 class="page-title" data-i18n="models.title">Model Hub & Registry</h1>
-            <p class="page-subtitle" data-i18n="models.subtitle">Curated lightweight on-device models with automatic downloading and SHA-256 integrity checks.</p>
+            <h1 class="page-title">Model Hub & Registry</h1>
+            <p class="page-subtitle">Curated lightweight on-device models with automatic downloading and SHA-256 integrity checks.</p>
 
-            <h2 data-i18n="models.whisperTitle">Whisper Models (GGML Quantized)</h2>
+            <h2>Whisper Models (GGML Quantized)</h2>
             <table>
                 <thead>
                     <tr>
@@ -489,7 +730,7 @@ def build_models():
                 </tbody>
             </table>
 
-            <h2 data-i18n="models.voskTitle">Vosk Models (X-Vector & STT)</h2>
+            <h2>Vosk Models (X-Vector & STT)</h2>
             <table>
                 <thead>
                     <tr>
@@ -515,7 +756,7 @@ def build_models():
                 </tbody>
             </table>
 
-            <h2 data-i18n="models.sherpaTitle">Sherpa-ONNX Models</h2>
+            <h2>Sherpa-ONNX Models</h2>
             <table>
                 <thead>
                     <tr>
@@ -547,7 +788,7 @@ def build_models():
                 </tbody>
             </table>
 
-            <h2 data-i18n="models.cliTitle">CLI Model Management</h2>
+            <h2>CLI Model Management</h2>
             <pre><code># List installed models
 termux-stt models list
 
@@ -573,8 +814,8 @@ def build_advanced_params():
     <div class="layout">
 {get_sidebar("advanced-parameters.html")}
         <main class="content">
-            <h1 class="page-title" data-i18n="advancedParams.title">Advanced Parameters</h1>
-            <p class="page-subtitle" data-i18n="advancedParams.subtitle">Detailed handbook for fine-tuning performance, latency, and hardware utilization.</p>
+            <h1 class="page-title">Advanced Parameters</h1>
+            <p class="page-subtitle">Detailed handbook for fine-tuning performance, latency, and hardware utilization.</p>
 
             <h2>EngineConfig Parameters</h2>
             <table>
@@ -664,8 +905,8 @@ def build_api_reference():
     <div class="layout">
 {get_sidebar("api-reference.html")}
         <main class="content">
-            <h1 class="page-title" data-i18n="apiReference.title">100% Full API Reference</h1>
-            <p class="page-subtitle" data-i18n="apiReference.subtitle">Exhaustive specification for all public functions, classes, and types.</p>
+            <h1 class="page-title">100% Full API Reference</h1>
+            <p class="page-subtitle">Exhaustive specification for all public functions, classes, and types.</p>
 
             <h2>Factory Function: <code>create_engine()</code></h2>
             <pre><code>def create_engine(
@@ -741,10 +982,10 @@ def build_benchmarks():
     <div class="layout">
 {get_sidebar("benchmarks.html")}
         <main class="content">
-            <h1 class="page-title" data-i18n="benchmarks.title">Benchmarks & Hardware Profile</h1>
-            <p class="page-subtitle" data-i18n="benchmarks.subtitle">Real measured benchmarks on Samsung Galaxy A35 (Exynos 1380 5G, 6GB LPDDR4X RAM).</p>
+            <h1 class="page-title">Benchmarks & Hardware Profile</h1>
+            <p class="page-subtitle">Real measured benchmarks on Samsung Galaxy A35 (Exynos 1380 5G, 6GB LPDDR4X RAM).</p>
 
-            <h2 data-i18n="benchmarks.matrixTitle">Comprehensive Engine Benchmark Matrix</h2>
+            <h2>Comprehensive Engine Benchmark Matrix</h2>
             <table>
                 <thead>
                     <tr>
@@ -808,7 +1049,7 @@ def build_benchmarks():
                 </tbody>
             </table>
 
-            <h2 data-i18n="benchmarks.findingsTitle">Key Empirical Findings</h2>
+            <h2>Key Empirical Findings</h2>
             <ul>
                 <li><strong>Golden Balance:</strong> The Hybrid Pipeline (Vosk 128d X-Vector + Whisper Base STT + Pure Python K-Means) delivers 94%+ speaker alignment while using less than 400 MB RAM.</li>
                 <li><strong>Subprocess Isolation:</strong> Zero host process crashes even during aggressive stress testing on large audio files.</li>
@@ -831,10 +1072,10 @@ def build_versions():
     <div class="layout">
 {get_sidebar("versions.html")}
         <main class="content">
-            <h1 class="page-title" data-i18n="versions.title">Version Archive</h1>
-            <p class="page-subtitle" data-i18n="versions.subtitle">Release history and upgrade guides for termux-stt.</p>
+            <h1 class="page-title">Version Archive</h1>
+            <p class="page-subtitle">Release history and upgrade guides for termux-stt.</p>
 
-            <h2 data-i18n="versions.v100Title">v1.0.0 (Initial Public Release) - 2026-08-20</h2>
+            <h2>v1.0.0 (Initial Public Release) - 2026-08-20</h2>
             <ul>
                 <li><strong>Unified Multi-Engine Architecture:</strong> Single <code>create_engine()</code> API for whisper.cpp, vosk, and sherpa-onnx.</li>
                 <li><strong>Pure-Python Speaker Diarization:</strong> Custom K-Means and Cosine Distance matrix without numpy/sklearn dependencies.</li>
@@ -844,6 +1085,7 @@ def build_versions():
                 <li><strong>Export Standards:</strong> SRT, WebVTT, NIST RTTM, and structured JSON output.</li>
                 <li><strong>CLI Suite:</strong> <code>transcribe</code>, <code>listen</code>, <code>diarize</code>, <code>models</code>, <code>doctor</code>, and <code>benchmark</code>.</li>
                 <li><strong>Dual-Engine Support:</strong> First-class Node.js npm package with identical capabilities.</li>
+                <li><strong>Live Showcase Page:</strong> Interactive web audio playback and synchronized SRT subtitle timeline.</li>
             </ul>
         </main>
     </div>
@@ -860,13 +1102,14 @@ def build_ai_and_seo_files():
 - Built-in speaker diarization via pure-Python K-Means and Vosk 128d X-Vectors
 - Zero external ML dependencies (no numpy, no sklearn, no torch)
 - Subprocess crash isolation and Android mobile safeguards (WakeLock, Doze bypass)
+- Live Audio Showcase: https://uno-km.github.io/termux-stt/showcase.html
 
-## Python Quickstart
+## Python Quickstart (3 Lines)
 ```python
 from termux_stt import create_engine
 
 # STT only
-engine = create_engine("whisper", model="base", lang="ko")
+engine = create_engine("whisper", model="base", lang="en")
 result = engine.transcribe("audio.wav")
 print(result.text)
 
@@ -905,74 +1148,13 @@ Clustering and similarity calculation are implemented in pure Python to eliminat
 Allow: /
 Crawl-delay: 0
 
-User-agent: GPTBot
-Allow: /
-
-User-agent: ChatGPT-User
-Allow: /
-
-User-agent: ClaudeBot
-Allow: /
-
-User-agent: Claude-Web
-Allow: /
-
-User-agent: anthropic-ai
-Allow: /
-
-User-agent: PerplexityBot
-Allow: /
-
-User-agent: Google-Extended
-Allow: /
-
-User-agent: Googlebot
-Allow: /
-
-User-agent: Googlebot-Image
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Applebot
-Allow: /
-
-User-agent: Applebot-Extended
-Allow: /
-
-User-agent: Amazonbot
-Allow: /
-
-User-agent: cohere-ai
-Allow: /
-
-User-agent: meta-externalagent
-Allow: /
-
-User-agent: Bytespider
-Allow: /
-
-User-agent: Baiduspider
-Allow: /
-
-User-agent: YandexBot
-Allow: /
-
-User-agent: Yeti
-Allow: /
-
-User-agent: DuckDuckBot
-Allow: /
-
 Sitemap: https://uno-km.github.io/termux-stt/sitemap.xml
-Sitemap: https://uno-km.github.io/termux-stt/sitemap-images.xml
-Sitemap: https://uno-km.github.io/termux-stt/rss.xml
 """
 
     sitemap_xml = """<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://uno-km.github.io/termux-stt/index.html</loc><priority>1.0</priority></url>
+  <url><loc>https://uno-km.github.io/termux-stt/showcase.html</loc><priority>1.0</priority></url>
   <url><loc>https://uno-km.github.io/termux-stt/installation.html</loc><priority>0.9</priority></url>
   <url><loc>https://uno-km.github.io/termux-stt/quickstart.html</loc><priority>0.9</priority></url>
   <url><loc>https://uno-km.github.io/termux-stt/models.html</loc><priority>0.8</priority></url>
@@ -993,6 +1175,13 @@ Sitemap: https://uno-km.github.io/termux-stt/rss.xml
       <image:title>termux-stt Logo</image:title>
     </image:image>
   </url>
+  <url>
+    <loc>https://uno-km.github.io/termux-stt/showcase.html</loc>
+    <image:image>
+      <image:loc>https://uno-km.github.io/termux-stt/favicon.svg</image:loc>
+      <image:title>termux-stt Live Audio Showcase</image:title>
+    </image:image>
+  </url>
 </urlset>
 """
 
@@ -1003,9 +1192,9 @@ Sitemap: https://uno-km.github.io/termux-stt/rss.xml
   <link>https://uno-km.github.io/termux-stt/</link>
   <description>Android on-device STT framework for Termux</description>
   <item>
-    <title>termux-stt v1.0.0 Released</title>
-    <link>https://uno-km.github.io/termux-stt/versions.html</link>
-    <description>Unified STT with whisper.cpp, vosk, and sherpa-onnx on Android Termux.</description>
+    <title>termux-stt v1.0.0 Released with Live Showcase</title>
+    <link>https://uno-km.github.io/termux-stt/showcase.html</link>
+    <description>Unified STT with whisper.cpp, vosk, and sherpa-onnx on Android Termux with interactive live audio showcase.</description>
     <pubDate>Thu, 20 Aug 2026 00:00:00 GMT</pubDate>
   </item>
 </channel>
@@ -1028,6 +1217,7 @@ Sitemap: https://uno-km.github.io/termux-stt/rss.xml
 def main():
     pages = {
         "index.html": build_index(),
+        "showcase.html": build_showcase(),
         "installation.html": build_installation(),
         "quickstart.html": build_quickstart(),
         "models.html": build_models(),

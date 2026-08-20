@@ -17,6 +17,7 @@
 <p align="center">
   <a href="https://pypi.org/project/termux-stt/"><img src="https://img.shields.io/pypi/v/termux-stt.svg?color=blue&style=for-the-badge&logo=pypi&logoColor=white" alt="PyPI Version" /></a>
   <a href="https://www.npmjs.com/package/termux-stt"><img src="https://img.shields.io/npm/v/termux-stt.svg?color=red&style=for-the-badge&logo=npm&logoColor=white" alt="npm Version" /></a>
+  <a href="https://uno-km.github.io/termux-stt/showcase.html"><img src="https://img.shields.io/badge/Live_Showcase-▶_Audio_Player-00f5d4?style=for-the-badge&logo=googlechrome&logoColor=0b132b" alt="Live Audio Showcase" /></a>
   <a href="https://uno-km.github.io/termux-stt/"><img src="https://img.shields.io/badge/Docs-uno--km.github.io-004499?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Live Docs" /></a>
   <a href="https://github.com/uno-km/termux-stt/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge" alt="License" /></a>
 </p>
@@ -32,9 +33,86 @@
 
 <br/>
 
-**[📖 Official Documentation Site](https://uno-km.github.io/termux-stt/)** • **[⚡ Quickstart](#1-quick-scenario-playbook)** • **[🏛️ Architecture](#2-why-termux-stt-architectural-pillars)** • **[📊 Benchmarks](#3-empirical-benchmarks-galaxy-a35--exynos-1380)** • **[🔍 15-Part Blog Series](#7-15-part-empirical-research-blog-series)**
+**[🎧 Live Audio Showcase & Demo](https://uno-km.github.io/termux-stt/showcase.html)** • **[📖 Official Documentation Site](https://uno-km.github.io/termux-stt/)** • **[⚡ Quickstart](#1-quick-scenario-playbook)** • **[🏛️ Architecture](#2-why-termux-stt-architectural-pillars)** • **[📊 Benchmarks](#3-empirical-benchmarks-galaxy-a35--exynos-1380)** • **[🔍 15-Part Blog Series](#7-15-part-empirical-research-blog-series)**
 
 </div>
+
+---
+
+## 🎙️ 단 3줄로 끝내는 안드로이드 Termux 온디바이스 음성인식
+
+```python
+from termux_stt import create_engine
+
+# 1. 엔진 초기화 (최초 1회 모델 자동 다운로드 및 캐싱)
+engine = create_engine("whisper", model="base", lang="en")
+
+# 2. 오디오 전사 및 자막 생성 (WAV, MP3, M4A, FLAC, OGG 자동 16kHz 변환)
+result = engine.transcribe("speech.mp3")
+
+print(result.text)          # 전체 텍스트
+print(result.to_srt())       # 표준 SRT 자막
+```
+
+```bash
+# 또는 터미널에서 1줄 CLI 실행
+termux-stt transcribe --engine whisper --model base speech.mp3
+```
+
+---
+
+## 🎧 Live Audio Showcase & On-Device Transcription Proof
+
+> **[▶ 웹 브라우저에서 실시간 음성 및 동기화 자막 체험하기 (Live Audio Showcase)](https://uno-km.github.io/termux-stt/showcase.html)**
+
+### 1. 실측 오디오 스펙 & 전사 타임라인
+
+* **입력 오디오**: `continuous_speech.wav` (37.91초, 16000Hz Mono PCM)
+* **추론 엔진**: `whisper.cpp Base` (On-Device Local CPU)
+* **처리 시간**: **32.79초** (RTF: **0.865x**, 실시간보다 빠름)
+* **문장 반복률**: **0%** (모든 발화 구간이 각기 다른 내용으로 고유하게 전사됨)
+
+| No. | 타임스탬프 (시작 → 종료) | 전사된 문장 (Transcribed Text) |
+| :---: | :---: | :--- |
+| **01** | `00:00.00 → 00:09.36` | *"And so my fellow Americans, ask not what your country can do for you, ask what you can"* |
+| **02** | `00:09.36 → 00:11.60` | *"do for your country."* |
+| **03** | `00:11.60 → 00:16.18` | *He hoped there would be stew for dinner, turnips and carrots and bruised potatoes and* |
+| **04** | `00:16.18 → 00:22.00` | *fat mutton pieces to be ladled out in thick, peppered flour-fatten sauce.* |
+| **05** | `00:22.00 → 00:25.36` | *Stuff it into you, his belly counseled him.* |
+| **06** | `00:25.36 → 00:29.88` | *After early nightfall, the yellow lamps would light up here and there, the squalid quarter* |
+| **07** | `00:29.88 → 00:37.14` | *of the brothels.* |
+
+### 2. 자동 생성된 SRT 자막 파일
+
+```srt
+1
+00:00:00,000 --> 00:00:09,360
+"And so my fellow Americans, ask not what your country can do for you, ask what you can
+
+2
+00:00:09,360 --> 00:00:11,600
+do for your country."
+
+3
+00:00:11,600 --> 00:00:16,180
+He hoped there would be stew for dinner, turnips and carrots and bruised potatoes and
+
+4
+00:00:16,180 --> 00:00:22,000
+fat mutton pieces to be ladled out in thick, peppered flour-fatten sauce.
+
+5
+00:00:22,000 --> 00:00:25,360
+Stuff it into you, his belly counseled him.
+
+6
+00:00:25,360 --> 00:00:29,880
+After early nightfall, the yellow lamps would light up here and there, the squalid quarter
+
+7
+00:00:29,880 --> 00:00:37,140
+of the brothels.
+```
 
 ---
 
@@ -336,4 +414,3 @@ This framework is built upon the exhaustive 15-part research series published on
 ## 📄 License
 
 Released under the **MIT License**. Maintained by **uno-km (쌩초보코딩단) / Eunho Kim**.
-

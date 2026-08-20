@@ -8,4 +8,11 @@
       <image:title>termux-stt Logo</image:title>
     </image:image>
   </url>
+  <url>
+    <loc>https://uno-km.github.io/termux-stt/showcase.html</loc>
+    <image:image>
+      <image:loc>https://uno-km.github.io/termux-stt/favicon.svg</image:loc>
+      <image:title>termux-stt Live Audio Showcase</image:title>
+    </image:image>
+  </url>
 </urlset>

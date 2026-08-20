@@ -5,9 +5,9 @@
   <link>https://uno-km.github.io/termux-stt/</link>
   <description>Android on-device STT framework for Termux</description>
   <item>
-    <title>termux-stt v1.0.0 Released</title>
-    <link>https://uno-km.github.io/termux-stt/versions.html</link>
-    <description>Unified STT with whisper.cpp, vosk, and sherpa-onnx on Android Termux.</description>
+    <title>termux-stt v1.0.0 Released with Live Showcase</title>
+    <link>https://uno-km.github.io/termux-stt/showcase.html</link>
+    <description>Unified STT with whisper.cpp, vosk, and sherpa-onnx on Android Termux with interactive live audio showcase.</description>
     <pubDate>Thu, 20 Aug 2026 00:00:00 GMT</pubDate>
   </item>
 </channel>
