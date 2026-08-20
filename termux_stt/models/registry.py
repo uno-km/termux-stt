@@ -2,7 +2,7 @@
 Model registry containing known models for termux-stt engines.
 """
 
-from typing import Dict, List, Any, Optional
+from typing import Any, Dict, List, Optional
 
 __all__ = ["MODEL_REGISTRY", "get_model_info", "list_models", "get_default_model"]
 

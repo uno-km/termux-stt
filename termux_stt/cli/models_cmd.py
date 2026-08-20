@@ -1,6 +1,6 @@
 def run_models(args):
     action = args.action
-    
+
     if action == "list":
         print("Installed models:")
         print(" - whisper: ggml-base.en.bin")

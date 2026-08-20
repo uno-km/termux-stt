@@ -1,8 +1,8 @@
+import logging
 import subprocess
 import time
-import logging
 from dataclasses import dataclass
-from typing import Optional, Dict
+from typing import Dict, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +32,7 @@ def run_isolated(cmd: list[str], timeout: Optional[float] = None, env: Optional[
                 logger.error(f"Process crashed with signal {-result.returncode}. Attempt {attempt + 1}/{max_retries}")
                 if attempt < max_retries - 1:
                     continue
-            
+
             return SubprocessResult(
                 returncode=result.returncode,
                 stdout=result.stdout,
@@ -61,5 +61,5 @@ def run_isolated(cmd: list[str], timeout: Optional[float] = None, env: Optional[
                 stderr=str(e),
                 duration_sec=duration
             )
-    
+
     return SubprocessResult(-1, "", "Failed after retries", 0.0)

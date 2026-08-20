@@ -4,9 +4,10 @@
 
 import termux_stt
 
+
 def main():
     engine = termux_stt.create_engine("sherpa-onnx")
-    
+
     print("마이크 입력을 시작합니다... (종료: Ctrl+C)")
     try:
         for segment in engine.stream_mic(duration=10.0):

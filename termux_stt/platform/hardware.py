@@ -2,13 +2,13 @@
 Hardware detection for Termux Android devices.
 """
 
-import os
 import multiprocessing
+import os
 from dataclasses import dataclass
 from typing import Tuple
 
 __all__ = [
-    "HardwareInfo", "detect_hardware", "get_optimal_threads", 
+    "HardwareInfo", "detect_hardware", "get_optimal_threads",
     "check_neon_support", "check_fp16_support", "get_ram_info", "is_termux"
 ]
 
@@ -75,13 +75,13 @@ def detect_hardware() -> HardwareInfo:
     cores = multiprocessing.cpu_count()
     big_cores = get_optimal_threads()
     little_cores = cores - big_cores
-    
+
     total_ram, avail_ram = get_ram_info()
     termux_env = is_termux()
     android_env = hasattr(os, "uname") and "android" in os.uname().release.lower()
     if termux_env:
         android_env = True
-        
+
     return HardwareInfo(
         cpu_model="Unknown ARM",
         cpu_cores=cores,

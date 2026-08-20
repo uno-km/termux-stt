@@ -2,9 +2,8 @@
 Microphone capture for Termux using termux-api.
 """
 
-import os
 import subprocess
-from typing import Optional, Iterator
+from typing import Iterator, Optional
 
 __all__ = ["MicCapture"]
 
@@ -19,12 +18,12 @@ class MicCapture:
         """Start recording using termux-microphone-record."""
         if self._is_recording:
             raise RuntimeError("Already recording.")
-        
+
         self._output_path = output_path
         cmd = ["termux-microphone-record", "-f", output_path]
         if duration:
             cmd.extend(["-l", str(int(duration))])
-            
+
         subprocess.run(cmd, check=True)
         self._is_recording = True
 
@@ -32,7 +31,7 @@ class MicCapture:
         """Stop current recording."""
         if not self._is_recording:
             return
-            
+
         subprocess.run(["termux-microphone-record", "-q"], check=True)
         self._is_recording = False
         self._output_path = None

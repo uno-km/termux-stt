@@ -4,8 +4,8 @@ Converts any input audio to 16kHz Mono PCM WAV using ffmpeg.
 """
 
 import os
-import tempfile
 import subprocess
+import tempfile
 from typing import Optional
 
 __all__ = ["preprocess", "ensure_wav_format", "validate_audio"]
@@ -82,11 +82,11 @@ def ensure_wav_format(path: str) -> str:
         streams = info.get("streams", [])
         if streams:
             stream = streams[0]
-            if (stream.get("codec_name") == "pcm_s16le" and 
-                stream.get("channels") == 1 and 
+            if (stream.get("codec_name") == "pcm_s16le" and
+                stream.get("channels") == 1 and
                 str(stream.get("sample_rate")) == "16000"):
                 return path
     except Exception:
         pass  # fallback to preprocess
-    
+
     return preprocess(path)

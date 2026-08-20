@@ -4,15 +4,14 @@ Handles the ``sys.platform`` spoofing required for Vosk on Android Termux
 and provides both speech-to-text and 128-dimensional X-Vector extraction.
 """
 
-import sys
 import json
-import wave
 import logging
-from typing import Iterator, Dict, Any, List, Tuple, Optional
-from pathlib import Path
+import sys
+import wave
+from typing import Any, Dict, Iterator, List, Optional, Tuple
 
 from termux_stt.engine.base import Engine, EngineConfig
-from termux_stt.export.result import TranscriptResult, Segment, DiarizedResult
+from termux_stt.export.result import DiarizedResult, Segment, TranscriptResult
 
 logger = logging.getLogger(__name__)
 
@@ -44,8 +43,9 @@ class VoskEngine(Engine):
         if self._model is not None:
             return
         try:
-            from termux_stt.models.hub import ModelHub
             import vosk
+
+            from termux_stt.models.hub import ModelHub
 
             model_path = ModelHub.ensure_model('vosk', self.model_name)
             self._model = vosk.Model(model_path)

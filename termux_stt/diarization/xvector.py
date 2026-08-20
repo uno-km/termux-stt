@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import List, Optional
 
+
 @dataclass
 class SpeakerEmbedding:
     start: float
@@ -10,7 +11,7 @@ class SpeakerEmbedding:
 
 class XVectorExtractor:
     """Vosk X-Vector Extraction Interface."""
-    
+
     def __init__(self, model_path: Optional[str] = None):
         self.model_path = model_path
         # Model loading is deferred to extraction time or handled by VoskEngine

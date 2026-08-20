@@ -2,11 +2,10 @@
 Model download and caching hub.
 """
 
+import hashlib
 import os
 import urllib.request
-import hashlib
-from typing import List, Dict, Optional
-from pathlib import Path
+from typing import Dict, List, Optional
 
 from .registry import get_model_info
 

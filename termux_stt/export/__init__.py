@@ -1,6 +1,6 @@
 """
 Result export module for termux-stt.
 """
-from .result import TranscriptResult, Segment, DiarizedResult
+from .result import DiarizedResult, Segment, TranscriptResult
 
 __all__ = ['TranscriptResult', 'Segment', 'DiarizedResult']

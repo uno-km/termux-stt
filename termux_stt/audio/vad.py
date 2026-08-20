@@ -3,12 +3,12 @@ Voice Activity Detection (VAD) module.
 Provides Silero-VAD and EnergyVAD fallback.
 """
 
-import os
-import wave
-import struct
-import tempfile
-import subprocess
 import math
+import os
+import struct
+import subprocess
+import tempfile
+import wave
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import List, Tuple
@@ -32,25 +32,25 @@ class EnergyVAD(BaseVAD):
             framerate = wf.getframerate()
             nframes = wf.getnframes()
             audio_data = wf.readframes(nframes)
-            
+
             samples = struct.unpack(f"<{nframes}h", audio_data)
-            
+
         # Simplified framing and energy thresholding
         frame_ms = 30
         frame_size = int(framerate * frame_ms / 1000)
-        
+
         segments = []
         in_speech = False
         start_time = 0.0
-        
+
         for i in range(0, len(samples), frame_size):
             frame = samples[i:i+frame_size]
             if not frame:
                 break
-            
+
             energy = sum(x*x for x in frame) / len(frame)
             rms = math.sqrt(energy) if energy > 0 else 0
-            
+
             current_time = i / framerate
             # Heuristic threshold
             if rms > threshold * 1000:
@@ -91,7 +91,7 @@ def split_by_speech(audio_path: str, vad_result: VADResult) -> List[str]:
     for idx, (start, end) in enumerate(vad_result.segments):
         fd, out_path = tempfile.mkstemp(suffix=f"_seg_{idx}.wav", prefix="vad_")
         os.close(fd)
-        
+
         cmd = [
             "ffmpeg",
             "-y",

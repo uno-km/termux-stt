@@ -8,10 +8,10 @@ import json
 import logging
 import os
 from pathlib import Path
-from typing import Iterator, Dict, Any, List, Optional
+from typing import Any, Dict, Iterator, List, Optional
 
 from termux_stt.engine.base import Engine, EngineConfig
-from termux_stt.export.result import TranscriptResult, Segment, DiarizedResult
+from termux_stt.export.result import DiarizedResult, Segment, TranscriptResult
 
 logger = logging.getLogger(__name__)
 
@@ -169,8 +169,9 @@ class WhisperEngine(Engine):
         VAD to detect speech boundaries, and transcribes each utterance
         with whisper.cpp.
         """
-        from termux_stt.audio.mic import MicCapture
         import tempfile
+
+        from termux_stt.audio.mic import MicCapture
 
         mic = MicCapture()
         chunk_sec = 5.0  # seconds per chunk
@@ -198,9 +199,10 @@ class WhisperEngine(Engine):
         self, audio_path: str, chunk_sec: float = 5.0
     ) -> Iterator[Segment]:
         """Stream transcription from a file in chunks."""
-        from termux_stt.audio.preprocessor import preprocess
-        import wave
         import tempfile
+        import wave
+
+        from termux_stt.audio.preprocessor import preprocess
 
         wav_path = preprocess(audio_path, target_sr=16000, force_mono=True)
         wf = wave.open(wav_path, "rb")

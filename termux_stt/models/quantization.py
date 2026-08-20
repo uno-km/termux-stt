@@ -3,7 +3,6 @@ Quantization logic for Whisper.cpp models.
 """
 
 from dataclasses import dataclass
-from typing import List
 
 __all__ = ["QUANTIZATION_LEVELS", "QuantizationInfo", "get_quantized_url", "recommend_quantization"]
 
@@ -20,12 +19,12 @@ def get_quantized_url(model_name: str, quant_level: str) -> str:
     """Construct URL for specific quantization level for whisper.cpp models."""
     if quant_level not in QUANTIZATION_LEVELS:
         raise ValueError(f"Unknown quantization level {quant_level}")
-        
+
     base_url = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main"
-    
+
     if quant_level == "f16":
         return f"{base_url}/ggml-{model_name}.bin"
-        
+
     return f"{base_url}/ggml-{model_name}-{quant_level}.bin"
 
 def recommend_quantization(available_ram_mb: int) -> str:

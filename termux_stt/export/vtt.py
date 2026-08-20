@@ -1,5 +1,6 @@
 from termux_stt.export.result import TranscriptResult
 
+
 def _format_timestamp(seconds: float) -> str:
     """Format seconds into HH:MM:SS.mmm"""
     hours = int(seconds // 3600)

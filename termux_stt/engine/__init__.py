@@ -5,7 +5,7 @@ Provides the EngineRegistry that maps engine names to their concrete
 implementations and the shared base classes.
 """
 
-from typing import Dict, Type, Any, Optional
+from typing import Any, Dict, Type
 
 from .base import Engine, EngineConfig
 

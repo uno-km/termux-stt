@@ -1,8 +1,8 @@
-import sys
 from termux_stt.engine.base import EngineConfig
 from termux_stt.engine.hybrid_engine import HybridEngine
-from termux_stt.export.rttm import save_rttm, to_rttm
 from termux_stt.export.json_export import save_json, to_json
+from termux_stt.export.rttm import save_rttm, to_rttm
+
 
 def run_diarize(args):
     config = EngineConfig(
@@ -11,12 +11,12 @@ def run_diarize(args):
         num_threads=args.threads,
         use_vad=args.vad
     )
-    
+
     engine = HybridEngine(config)
-        
+
     print(f"Diarizing {args.file} with {args.speakers} speakers...")
     result = engine.diarize(args.file, num_speakers=args.speakers)
-    
+
     if args.output:
         if args.format == "rttm":
             save_rttm(result, args.output)

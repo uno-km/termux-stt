@@ -2,11 +2,11 @@
 Docker test runner for termux-stt with JFK 1-minute speech.
 """
 
-import sys
 import time
 from pathlib import Path
-from termux_stt import create_engine, __version__
-from termux_stt.export.result import TranscriptResult
+
+from termux_stt import __version__, create_engine
+
 
 def main():
     print("=" * 60)
@@ -54,6 +54,7 @@ def main():
     srt_output = result_base.to_srt()
     vtt_output = result_base.to_vtt()
     json_output = result_base.to_json()
+    print(f"Exported: SRT ({len(srt_output)} chars), VTT ({len(vtt_output)} chars), JSON ({len(json_output)} chars)")
     print("--- [SRT Sample] ---")
     print("\n".join(srt_output.splitlines()[:12]))
 

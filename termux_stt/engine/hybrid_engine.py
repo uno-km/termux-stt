@@ -16,10 +16,10 @@ Pipeline
 """
 
 import logging
-from typing import Iterator, Dict, Any, Optional
+from typing import Any, Dict, Iterator, Optional
 
 from termux_stt.engine.base import Engine, EngineConfig
-from termux_stt.export.result import TranscriptResult, Segment, DiarizedResult
+from termux_stt.export.result import DiarizedResult, Segment, TranscriptResult
 
 logger = logging.getLogger(__name__)
 
@@ -54,8 +54,8 @@ class HybridEngine(Engine):
             num_speakers=config.num_speakers or 2,
         )
 
-        from termux_stt.engine.whisper_engine import WhisperEngine
         from termux_stt.engine.vosk_engine import VoskEngine
+        from termux_stt.engine.whisper_engine import WhisperEngine
 
         self._whisper = WhisperEngine(whisper_config)
         self._vosk = VoskEngine(vosk_config)

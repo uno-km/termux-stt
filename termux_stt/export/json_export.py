@@ -1,6 +1,8 @@
 import json
 from dataclasses import asdict
+
 from termux_stt.export.result import TranscriptResult
+
 
 def to_json(result: TranscriptResult, indent: int = 2, ensure_ascii: bool = False) -> str:
     """Generate JSON format from TranscriptResult."""
@@ -11,7 +13,7 @@ def to_json(result: TranscriptResult, indent: int = 2, ensure_ascii: bool = Fals
     }
     if hasattr(result, 'num_speakers'):
         data["num_speakers"] = getattr(result, 'num_speakers')
-        
+
     return json.dumps(data, indent=indent, ensure_ascii=ensure_ascii)
 
 def save_json(result: TranscriptResult, output_path: str, indent: int = 2, ensure_ascii: bool = False) -> None:

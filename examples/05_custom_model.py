@@ -4,11 +4,10 @@
 
 import termux_stt
 
+
 def main():
-    engine = termux_stt.create_engine("vosk", model_path="/path/to/custom/model")
-    
-    # ... transcribing logic ...
-    print("커스텀 모델이 준비되었습니다.")
+    engine = termux_stt.create_engine("vosk", custom_model_path="/path/to/custom/model")
+    print(f"커스텀 모델이 준비되었습니다: {engine.get_info()}")
 
 if __name__ == "__main__":
     main()

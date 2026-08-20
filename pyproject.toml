@@ -26,3 +26,18 @@ Homepage = "https://github.com/uno-km/termux-stt"
 Repository = "https://github.com/uno-km/termux-stt"
 Documentation = "https://github.com/uno-km/termux-stt#readme"
 Issues = "https://github.com/uno-km/termux-stt/issues"
+
+[tool.ruff]
+line-length = 120
+target-version = "py38"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+ignore = ["E501", "E722"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["termux_stt"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+

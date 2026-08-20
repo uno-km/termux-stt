@@ -1,5 +1,5 @@
 import json
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from typing import List, Optional
 
 
@@ -38,7 +38,7 @@ class TranscriptResult:
             res.append(seg.text)
             res.append("")
         return "\n".join(res)
-        
+
     def to_rttm(self) -> str:
         res = []
         for seg in self.segments:

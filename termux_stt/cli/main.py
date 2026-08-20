@@ -1,12 +1,13 @@
 import argparse
 import sys
 
-from termux_stt.cli.transcribe import run_transcribe
-from termux_stt.cli.listen import run_listen
-from termux_stt.cli.diarize import run_diarize
-from termux_stt.cli.models_cmd import run_models
-from termux_stt.cli.doctor import run_doctor
 from termux_stt.cli.benchmark import run_benchmark
+from termux_stt.cli.diarize import run_diarize
+from termux_stt.cli.doctor import run_doctor
+from termux_stt.cli.listen import run_listen
+from termux_stt.cli.models_cmd import run_models
+from termux_stt.cli.transcribe import run_transcribe
+
 
 def main():
     parser = argparse.ArgumentParser(description="Termux STT - On-device Speech-to-Text Framework")
@@ -46,7 +47,7 @@ def main():
     parser_models.add_argument("--engine", type=str, default="whisper", help="Target engine")
 
     # Doctor subcommand
-    parser_doctor = subparsers.add_parser("doctor", help="Check system environment and dependencies")
+    subparsers.add_parser("doctor", help="Check system environment and dependencies")
 
     # Benchmark subcommand
     parser_benchmark = subparsers.add_parser("benchmark", parents=[common_parser], help="Run performance benchmarks")

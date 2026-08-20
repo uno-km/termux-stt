@@ -1,14 +1,15 @@
-import subprocess
-import os
 import logging
+import os
+import subprocess
+from typing import Any, Dict
+
 import psutil
-from typing import Dict, Any
 
 logger = logging.getLogger(__name__)
 
 class MobileGuard:
     """Handles Termux-specific device APIs: WakeLock, phantom processes, memory."""
-    
+
     def __init__(self):
         self._wakelock_acquired = False
 

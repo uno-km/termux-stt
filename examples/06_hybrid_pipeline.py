@@ -4,9 +4,10 @@
 
 import termux_stt
 
+
 def main():
-    engine = termux_stt.create_engine("hybrid")
-    print("하이브리드 파이프라인 초기화 완료")
+    engine = termux_stt.create_engine("hybrid", lang="ko", num_speakers=2)
+    print(f"하이브리드 파이프라인 초기화 완료: {engine.get_info()}")
 
 if __name__ == "__main__":
     main()

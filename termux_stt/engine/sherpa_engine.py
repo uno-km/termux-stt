@@ -6,10 +6,10 @@ speaker embedding extraction.
 
 import logging
 from pathlib import Path
-from typing import Iterator, Dict, Any, Optional
+from typing import Any, Dict, Iterator, Optional
 
 from termux_stt.engine.base import Engine, EngineConfig
-from termux_stt.export.result import TranscriptResult, Segment, DiarizedResult
+from termux_stt.export.result import DiarizedResult, Segment, TranscriptResult
 
 logger = logging.getLogger(__name__)
 
@@ -84,7 +84,6 @@ class SherpaEngine(Engine):
     ) -> DiarizedResult:
         """Speaker diarization using CAM++ embeddings and clustering."""
         from termux_stt.audio.preprocessor import preprocess
-        from termux_stt.diarization.clustering import KMeans
 
         wav_path = preprocess(audio_path, target_sr=16000, force_mono=True)
 
@@ -115,8 +114,10 @@ class SherpaEngine(Engine):
         self, duration: Optional[float] = None
     ) -> Iterator[Segment]:
         """Stream transcription from the microphone using sherpa-onnx."""
+        import os
+        import tempfile
+
         from termux_stt.audio.mic import MicCapture
-        import tempfile, os
 
         mic = MicCapture()
         for chunk_bytes in mic.stream(duration=duration, chunk_sec=5.0):
@@ -153,8 +154,12 @@ class SherpaEngine(Engine):
         self, audio_path: str, chunk_sec: float = 5.0
     ) -> Iterator[Segment]:
         """Stream transcription from a file in chunks."""
+        import os
+        import struct
+        import tempfile
+        import wave
+
         from termux_stt.audio.preprocessor import preprocess
-        import wave, tempfile, os, struct
 
         wav_path = preprocess(audio_path, target_sr=16000, force_mono=True)
         wf = wave.open(wav_path, "rb")

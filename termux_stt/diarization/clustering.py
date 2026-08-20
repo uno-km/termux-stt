@@ -2,6 +2,7 @@ import math
 import random
 from typing import List
 
+
 def euclidean_distance(vec_a: List[float], vec_b: List[float]) -> float:
     """Calculate Euclidean distance between two vectors."""
     if len(vec_a) != len(vec_b):
@@ -36,7 +37,7 @@ def cosine_distance_matrix(vectors: List[List[float]]) -> List[List[float]]:
 
 class KMeans:
     """Pure Python K-Means clustering implementation."""
-    
+
     def __init__(self, n_clusters: int, max_iter: int = 100, tolerance: float = 1e-4, seed: int = 42):
         self.n_clusters = n_clusters
         self.max_iter = max_iter
@@ -53,26 +54,26 @@ class KMeans:
         n_samples = len(vectors)
         if n_samples < self.n_clusters:
             raise ValueError(f"Number of samples ({n_samples}) must be >= n_clusters ({self.n_clusters})")
-            
+
         dim = len(vectors[0])
-        
+
         # Initialize centroids randomly
         indices = random.sample(range(n_samples), self.n_clusters)
         self.centroids = [vectors[i].copy() for i in indices]
-        
+
         for _ in range(self.max_iter):
             # Assign labels
             self.labels_ = self.predict(vectors)
-            
+
             # Update centroids
             new_centroids = [[0.0] * dim for _ in range(self.n_clusters)]
             counts = [0] * self.n_clusters
-            
+
             for i, label in enumerate(self.labels_):
                 counts[label] += 1
                 for d in range(dim):
                     new_centroids[label][d] += vectors[i][d]
-                    
+
             for c in range(self.n_clusters):
                 if counts[c] > 0:
                     for d in range(dim):
@@ -80,18 +81,18 @@ class KMeans:
                 else:
                     # If empty cluster, pick a random vector
                     new_centroids[c] = vectors[random.randint(0, n_samples - 1)].copy()
-            
+
             # Check convergence
             diff = sum(euclidean_distance(c1, c2) for c1, c2 in zip(self.centroids, new_centroids))
             self.centroids = new_centroids
             if diff < self.tolerance:
                 break
-                
+
         # Calculate inertia
         self.inertia_ = 0.0
         for i, label in enumerate(self.labels_):
             self.inertia_ += euclidean_distance(vectors[i], self.centroids[label]) ** 2
-            
+
         return self
 
     def predict(self, vectors: List[List[float]]) -> List[int]:

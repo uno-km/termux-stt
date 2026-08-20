@@ -4,12 +4,13 @@
 
 import termux_stt
 
+
 def main():
     engine = termux_stt.create_engine("whisper")
-    
+
     print("화자 분리를 시작합니다...")
     result = engine.diarize("sample_audio.wav", num_speakers=2)
-    
+
     for segment in result.segments:
         print(f"[{segment.speaker}] {segment.text}")
 

@@ -1,6 +1,7 @@
-import pytest
-import os
 import tempfile
+
+import pytest
+
 
 @pytest.fixture
 def sample_audio_path():

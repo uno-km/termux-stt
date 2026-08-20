@@ -3,11 +3,11 @@ Audio loading module for termux-stt.
 Supports multiple formats (wav, mp3, m4a, flac, ogg, opus, webm).
 """
 
-import os
 import json
+import os
 import subprocess
 from dataclasses import dataclass
-from typing import Dict, Any
+from typing import Any, Dict
 
 __all__ = ["AudioData", "load_audio", "is_supported_format", "get_audio_info"]
 
@@ -51,23 +51,23 @@ def load_audio(path: str) -> AudioData:
     """Load audio file and return AudioData."""
     if not is_supported_format(path):
         raise ValueError(f"Unsupported format for {path}")
-    
+
     info = get_audio_info(path)
     # Parse info to get basic details (some streams might vary)
     streams = info.get("streams", [])
     audio_stream = next((s for s in streams if s.get("codec_type") == "audio"), None)
-    
+
     if not audio_stream:
         raise ValueError("No audio stream found in file.")
 
     sample_rate = int(audio_stream.get("sample_rate", 16000))
     channels = int(audio_stream.get("channels", 1))
-    
+
     # Try to get duration
     duration = float(info.get("format", {}).get("duration", 0.0))
     if not duration and audio_stream.get("duration"):
         duration = float(audio_stream["duration"])
-        
+
     format_name = info.get("format", {}).get("format_name", "unknown")
 
     # Read binary data

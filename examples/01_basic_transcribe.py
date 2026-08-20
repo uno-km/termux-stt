@@ -4,13 +4,14 @@
 
 import termux_stt
 
+
 def main():
     # 엔진 생성
     engine = termux_stt.create_engine("whisper", model="base")
-    
+
     # 전사 수행
     result = engine.transcribe("sample_audio.wav")
-    
+
     # 결과 출력
     print(f"전사 결과: {result.text}")
     print(f"세그먼트: {result.segments}")

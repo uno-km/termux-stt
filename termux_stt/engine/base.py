@@ -7,9 +7,9 @@ Every concrete engine (Whisper, Vosk, Sherpa, Hybrid) inherits from
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import Iterator, Dict, Any, Optional
+from typing import Any, Dict, Iterator, Optional
 
-from ..export.result import TranscriptResult, Segment, DiarizedResult
+from ..export.result import DiarizedResult, Segment, TranscriptResult
 
 __all__ = ['Engine', 'EngineConfig']
 

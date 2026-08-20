@@ -1,4 +1,5 @@
-from termux_stt.export.result import TranscriptResult, Segment
+from termux_stt.export.result import Segment, TranscriptResult
+
 
 def test_srt_format():
     res = TranscriptResult(text="Hello", segments=[Segment(0, 1, "Hello")])
