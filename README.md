@@ -15,12 +15,10 @@
 *Dual-Engine Architecture (Python & Node.js / TypeScript) with Native Bionic ARM64 Acceleration & 0 PyTorch Dependency*
 
 <p align="center">
-  <a href="https://pypi.org/project/termux-stt/"><img src="https://img.shields.io/badge/PyPI-v1.0.0-0088ff?style=for-the-badge&logo=pypi&logoColor=white" alt="PyPI Version" /></a>
+  <a href="https://pypi.org/project/termux-stt/"><img src="https://img.shields.io/pypi/v/termux-stt.svg?style=for-the-badge&color=0088ff&logo=pypi&logoColor=white" alt="PyPI Version" /></a>
+  <a href="https://pypi.org/project/termux-stt/"><img src="https://img.shields.io/pypi/dm/termux-stt?style=for-the-badge&color=004499&logo=pypi&logoColor=white&label=PyPI%20Downloads" alt="PyPI Downloads" /></a>
   <a href="https://www.npmjs.com/package/termux-stt"><img src="https://img.shields.io/npm/v/termux-stt.svg?style=for-the-badge&color=cb3837&logo=npm&logoColor=white" alt="npm Version" /></a>
-  <a href="https://uno-km.github.io/termux-stt/showcase.html"><img src="https://img.shields.io/badge/Live_Showcase-▶_Audio_Player-00f5d4?style=for-the-badge&logo=googlechrome&logoColor=0b132b" alt="Live Audio Showcase" /></a>
-  <a href="https://uno-km.github.io/termux-stt/"><img src="https://img.shields.io/badge/Docs-uno--km.github.io-004499?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Live Docs" /></a>
-  <a href="https://github.com/uno-km/termux-stt"><img src="https://img.shields.io/github/stars/uno-km/termux-stt?style=for-the-badge&color=gold&logo=github" alt="GitHub Stars" /></a>
-  <a href="https://github.com/uno-km/termux-stt/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge" alt="License" /></a>
+  <a href="https://www.npmjs.com/package/termux-stt"><img src="https://img.shields.io/npm/dm/termux-stt?style=for-the-badge&color=ff5722&logo=npm&logoColor=white&label=npm%20Downloads" alt="npm Downloads" /></a>
 </p>
 
 <p align="center">
