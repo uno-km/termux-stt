@@ -69,22 +69,33 @@ def get_header(active_page):
     return """    <header>
         <a href="index.html" class="header-brand">
             <img src="favicon.svg" alt="termux-stt Logo">
-            <h1 data-i18n="common.brand">termux-stt</h1>
+            <h1 data-i18n="common.brand">termux-stt</h2>
         </a>
         <div class="header-controls">
             <span class="release-tag" data-i18n="common.releaseTag">v1.0.0 (Unified STT)</span>
-            <div class="lang-selector-wrapper"></div>
-            <a href="https://pypi.org/project/termux-stt/" target="_blank" class="header-btn" data-i18n="common.pypiBtn">PyPI (Python)</a>
+            <div class="lang-selector-wrapper">
+                <select class="lang-select" onchange="if(window.i18nManager) window.i18nManager.setLanguage(this.value); else if(window.I18n) window.I18n.setLanguage(this.value)">
+                    <option value="en">🇺🇸 English</option>
+                    <option value="ko">🇰🇷 한국어</option>
+                    <option value="ja">🇯🇵 日本語</option>
+                    <option value="zh">🇨🇳 简体中文</option>
+                    <option value="es">🇪🇸 Español</option>
+                    <option value="de">🇩🇪 Deutsch</option>
+                </select>
+            </div>
+            <a href="https://pypi.org/project/termux-stt/" target="_blank" class="header-btn" data-i18n="common.pypiBtn">PyPI (pip)</a>
             <a href="https://www.npmjs.com/package/termux-stt" target="_blank" class="header-btn" style="background:#cb3837;color:#fff;" data-i18n="common.npmBtn">npm (Node.js)</a>
             <a href="https://github.com/uno-km/termux-stt" target="_blank" class="header-btn primary" data-i18n="common.githubBtn">GitHub</a>
         </div>
     </header>"""
 
 def get_sidebar(active_page):
-    pages = [
+    pages_overview = [
         ('index.html', 'common.nav.home', 'Home / Architecture'),
         ('installation.html', 'common.nav.installation', 'Installation Guide'),
         ('quickstart.html', 'common.nav.quickstart', 'Quickstart & Recipes'),
+    ]
+    pages_reference = [
         ('showcase.html', 'common.nav.showcase', 'Live Audio Showcase'),
         ('models.html', 'common.nav.models', 'Model Hub & Registry'),
         ('advanced-parameters.html', 'common.nav.advancedParams', 'Advanced Parameters'),
@@ -92,23 +103,31 @@ def get_sidebar(active_page):
         ('benchmarks.html', 'common.nav.benchmarks', 'Benchmarks & Hardware'),
         ('versions.html', 'common.nav.versions', 'Version Archive')
     ]
-
+    
     sidebar_html = """        <nav class="sidebar">
             <h3 data-i18n="common.nav.overview">Overview</h3>
             <ul>"""
-
-    for href, i18n_key, title in pages:
+    for href, i18n_key, title in pages_overview:
         active_class = ' class="active"' if href == active_page else ''
         sidebar_html += f"""
                 <li><a href="{href}"{active_class} data-i18n="{i18n_key}">{title}</a></li>"""
-
+    
     sidebar_html += """
             </ul>
-            <h3>AI Agent Protocol &amp; Feeds</h3>
+            <h3 data-i18n="common.nav.reference">Official Reference</h3>
+            <ul>"""
+    for href, i18n_key, title in pages_reference:
+        active_class = ' class="active"' if href == active_page else ''
+        sidebar_html += f"""
+                <li><a href="{href}"{active_class} data-i18n="{i18n_key}">{title}</a></li>"""
+    
+    sidebar_html += """
+            </ul>
+            <h3 data-i18n="common.nav.aiSpecs">AI Agent Protocol &amp; Feeds</h3>
             <ul>
                 <li><a href="llms.txt" target="_blank">llms.txt (AI Context)</a></li>
                 <li><a href="llms-full.txt" target="_blank">llms-full.txt (Full Spec)</a></li>
-                <li><a href="rss.xml" target="_blank">rss.xml (RSS Feed)</a></li>
+                <li><a href="robots.txt" target="_blank">robots.txt (AI Crawlers)</a></li>
                 <li><a href="sitemap.xml" target="_blank">sitemap.xml (Sitemap)</a></li>
             </ul>
         </nav>"""
@@ -133,8 +152,17 @@ def build_index():
     <div class="container">
 {get_sidebar("index.html")}
         <main class="content">
-            <h1 class="page-title" data-i18n="home.title">Android On-Device Unified STT Framework</h1>
-            <p class="page-subtitle" data-i18n="home.subtitle">Whisper.cpp, Vosk, and Sherpa-ONNX unified with Speaker Diarization and 0 external ML dependencies on Termux.</p>
+            <h2 data-i18n="home.title">Android On-Device Unified STT Framework</h2>
+            <p class="subtitle" data-i18n="home.subtitle">Whisper.cpp, Vosk, and Sherpa-ONNX unified with Speaker Diarization and 0 external ML dependencies on Termux.</p>
+
+            <div class="badges-bar">
+                <a href="https://pypi.org/project/termux-stt/" target="_blank"><img src="https://img.shields.io/pypi/v/termux-stt.svg?color=blue" alt="PyPI Version"></a>
+                <a href="https://www.npmjs.com/package/termux-stt" target="_blank"><img src="https://img.shields.io/npm/v/termux-stt.svg?color=red" alt="npm Version"></a>
+                <img src="https://img.shields.io/badge/python-3.8+-blue.svg" alt="Python">
+                <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License">
+                <img src="https://img.shields.io/badge/platform-Android%20ARM64%20%7C%20Termux-success.svg" alt="Platform">
+                <img src="https://img.shields.io/badge/tests-100%25%20PASS-success" alt="Tests">
+            </div>
 
             <div class="alert alert-info" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
                 <div>
@@ -168,7 +196,7 @@ termux-stt transcribe --engine whisper --model base --lang ko meeting.wav</code>
             </div>
 
             <h2>Core Architecture</h2>
-            <div class="feature-grid">
+            <div class="features-grid">
                 <div class="feature-card">
                     <h4 data-i18n="home.features.f1Title">Multi-Engine Abstraction</h4>
                     <p data-i18n="home.features.f1Desc">Unified create_engine() API for whisper.cpp, vosk, and sherpa-onnx.</p>
@@ -229,7 +257,7 @@ for seg in result.segments:
             </div>
 
             <h2>Engine Comparison Matrix</h2>
-            <table>
+            <table class="data-table">
                 <thead>
                     <tr>
                         <th>Engine</th>
@@ -292,7 +320,7 @@ for seg in result.segments:
             <div class="alert alert-info">
                 <strong>AMEVA Foundation Initiative:</strong> 100% on-device local AI for everyone with zero cloud subscriptions and zero data leakage.
             </div>
-            <table>
+            <table class="data-table">
                 <thead>
                     <tr>
                         <th>Project</th>
@@ -350,8 +378,8 @@ def build_showcase():
     <div class="container">
 {get_sidebar("showcase.html")}
         <main class="content">
-            <h1 class="page-title">Live Audio Showcase &amp; Playback</h1>
-            <p class="page-subtitle">Interactive speech playback and empirical transcription results generated natively on-device by termux-stt.</p>
+            <h2>Live Audio Showcase &amp; Playback</h2>
+            <p class="subtitle">Interactive speech playback and empirical transcription results generated natively on-device by termux-stt.</p>
 
             <div class="alert alert-success">
                 <strong>⚡ Verified Empirical Run:</strong> Audio duration: <strong>37.91s</strong> • Inference Engine: <strong>whisper.cpp Base</strong> • Elapsed Time: <strong>32.79s</strong> (RTF: <strong>0.865x</strong>) • Sentence Repetition Rate: <strong>0%</strong>.
@@ -587,8 +615,8 @@ def build_installation():
     <div class="container">
 {get_sidebar("installation.html")}
         <main class="content">
-            <h1 class="page-title">Installation Guide</h1>
-            <p class="page-subtitle">Setup termux-stt in Android Termux environment with zero compilation headaches.</p>
+            <h2>Installation Guide</h2>
+            <p class="subtitle">Setup termux-stt in Android Termux environment with zero compilation headaches.</p>
 
             <h2>Prerequisites in Termux</h2>
             <pre><code># Update Termux packages
@@ -650,8 +678,8 @@ def build_quickstart():
     <div class="container">
 {get_sidebar("quickstart.html")}
         <main class="content">
-            <h1 class="page-title">Quickstart & Recipes</h1>
-            <p class="page-subtitle">Production-ready code snippets for common audio transcription workflows.</p>
+            <h2>Quickstart & Recipes</h2>
+            <p class="subtitle">Production-ready code snippets for common audio transcription workflows.</p>
 
             <h2>Recipe 1: Simple File Transcription</h2>
             <pre><code>from termux_stt import create_engine
@@ -723,11 +751,11 @@ def build_models():
     <div class="container">
 {get_sidebar("models.html")}
         <main class="content">
-            <h1 class="page-title">Model Hub & Registry</h1>
-            <p class="page-subtitle">Curated lightweight on-device models with automatic downloading and SHA-256 integrity checks.</p>
+            <h2>Model Hub & Registry</h2>
+            <p class="subtitle">Curated lightweight on-device models with automatic downloading and SHA-256 integrity checks.</p>
 
             <h2>Whisper Models (GGML Quantized)</h2>
-            <table>
+            <table class="data-table">
                 <thead>
                     <tr>
                         <th>Model Identifier</th>
@@ -775,7 +803,7 @@ def build_models():
             </table>
 
             <h2>Vosk Models (X-Vector & STT)</h2>
-            <table>
+            <table class="data-table">
                 <thead>
                     <tr>
                         <th>Model Identifier</th>
@@ -801,7 +829,7 @@ def build_models():
             </table>
 
             <h2>Sherpa-ONNX Models</h2>
-            <table>
+            <table class="data-table">
                 <thead>
                     <tr>
                         <th>Model Identifier</th>
@@ -858,11 +886,11 @@ def build_advanced_params():
     <div class="container">
 {get_sidebar("advanced-parameters.html")}
         <main class="content">
-            <h1 class="page-title">Advanced Parameters</h1>
-            <p class="page-subtitle">Detailed handbook for fine-tuning performance, latency, and hardware utilization.</p>
+            <h2>Advanced Parameters</h2>
+            <p class="subtitle">Detailed handbook for fine-tuning performance, latency, and hardware utilization.</p>
 
             <h2>EngineConfig Parameters</h2>
-            <table>
+            <table class="data-table">
                 <thead>
                     <tr>
                         <th>Parameter</th>
@@ -949,8 +977,8 @@ def build_api_reference():
     <div class="container">
 {get_sidebar("api-reference.html")}
         <main class="content">
-            <h1 class="page-title">100% Full API Reference</h1>
-            <p class="page-subtitle">Exhaustive specification for all public functions, classes, and types.</p>
+            <h2>100% Full API Reference</h2>
+            <p class="subtitle">Exhaustive specification for all public functions, classes, and types.</p>
 
             <h2>Factory Function: <code>create_engine()</code></h2>
             <pre><code>def create_engine(
@@ -1026,11 +1054,11 @@ def build_benchmarks():
     <div class="container">
 {get_sidebar("benchmarks.html")}
         <main class="content">
-            <h1 class="page-title">Benchmarks & Hardware Profile</h1>
-            <p class="page-subtitle">Real measured benchmarks on Samsung Galaxy A35 (Exynos 1380 5G, 6GB LPDDR4X RAM).</p>
+            <h2>Benchmarks & Hardware Profile</h2>
+            <p class="subtitle">Real measured benchmarks on Samsung Galaxy A35 (Exynos 1380 5G, 6GB LPDDR4X RAM).</p>
 
             <h2>Comprehensive Engine Benchmark Matrix</h2>
-            <table>
+            <table class="data-table">
                 <thead>
                     <tr>
                         <th>Engine &amp; Model</th>
@@ -1116,8 +1144,8 @@ def build_versions():
     <div class="container">
 {get_sidebar("versions.html")}
         <main class="content">
-            <h1 class="page-title">Version Archive</h1>
-            <p class="page-subtitle">Release history and upgrade guides for termux-stt.</p>
+            <h2>Version Archive</h2>
+            <p class="subtitle">Release history and upgrade guides for termux-stt.</p>
 
             <h2>v1.0.0 (Initial Public Release) - 2026-08-20</h2>
             <ul>
