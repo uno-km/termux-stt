@@ -1,0 +1,83 @@
+"""
+Audio loading module for termux-stt.
+Supports multiple formats (wav, mp3, m4a, flac, ogg, opus, webm).
+"""
+
+import os
+import json
+import subprocess
+from dataclasses import dataclass
+from typing import Dict, Any
+
+__all__ = ["AudioData", "load_audio", "is_supported_format", "get_audio_info"]
+
+SUPPORTED_FORMATS = {".wav", ".mp3", ".m4a", ".flac", ".ogg", ".opus", ".webm"}
+
+@dataclass
+class AudioData:
+    samples: bytes
+    sample_rate: int
+    channels: int
+    duration: float
+    format: str
+
+def is_supported_format(path: str) -> bool:
+    """Check if the given file has a supported audio format extension."""
+    _, ext = os.path.splitext(path)
+    return ext.lower() in SUPPORTED_FORMATS
+
+def get_audio_info(path: str) -> Dict[str, Any]:
+    """Get audio metadata using ffprobe."""
+    if not os.path.exists(path):
+        raise FileNotFoundError(f"File not found: {path}")
+
+    cmd = [
+        "ffprobe",
+        "-v", "quiet",
+        "-print_format", "json",
+        "-show_format",
+        "-show_streams",
+        path
+    ]
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+        return json.loads(result.stdout)
+    except subprocess.CalledProcessError as e:
+        raise RuntimeError(f"Failed to probe audio file: {e}")
+    except json.JSONDecodeError as e:
+        raise RuntimeError(f"Failed to parse ffprobe output: {e}")
+
+def load_audio(path: str) -> AudioData:
+    """Load audio file and return AudioData."""
+    if not is_supported_format(path):
+        raise ValueError(f"Unsupported format for {path}")
+    
+    info = get_audio_info(path)
+    # Parse info to get basic details (some streams might vary)
+    streams = info.get("streams", [])
+    audio_stream = next((s for s in streams if s.get("codec_type") == "audio"), None)
+    
+    if not audio_stream:
+        raise ValueError("No audio stream found in file.")
+
+    sample_rate = int(audio_stream.get("sample_rate", 16000))
+    channels = int(audio_stream.get("channels", 1))
+    
+    # Try to get duration
+    duration = float(info.get("format", {}).get("duration", 0.0))
+    if not duration and audio_stream.get("duration"):
+        duration = float(audio_stream["duration"])
+        
+    format_name = info.get("format", {}).get("format_name", "unknown")
+
+    # Read binary data
+    with open(path, "rb") as f:
+        samples = f.read()
+
+    return AudioData(
+        samples=samples,
+        sample_rate=sample_rate,
+        channels=channels,
+        duration=duration,
+        format=format_name
+    )

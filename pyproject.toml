@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "termux-stt"
+version = "1.0.0"
+description = "Android on-device STT framework for Termux — whisper.cpp, vosk, sherpa-onnx unified"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [
+  {name = "Eunho Kim (@uno-km)"}
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest", "ruff", "mypy"]
+
+[project.scripts]
+termux-stt = "termux_stt.cli.main:main"
+
+[project.urls]
+Homepage = "https://github.com/uno-km/termux-stt"
+Repository = "https://github.com/uno-km/termux-stt"
+Documentation = "https://github.com/uno-km/termux-stt#readme"
+Issues = "https://github.com/uno-km/termux-stt/issues"

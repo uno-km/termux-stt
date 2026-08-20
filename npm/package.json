@@ -1,0 +1,11 @@
+{
+  "name": "termux-stt",
+  "version": "1.0.0",
+  "description": "Android on-device STT framework for Termux",
+  "main": "index.js",
+  "bin": {
+    "termux-stt": "./bin/termux-stt.js"
+  },
+  "author": "Eunho Kim (@uno-km)",
+  "license": "MIT"
+}
