@@ -1,34 +1,37 @@
 import sys
-
-from termux_stt.engine.base import EngineConfig
-from termux_stt.engine.hybrid_engine import HybridEngine
-from termux_stt.engine.vosk_engine import VoskEngine
-from termux_stt.engine.whisper_engine import WhisperEngine
+from termux_stt import create_engine
 from termux_stt.export.json_export import save_json, to_json
 from termux_stt.export.srt import save_srt, to_srt
 from termux_stt.export.vtt import save_vtt, to_vtt
 
-
 def run_transcribe(args):
-    config = EngineConfig(
-        model_path=args.model or "default",
-        language=args.lang,
-        num_threads=args.threads,
-        use_vad=args.vad
+    # Collect all extra kwargs
+    extra_kwargs = {}
+    if getattr(args, "prompt", None):
+        extra_kwargs["prompt"] = args.prompt
+    if getattr(args, "temperature", None) is not None:
+        extra_kwargs["temperature"] = args.temperature
+    if getattr(args, "beam_size", None) is not None:
+        extra_kwargs["beam_size"] = args.beam_size
+    if getattr(args, "translate", False):
+        extra_kwargs["translate"] = True
+    if getattr(args, "extra_args", None):
+        extra_kwargs["extra_args"] = args.extra_args
+
+    engine = create_engine(
+        engine=args.engine,
+        model=args.model,
+        lang=args.lang or "ko",
+        threads=args.threads,
+        vad=args.vad,
+        quantization=args.quantization,
+        **extra_kwargs
     )
 
-    if args.engine == "whisper":
-        engine = WhisperEngine(config)
-    elif args.engine == "vosk":
-        engine = VoskEngine(config)
-    elif args.engine == "hybrid":
-        engine = HybridEngine(config)
-    else:
-        print(f"Engine {args.engine} not supported for transcription yet.")
-        sys.exit(1)
+    if getattr(args, "verbose", False):
+        print(f"Transcribing {args.file} using {args.engine} with config {engine.get_info()}...")
 
-    print(f"Transcribing {args.file} using {args.engine}...")
-    result = engine.transcribe(args.file)
+    result = engine.transcribe(args.file, **extra_kwargs)
 
     if args.output:
         if args.format == "srt":

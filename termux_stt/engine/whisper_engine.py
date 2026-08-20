@@ -101,7 +101,7 @@ class WhisperEngine(Engine):
         # 2. Ensure model is downloaded
         model_path = ModelHub.ensure_model('whisper', self.model)
 
-        # 3. Build command
+        # 3. Build command with all whisper.cpp control flags
         binary = self._get_binary_path()
         cmd = [
             binary,
@@ -111,6 +111,42 @@ class WhisperEngine(Engine):
             "-oj",  # output JSON
             "-f", wav_path,
         ]
+
+        # Extract options from kwargs or self.config.extra
+        opts = {**self.config.extra, **kwargs}
+
+        if "prompt" in opts or "initial_prompt" in opts:
+            prompt_val = opts.get("prompt") or opts.get("initial_prompt")
+            cmd.extend(["--prompt", str(prompt_val)])
+        if "beam_size" in opts:
+            cmd.extend(["-bs", str(opts["beam_size"])])
+        if "best_of" in opts:
+            cmd.extend(["-bo", str(opts["best_of"])])
+        if "temperature" in opts:
+            cmd.extend(["-tp", str(opts["temperature"])])
+        if opts.get("translate", False):
+            cmd.append("-tr")
+        if "max_len" in opts:
+            cmd.extend(["-ml", str(opts["max_len"])])
+        if opts.get("split_on_word", False):
+            cmd.append("-sow")
+        if opts.get("no_fallback", False):
+            cmd.append("-nf")
+        if "suppress_regex" in opts:
+            cmd.extend(["--suppress-regex", str(opts["suppress_regex"])])
+        if "grammar" in opts:
+            cmd.extend(["--grammar", str(opts["grammar"])])
+        if opts.get("dtw", False):
+            cmd.append("-dtw")
+
+        # Passthrough raw extra_args if provided (list or string)
+        extra_args = opts.get("extra_args")
+        if extra_args:
+            if isinstance(extra_args, list):
+                cmd.extend(extra_args)
+            elif isinstance(extra_args, str):
+                import shlex
+                cmd.extend(shlex.split(extra_args))
 
         logger.info("Running whisper.cpp: %s", " ".join(cmd))
         result = run_isolated(cmd)

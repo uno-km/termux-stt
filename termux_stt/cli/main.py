@@ -17,10 +17,15 @@ def main():
     common_parser = argparse.ArgumentParser(add_help=False)
     common_parser.add_argument("--engine", type=str, default="whisper", choices=["whisper", "vosk", "hybrid", "sherpa"], help="Engine to use")
     common_parser.add_argument("--model", type=str, help="Model name or path")
-    common_parser.add_argument("--lang", type=str, help="Language code")
-    common_parser.add_argument("--threads", type=int, default=4, help="Number of CPU threads to use")
+    common_parser.add_argument("--lang", type=str, default="ko", help="Language code")
+    common_parser.add_argument("--threads", type=int, default=None, help="Number of CPU threads to use")
     common_parser.add_argument("--vad", action="store_true", help="Enable VAD filtering")
-    common_parser.add_argument("--quantization", type=str, choices=["none", "q4_0", "q8_0"], default="none", help="Model quantization level")
+    common_parser.add_argument("--quantization", type=str, choices=["none", "q4_0", "q5_1", "q8_0", "f16"], default="q5_1", help="Model quantization level")
+    common_parser.add_argument("--prompt", type=str, default=None, help="Initial prompt / context for decoding")
+    common_parser.add_argument("--temperature", type=float, default=None, help="Sampling temperature")
+    common_parser.add_argument("--beam-size", type=int, default=None, help="Beam search beam size")
+    common_parser.add_argument("--translate", action="store_true", help="Translate source audio to English")
+    common_parser.add_argument("--extra-args", type=str, default=None, help="Raw CLI arguments passed directly to the engine")
     common_parser.add_argument("--verbose", action="store_true", help="Enable verbose logging")
 
     # Transcribe subcommand

@@ -38,6 +38,12 @@ ignore = ["E501", "E722"]
 [tool.ruff.lint.isort]
 known-first-party = ["termux_stt"]
 
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["termux_stt*"]
+exclude = ["tests*", "docs*", "examples*"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
 

@@ -86,8 +86,18 @@ class VoskEngine(Engine):
         wav_path = preprocess(audio_path, target_sr=16000, force_mono=True)
 
         wf = wave.open(wav_path, "rb")
+        opts = {**self.config.extra, **kwargs}
         rec = vosk.KaldiRecognizer(self._model, wf.getframerate())
-        rec.SetWords(True)
+        rec.SetWords(opts.get("words", True))
+        if "max_alternatives" in opts:
+            rec.SetMaxAlternatives(int(opts["max_alternatives"]))
+        if "grammar" in opts:
+            import json as _json
+            grammar_val = opts["grammar"]
+            if isinstance(grammar_val, (list, dict)):
+                rec.SetGrammar(_json.dumps(grammar_val))
+            elif isinstance(grammar_val, str):
+                rec.SetGrammar(grammar_val)
 
         segments: List[Segment] = []
         texts: List[str] = []
@@ -99,15 +109,27 @@ class VoskEngine(Engine):
             if rec.AcceptWaveform(data):
                 res = json.loads(rec.Result())
                 text = res.get("text", "").strip()
-                if text:
+                words = res.get("result", [])
+                if words:
+                    t0 = words[0].get("start", 0.0)
+                    t1 = words[-1].get("end", 0.0)
+                    segments.append(Segment(start=t0, end=t1, text=text))
+                elif text:
                     segments.append(Segment(start=0.0, end=0.0, text=text))
+                if text:
                     texts.append(text)
 
         # Capture final partial
         res = json.loads(rec.FinalResult())
         text = res.get("text", "").strip()
-        if text:
+        words = res.get("result", [])
+        if words:
+            t0 = words[0].get("start", 0.0)
+            t1 = words[-1].get("end", 0.0)
+            segments.append(Segment(start=t0, end=t1, text=text))
+        elif text:
             segments.append(Segment(start=0.0, end=0.0, text=text))
+        if text:
             texts.append(text)
 
         wf.close()

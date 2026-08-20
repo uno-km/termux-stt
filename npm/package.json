@@ -1,11 +1,50 @@
 {
   "name": "termux-stt",
   "version": "1.0.0",
-  "description": "Android on-device STT framework for Termux",
+  "description": "Production-Grade On-Device Speech-to-Text & Speaker Diarization Framework for Android Termux & Samsung Galaxy",
   "main": "index.js",
+  "types": "index.d.ts",
   "bin": {
     "termux-stt": "./bin/termux-stt.js"
   },
-  "author": "Eunho Kim (@uno-km)",
-  "license": "MIT"
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "lib",
+    "bin",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/uno-km/termux-stt.git"
+  },
+  "keywords": [
+    "termux",
+    "stt",
+    "speech-to-text",
+    "whisper",
+    "whisper-cpp",
+    "vosk",
+    "sherpa-onnx",
+    "diarization",
+    "speaker-diarization",
+    "android",
+    "samsung-galaxy",
+    "edge-ai",
+    "on-device-ai",
+    "pure-python",
+    "exynos",
+    "snapdragon",
+    "arm64"
+  ],
+  "author": "uno-km (쌩초보코딩단) <hosequelbo@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/uno-km/termux-stt/issues"
+  },
+  "homepage": "https://uno-km.github.io/termux-stt/",
+  "engines": {
+    "node": ">=16.0.0"
+  }
 }
