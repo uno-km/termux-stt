@@ -1,4 +1,4 @@
-﻿"""
+"""
 Official AMEVA Library Documentation Site Generator for termux-stt.
 Aligned with uno-km Library Template Design System, 6-Language i18n, Full API, Live Showcase & Benchmarks.
 """
@@ -286,6 +286,50 @@ for seg in result.segments:
                         <td>92%+</td>
                         <td>✅ Built-in (K-Means)</td>
                         <td>⭐⭐⭐⭐⭐ (Recommended)</td>
+                    </tr>
+                </tbody>
+            <h2>AMEVA Foundation — Mobile AI &amp; Automation Ecosystem</h2>
+            <div class="alert alert-info">
+                <strong>AMEVA Foundation Initiative:</strong> 100% on-device local AI for everyone with zero cloud subscriptions and zero data leakage.
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Project</th>
+                        <th>Packages &amp; Links</th>
+                        <th>Core On-Device Capability</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>🎙️ <strong>termux-stt</strong></td>
+                        <td><a href="https://pypi.org/project/termux-stt/" target="_blank">PyPI</a> • <a href="https://www.npmjs.com/package/termux-stt" target="_blank">npm</a></td>
+                        <td>Unified STT + Pure-Python 128d X-Vector Speaker Diarization</td>
+                    </tr>
+                    <tr>
+                        <td>🎨 <strong>termux-diffusion</strong></td>
+                        <td><a href="https://pypi.org/project/termux-diffusion/" target="_blank">PyPI</a> • <a href="https://www.npmjs.com/package/termux-diffusion" target="_blank">npm</a></td>
+                        <td>On-Device Stable Diffusion Image Generation (ARM NEON)</td>
+                    </tr>
+                    <tr>
+                        <td>🌐 <strong>termux-playwright</strong></td>
+                        <td><a href="https://pypi.org/project/termux-playwright/" target="_blank">PyPI</a> • <a href="https://www.npmjs.com/package/termux-playwright" target="_blank">npm</a></td>
+                        <td>Native Headless Chromium Automation &amp; Scraping (Zero PRoot)</td>
+                    </tr>
+                    <tr>
+                        <td>🧠 <strong>termux-train</strong></td>
+                        <td><a href="https://github.com/uno-km/termux-train" target="_blank">GitHub</a></td>
+                        <td>Pure C++ Autograd Backprop Neural Training &amp; LoRA on Android</td>
+                    </tr>
+                    <tr>
+                        <td>🖥️ <strong>AMEVA Workstation</strong></td>
+                        <td><a href="https://ameva-workstation-web-core.vercel.app/" target="_blank">Web App</a></td>
+                        <td>100% On-Device WebGPU Document Intelligence Workspace</td>
+                    </tr>
+                    <tr>
+                        <td>⚡ <strong>AMEVA-Forge</strong></td>
+                        <td><a href="https://uno-km.github.io/ameva-forge/demo.html" target="_blank">Live Studio</a></td>
+                        <td>Real-Time WebGPU 3D Neural Studio &amp; Visualization Engine</td>
                     </tr>
                 </tbody>
             </table>

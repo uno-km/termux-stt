@@ -15,10 +15,18 @@
 *Dual-Engine Architecture (Python & Node.js / TypeScript) with Native Bionic ARM64 Acceleration & 0 PyTorch Dependency*
 
 <p align="center">
-  <a href="https://pypi.org/project/termux-stt/"><img src="https://img.shields.io/pypi/v/termux-stt.svg?color=blue&style=for-the-badge&logo=pypi&logoColor=white" alt="PyPI Version" /></a>
-  <a href="https://www.npmjs.com/package/termux-stt"><img src="https://img.shields.io/npm/v/termux-stt.svg?color=red&style=for-the-badge&logo=npm&logoColor=white" alt="npm Version" /></a>
+  <a href="https://pypi.org/project/termux-stt/"><img src="https://img.shields.io/pypi/v/termux-stt.svg?style=for-the-badge&color=00f5d4&logo=pypi&logoColor=0b132b" alt="PyPI Version" /></a>
+  <a href="https://pypi.org/project/termux-stt/"><img src="https://img.shields.io/pypi/dm/termux-stt?style=for-the-badge&color=004499&logo=pypi&logoColor=white&label=PyPI%20Downloads" alt="PyPI Downloads" /></a>
+  <a href="https://pepy.tech/project/termux-stt"><img src="https://img.shields.io/pepy/dt/termux-stt?style=for-the-badge&color=10b981&logo=pypi&logoColor=white&label=Total%20Installs" alt="Total Installs" /></a>
+  <a href="https://www.npmjs.com/package/termux-stt"><img src="https://img.shields.io/npm/v/termux-stt.svg?style=for-the-badge&color=cb3837&logo=npm&logoColor=white" alt="npm Version" /></a>
+  <a href="https://www.npmjs.com/package/termux-stt"><img src="https://img.shields.io/npm/dm/termux-stt?style=for-the-badge&color=ff5722&logo=npm&logoColor=white&label=npm%20Downloads" alt="npm Downloads" /></a>
+  <a href="https://www.npmjs.com/package/termux-stt"><img src="https://img.shields.io/npm/dt/termux-stt?style=for-the-badge&color=e91e63&logo=npm&logoColor=white&label=Total%20npm" alt="Total npm" /></a>
+</p>
+
+<p align="center">
   <a href="https://uno-km.github.io/termux-stt/showcase.html"><img src="https://img.shields.io/badge/Live_Showcase-▶_Audio_Player-00f5d4?style=for-the-badge&logo=googlechrome&logoColor=0b132b" alt="Live Audio Showcase" /></a>
   <a href="https://uno-km.github.io/termux-stt/"><img src="https://img.shields.io/badge/Docs-uno--km.github.io-004499?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Live Docs" /></a>
+  <a href="https://github.com/uno-km/termux-stt"><img src="https://img.shields.io/github/stars/uno-km/termux-stt?style=for-the-badge&color=gold&logo=github" alt="GitHub Stars" /></a>
   <a href="https://github.com/uno-km/termux-stt/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge" alt="License" /></a>
 </p>
 
@@ -33,7 +41,28 @@
 
 <br/>
 
-**[🎧 Live Audio Showcase & Demo](https://uno-km.github.io/termux-stt/showcase.html)** • **[📖 Official Documentation Site](https://uno-km.github.io/termux-stt/)** • **[⚡ Quickstart](#1-quick-scenario-playbook)** • **[🏛️ Architecture](#2-why-termux-stt-architectural-pillars)** • **[📊 Benchmarks](#3-empirical-benchmarks-galaxy-a35--exynos-1380)** • **[🔍 15-Part Blog Series](#7-15-part-empirical-research-blog-series)**
+**[🎧 Live Audio Showcase & Demo](https://uno-km.github.io/termux-stt/showcase.html)** • **[📖 Official Documentation Site](https://uno-km.github.io/termux-stt/)** • **[🌌 AMEVA Foundation](#-ameva-foundation--mobile-ai-ecosystem)** • **[⚡ Quickstart](#1-quick-scenario-playbook)** • **[🏛️ Architecture](#2-why-termux-stt-architectural-pillars)** • **[📊 Benchmarks](#3-empirical-benchmarks-galaxy-a35--exynos-1380)** • **[🔍 15-Part Blog Series](#7-15-part-empirical-research-blog-series)**
+
+</div>
+
+---
+
+## 🌌 AMEVA Foundation — Mobile AI Ecosystem
+
+> **"클라우드 구독료 0원, 데이터 외부 유출 0%. 모든 스마트폰을 완벽한 독립형 AI 워크스테이션으로."**
+> 
+> **AMEVA 재단(AMEVA Foundation)**은 안드로이드 모바일 환경에서 거대 AI 모델과 브라우저 자동화, 신경망 훈련, 화자 분리 음성인식을 100% 로컬 온디바이스로 구동하는 차세대 오픈소스 생태계를 구축합니다.
+
+<div align="center">
+
+| 프로젝트 (Project) | 플랫폼 & 패키지 | 핵심 기능 & 온디바이스 기술 | 공식 문서 & 데모 |
+| :--- | :--- | :--- | :---: |
+| 🎙️ **[termux-stt](https://github.com/uno-km/termux-stt)** | [![PyPI](https://img.shields.io/pypi/v/termux-stt?color=blue&style=flat-square)](https://pypi.org/project/termux-stt/) [![npm](https://img.shields.io/npm/v/termux-stt?color=red&style=flat-square)](https://www.npmjs.com/package/termux-stt) | **통합 온디바이스 STT & 순수 Python 128d X-Vector 화자 분리** (Whisper + Vosk + Sherpa) | **[Showcase](https://uno-km.github.io/termux-stt/showcase.html)** |
+| 🎨 **[termux-diffusion](https://github.com/uno-km/termux-diffusion)** | [![PyPI](https://img.shields.io/pypi/v/termux-diffusion?color=blue&style=flat-square)](https://pypi.org/project/termux-diffusion/) [![npm](https://img.shields.io/npm/v/termux-diffusion?color=red&style=flat-square)](https://www.npmjs.com/package/termux-diffusion) | **모바일 온디바이스 Stable Diffusion 이미지 생성** (bfloat16 ARM NEON 가속) | **[Docs](https://uno-km.github.io/termux-diffusion/)** |
+| 🌐 **[termux-playwright](https://github.com/uno-km/termux-playwright-demo)** | [![PyPI](https://img.shields.io/pypi/v/termux-playwright?color=blue&style=flat-square)](https://pypi.org/project/termux-playwright/) [![npm](https://img.shields.io/npm/v/termux-playwright?color=red&style=flat-square)](https://www.npmjs.com/package/termux-playwright) | **PRoot 없는 네이티브 헤드리스 Chromium 브라우저 자동화 & 스크래핑** | **[Docs](https://uno-km.github.io/termux-playwright-demo/)** |
+| 🧠 **[termux-train](https://github.com/uno-km/termux-train)** | [![GitHub](https://img.shields.io/badge/GitHub-termux--train-black?style=flat-square&logo=github)](https://github.com/uno-km/termux-train) | **모바일 순수 C++ Autograd 신경망 역전파 훈련 & LoRA 미세조정** | **[Repo](https://github.com/uno-km/termux-train)** |
+| 🖥️ **[AMEVA Workstation](https://github.com/uno-km/AMEVA-Workstation-Web)** | [![WebGPU](https://img.shields.io/badge/WebGPU-100%25_On--Device-00f5d4?style=flat-square)](https://ameva-workstation-web-core.vercel.app/) | **100% 브라우저 로컬 WebGPU 멀티모달 문서 지능 & 오피스 워크스페이스** | **[Live Demo](https://ameva-workstation-web-core.vercel.app/)** |
+| ⚡ **[AMEVA-Forge](https://github.com/uno-km/ameva-forge)** | [![WebGPU](https://img.shields.io/badge/3D_Studio-WebGPU-purple?style=flat-square)](https://uno-km.github.io/ameva-forge/demo.html) | **실시간 3D 뉴럴 스튜디오 & WebGPU 비주얼라이제이션 엔진** | **[Live Demo](https://uno-km.github.io/ameva-forge/demo.html)** |
 
 </div>
 
@@ -47,7 +76,7 @@ from termux_stt import create_engine
 # 1. 엔진 초기화 (최초 1회 모델 자동 다운로드 및 캐싱)
 engine = create_engine("whisper", model="base", lang="en")
 
-# 2. 오디오 전사 및 자막 생성 (WAV, MP3, M4A, FLAC, OGG 자동 16kHz 변환)
+# 2. 오디오 전사 및 자막 생성 (WAV, MP3, M4A, FLAC 등 자동 16kHz 변환)
 result = engine.transcribe("speech.mp3")
 
 print(result.text)          # 전체 텍스트
@@ -307,7 +336,7 @@ for seg in result.segments:
 ```python
 import termux_stt
 
-# Create Engine
+# Create Engine with fine-grained control parameters
 engine = termux_stt.create_engine(
     engine="whisper",         # "whisper" | "vosk" | "sherpa" | "hybrid"
     model="base",             # "tiny" | "base" | "small" | "medium" | "custom"
@@ -315,7 +344,10 @@ engine = termux_stt.create_engine(
     num_speakers=0,           # 0 = disabled, 2+ = enable diarization
     threads=4,                # CPU threads (defaults to big cores count)
     vad=True,                 # Enable Silero-VAD silence stripping
-    quantization="q5_1"       # "f16" | "q8_0" | "q5_1" | "q4_0"
+    quantization="q5_1",      # "f16" | "q8_0" | "q5_1" | "q4_0"
+    prompt="경제 브리핑",     # Initial decoding context / vocabulary
+    beam_size=5,              # Beam search beam size
+    temperature=0.0           # Sampling temperature
 )
 
 # Transcribe File
@@ -343,7 +375,7 @@ diar_result = engine.diarize("meeting.wav", num_speakers=2)
 termux-stt [COMMAND] [OPTIONS] [FILE]
 
 # Commands
-termux-stt transcribe [FILE]   # Transcribe audio file
+termux-stt transcribe [FILE]   # Transcribe audio file (--prompt, --beam-size, --translate)
 termux-stt listen              # Real-time microphone transcription
 termux-stt diarize [FILE]      # Perform speaker diarization
 termux-stt models list         # List installed and available models
@@ -392,16 +424,6 @@ This framework is built upon the exhaustive 15-part research series published on
 
 ---
 
-## 🌌 The AMEVA Mobile AI & Automation Ecosystem
-
-* **🎨 [Termux-Diffusion](https://github.com/uno-km/termux-diffusion)** ([PyPI](https://pypi.org/project/termux-diffusion/) | [npm](https://www.npmjs.com/package/termux-diffusion) | [Docs](https://uno-km.github.io/termux-diffusion/)): Production on-device Stable Diffusion image generation for Android Termux.
-* **🌐 [Termux-Playwright](https://github.com/uno-km/termux-playwright-demo)** ([PyPI](https://pypi.org/project/termux-playwright/) | [npm](https://www.npmjs.com/package/termux-playwright) | [Docs](https://uno-km.github.io/termux-playwright-demo/)): Production headless Chromium browser automation & scraping for Android Termux.
-* **🧠 [termux-train](https://github.com/uno-km/termux-train)**: On-device Autograd deep learning training & LoRA fine-tuning for Android Termux.
-* **🖥️ [AMEVA Workstation Web](https://github.com/uno-km/AMEVA-Workstation-Web)** ([Live Demo](https://ameva-workstation-web-core.vercel.app/)): 100% on-device WebGPU AI workspace & multimedia document intelligence.
-* **⚡ [AMEVA-Forge](https://github.com/uno-km/ameva-forge)** ([Docs](https://uno-km.github.io/ameva-forge/)): Real-time WebGPU 3D neural studio & visualization engine.
-
----
-
 ## ⚖️ Disclaimer (면책 조항)
 
 > **Disclaimer:**  
@@ -413,4 +435,4 @@ This framework is built upon the exhaustive 15-part research series published on
 
 ## 📄 License
 
-Released under the **MIT License**. Maintained by **uno-km (쌩초보코딩단) / Eunho Kim**.
+Released under the **MIT License**. Maintained by **AMEVA Foundation & uno-km (쌩초보코딩단) / Eunho Kim**.
