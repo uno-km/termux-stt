@@ -42,8 +42,15 @@ class WhisperEngine(Engine):
 
     def _get_binary_path(self) -> str:
         """Locate the ``whisper-cpp`` binary."""
+        import shutil
+        for name in ["whisper-cpp", "whisper-cli", "main"]:
+            found = shutil.which(name)
+            if found:
+                return found
+
         candidates = [
             Path.home() / ".local" / "bin" / "whisper-cpp",
+            Path("/usr/local/bin/whisper-cpp"),
             Path("/data/data/com.termux/files/home/.local/bin/whisper-cpp"),
             Path.home() / ".local" / "bin" / "main",  # legacy name
         ]

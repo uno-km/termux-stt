@@ -1,0 +1,33 @@
+FROM ubuntu:22.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-pip \
+    python3-dev \
+    ffmpeg \
+    cmake \
+    build-essential \
+    git \
+    curl \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Build whisper.cpp
+WORKDIR /tmp
+RUN git clone --depth 1 https://github.com/ggml-org/whisper.cpp.git && \
+    cd whisper.cpp && \
+    cmake -B build -DCMAKE_BUILD_TYPE=Release && \
+    cmake --build build -j$(nproc) && \
+    mkdir -p /root/.local/bin /usr/local/bin && \
+    (cp build/bin/whisper-cli /root/.local/bin/whisper-cpp || cp build/bin/main /root/.local/bin/whisper-cpp) && \
+    (cp build/bin/whisper-cli /usr/local/bin/whisper-cpp || cp build/bin/main /usr/local/bin/whisper-cpp) && \
+    cd / && rm -rf /tmp/whisper.cpp
+
+WORKDIR /app
+COPY . /app
+
+RUN pip3 install --no-cache-dir -e .[dev]
+
+CMD ["python3", "docker_test_run.py"]
