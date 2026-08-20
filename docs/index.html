@@ -111,13 +111,14 @@
             <h2 data-i18n="home.title">Android On-Device Unified STT Framework</h2>
             <p class="subtitle" data-i18n="home.subtitle">Whisper.cpp, Vosk, and Sherpa-ONNX unified with Speaker Diarization and 0 external ML dependencies on Termux.</p>
 
-            <div class="badges-bar">
+                                                <div class="badges-bar">
                 <a href="https://pypi.org/project/termux-stt/" target="_blank"><img src="https://img.shields.io/pypi/v/termux-stt.svg?color=blue" alt="PyPI Version"></a>
                 <a href="https://www.npmjs.com/package/termux-stt" target="_blank"><img src="https://img.shields.io/npm/v/termux-stt.svg?color=red" alt="npm Version"></a>
-                <img src="https://img.shields.io/badge/python-3.8+-blue.svg" alt="Python">
-                <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License">
-                <img src="https://img.shields.io/badge/platform-Android%20ARM64%20%7C%20Termux-success.svg" alt="Platform">
-                <img src="https://img.shields.io/badge/tests-100%25%20PASS-success" alt="Tests">
+                <a href="https://pepy.tech/projects/termux-stt" target="_blank"><img src="https://img.shields.io/pepy/dt/termux-stt?color=orange" alt="Total Downloads"></a>
+                <img src="https://img.shields.io/badge/python-3.8+-blue.svg" alt="Python Version">
+                <img src="https://img.shields.io/badge/node-16+-brightgreen.svg" alt="Node Version">
+                <img src="https://img.shields.io/badge/platform-Android%20Termux%20(aarch64)-green.svg" alt="Platform">
+                <img src="https://img.shields.io/badge/tests-72%20passed%20%7C%20100%25-success" alt="Tests">
             </div>
 
             <div class="alert alert-info" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
@@ -127,55 +128,14 @@
                 <a href="showcase.html" class="header-btn primary" style="padding:6px 16px; font-size:0.9em; text-decoration:none;">▶ Open Live Showcase</a>
             </div>
 
-            <h2 data-i18n="home.quickInstall">Quick Install</h2>
-            <div class="tabs-container">
-                <div class="tabs-header">
-                    <button class="tab-btn active" data-tab="pip">Python (pip)</button>
-                    <button class="tab-btn" data-tab="npm">Node.js (npm)</button>
-                    <button class="tab-btn" data-tab="cli">CLI One-Liner</button>
-                </div>
-                <div class="tab-content active" data-tab-content="pip">
-                    <pre><code># 1. Install Python package
-pip install termux-stt
-
-# 2. Build engines & download base models (one-time setup)
-termux-stt-install</code></pre>
-                </div>
-                <div class="tab-content" data-tab-content="npm">
-                    <pre><code># Install Node.js package
-npm install termux-stt</code></pre>
-                </div>
-                <div class="tab-content" data-tab-content="cli">
-                    <pre><code># Transcribe any audio directly from CLI
-termux-stt transcribe --engine whisper --model base --lang ko meeting.wav</code></pre>
-                </div>
-            </div>
-
-            <h2>Core Architecture</h2>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <h4 data-i18n="home.features.f1Title">Multi-Engine Abstraction</h4>
-                    <p data-i18n="home.features.f1Desc">Unified create_engine() API for whisper.cpp, vosk, and sherpa-onnx.</p>
-                </div>
-                <div class="feature-card">
-                    <h4 data-i18n="home.features.f2Title">Pure-Python Diarization</h4>
-                    <p data-i18n="home.features.f2Desc">Cosine similarity & K-Means clustering in pure Python. Zero numpy/sklearn dependencies.</p>
-                </div>
-                <div class="feature-card">
-                    <h4 data-i18n="home.features.f3Title">Hybrid Pipeline</h4>
-                    <p data-i18n="home.features.f3Desc">Vosk 128d X-Vector + Whisper STT under 1.5 GB RAM on mobile devices.</p>
-                </div>
-                <div class="feature-card">
-                    <h4 data-i18n="home.features.f4Title">Subprocess Isolation</h4>
-                    <p data-i18n="home.features.f4Desc">C++ engines isolated in subprocesses. Host Python runtime never crashes on Segfault.</p>
-                </div>
-                <div class="feature-card">
-                    <h4 data-i18n="home.features.f5Title">Mobile Resilient</h4>
-                    <p data-i18n="home.features.f5Desc">Built-in WakeLock, Doze mode bypass, and Android memory safeguards.</p>
-                </div>
-                <div class="feature-card">
-                    <h4 data-i18n="home.features.f6Title">Dual-Engine Ecosystem</h4>
-                    <p data-i18n="home.features.f6Desc">First-class Python (pip) and Node.js (npm) packages with identical APIs.</p>
+                                    <div class="alert alert-tip">
+                <span class="alert-title" data-i18n="home.quickInstallTitle">1-Line Quick Installation (Choose Language)</span>
+                <p data-i18n="home.quickInstallDesc">Select your runtime and run the 1-line installation command in Termux:</p>
+                <div style="margin-top: 12px;">
+                    <h4 style="margin: 8px 0 4px 0; color: #0055cc;">🐍 Python Edition (PyPI):</h4>
+                    <pre><code>pip install termux-stt && termux-stt-install</code></pre>
+                    <h4 style="margin: 14px 0 4px 0; color: #cb3837;">☕ Node.js / TypeScript Edition (npm):</h4>
+                    <pre><code>npm install termux-stt && npx termux-stt install</code></pre>
                 </div>
             </div>
 
