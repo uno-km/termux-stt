@@ -16,7 +16,7 @@
   };
 
   const DEFAULT_LANG = 'en';
-  const STORAGE_KEY = 'ameva_stt_doc_lang';
+  const STORAGE_KEY = 'ameva_lib_doc_lang';
 
   class I18nManager {
     constructor() {
