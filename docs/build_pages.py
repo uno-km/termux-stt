@@ -1,4 +1,4 @@
-"""
+﻿"""
 Official AMEVA Library Documentation Site Generator for termux-stt.
 Aligned with uno-km Library Template Design System, 6-Language i18n, Full API, Live Showcase & Benchmarks.
 """
@@ -130,7 +130,7 @@ def build_index():
 </head>
 <body>
 {get_header("index.html")}
-    <div class="layout">
+    <div class="container">
 {get_sidebar("index.html")}
         <main class="content">
             <h1 class="page-title" data-i18n="home.title">Android On-Device Unified STT Framework</h1>
@@ -303,7 +303,7 @@ def build_showcase():
 </head>
 <body>
 {get_header("showcase.html")}
-    <div class="layout">
+    <div class="container">
 {get_sidebar("showcase.html")}
         <main class="content">
             <h1 class="page-title">Live Audio Showcase &amp; Playback</h1>
@@ -540,7 +540,7 @@ def build_installation():
 </head>
 <body>
 {get_header("installation.html")}
-    <div class="layout">
+    <div class="container">
 {get_sidebar("installation.html")}
         <main class="content">
             <h1 class="page-title">Installation Guide</h1>
@@ -603,7 +603,7 @@ def build_quickstart():
 </head>
 <body>
 {get_header("quickstart.html")}
-    <div class="layout">
+    <div class="container">
 {get_sidebar("quickstart.html")}
         <main class="content">
             <h1 class="page-title">Quickstart & Recipes</h1>
@@ -676,7 +676,7 @@ def build_models():
 </head>
 <body>
 {get_header("models.html")}
-    <div class="layout">
+    <div class="container">
 {get_sidebar("models.html")}
         <main class="content">
             <h1 class="page-title">Model Hub & Registry</h1>
@@ -811,7 +811,7 @@ def build_advanced_params():
 </head>
 <body>
 {get_header("advanced-parameters.html")}
-    <div class="layout">
+    <div class="container">
 {get_sidebar("advanced-parameters.html")}
         <main class="content">
             <h1 class="page-title">Advanced Parameters</h1>
@@ -902,7 +902,7 @@ def build_api_reference():
 </head>
 <body>
 {get_header("api-reference.html")}
-    <div class="layout">
+    <div class="container">
 {get_sidebar("api-reference.html")}
         <main class="content">
             <h1 class="page-title">100% Full API Reference</h1>
@@ -979,7 +979,7 @@ def build_benchmarks():
 </head>
 <body>
 {get_header("benchmarks.html")}
-    <div class="layout">
+    <div class="container">
 {get_sidebar("benchmarks.html")}
         <main class="content">
             <h1 class="page-title">Benchmarks & Hardware Profile</h1>
@@ -1069,7 +1069,7 @@ def build_versions():
 </head>
 <body>
 {get_header("versions.html")}
-    <div class="layout">
+    <div class="container">
 {get_sidebar("versions.html")}
         <main class="content">
             <h1 class="page-title">Version Archive</h1>
@@ -1239,3 +1239,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

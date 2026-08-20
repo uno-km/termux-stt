@@ -91,14 +91,14 @@ header {
   letter-spacing: -0.3px;
 }
 
-.header-controls {
+.header-controls, .header-badge-group {
   display: flex;
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
 }
 
-.release-tag {
+.release-tag, .apache-tag {
   background-color: var(--primary-light);
   color: var(--primary-color);
   padding: 4px 10px;
@@ -130,6 +130,8 @@ header {
   background: #ffffff;
   font-weight: 600;
   transition: all 0.15s ease-in-out;
+  display: inline-flex;
+  align-items: center;
 }
 
 .header-btn:hover {
@@ -154,7 +156,7 @@ header {
 }
 
 /* ── 2-Column Container ─────────────────────────────────────────────────── */
-.container {
+.container, .layout {
   display: flex;
   min-height: calc(100vh - var(--header-height));
 }
@@ -227,7 +229,7 @@ header {
   background-color: #ffffff;
 }
 
-.content h2 {
+.content h1, .content h2, .page-title {
   font-size: 1.85em;
   font-weight: 800;
   color: var(--primary-dark);
@@ -235,7 +237,7 @@ header {
   letter-spacing: -0.4px;
 }
 
-.content p.subtitle {
+.content p.subtitle, .page-subtitle {
   font-size: 1.05em;
   color: var(--text-muted);
   margin-bottom: 24px;
@@ -325,7 +327,7 @@ header {
 }
 
 /* ── Tables ──────────────────────────────────────────────────────────────── */
-table.data-table {
+table.data-table, table.spec-table, table.api-table, table {
   width: 100%;
   border-collapse: collapse;
   margin: 18px 0 28px;
@@ -336,23 +338,23 @@ table.data-table {
   overflow: hidden;
 }
 
-table.data-table th, table.data-table td {
+table th, table td {
   padding: 12px 14px;
   text-align: left;
   border-bottom: 1px solid var(--border-subtle);
 }
 
-table.data-table th {
+table th {
   background-color: var(--bg-surface);
   font-weight: 700;
   color: #1e293b;
 }
 
-table.data-table tr:hover {
+table tr:hover {
   background-color: #f8fafc;
 }
 
-table.data-table code {
+table code {
   background: #f1f5f9;
   padding: 2px 5px;
   border-radius: 3px;
@@ -362,20 +364,20 @@ table.data-table code {
 }
 
 /* ── Code Blocks & Tabs ──────────────────────────────────────────────────── */
-.code-tab-container {
+.code-tab-container, .tabs-container {
   margin: 16px 0 24px;
   border: 1px solid var(--border-color);
   border-radius: 4px;
   overflow: hidden;
 }
 
-.code-tab-nav {
+.code-tab-nav, .tabs-header {
   display: flex;
   background-color: #f1f5f9;
   border-bottom: 1px solid var(--border-color);
 }
 
-.code-tab-btn {
+.code-tab-btn, .tab-btn {
   padding: 8px 16px;
   border: none;
   background: transparent;
@@ -387,17 +389,17 @@ table.data-table code {
   transition: all 0.15s ease-in-out;
 }
 
-.code-tab-btn.active {
+.code-tab-btn.active, .tab-btn.active {
   background-color: #ffffff;
   color: var(--primary-color);
   border-bottom: 2px solid var(--primary-color);
 }
 
-.code-tab-pane {
+.code-tab-pane, .tab-content {
   display: none;
 }
 
-.code-tab-pane.active {
+.code-tab-pane.active, .tab-content.active {
   display: block;
 }
 
@@ -418,20 +420,20 @@ code {
   font-family: var(--font-mono);
 }
 
-.code-tab-container pre {
+.code-tab-container pre, .tabs-container pre {
   margin: 0;
   border-radius: 0;
 }
 
 /* ── Feature & Project Cards ─────────────────────────────────────────────── */
-.features-grid {
+.features-grid, .architecture-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 16px;
   margin: 18px 0 28px;
 }
 
-.feature-card {
+.feature-card, .arch-card {
   border: 1px solid var(--border-color);
   border-radius: 4px;
   padding: 18px;
@@ -442,17 +444,19 @@ code {
   transition: border-color 0.15s ease-in-out;
 }
 
-.feature-card:hover {
+.feature-card:hover, .arch-card:hover {
   border-color: #94a3b8;
 }
 
-.feature-card h4 {
+.feature-card h4, .arch-card h4, .arch-card h3 {
   margin: 0 0 8px;
   color: var(--primary-dark);
   font-size: 1.05em;
+  border-bottom: none;
+  padding-bottom: 0;
 }
 
-.feature-card p {
+.feature-card p, .arch-card p {
   margin: 0 0 14px;
   font-size: 0.88em;
   color: var(--text-muted);
@@ -513,7 +517,7 @@ footer a:hover {
 
 /* ── Responsive ──────────────────────────────────────────────────────────── */
 @media (max-width: 860px) {
-  .container {
+  .container, .layout {
     flex-direction: column;
   }
   .sidebar {
