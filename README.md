@@ -54,7 +54,9 @@
 
 | 프로젝트 (Project) | 플랫폼 & 패키지 | 핵심 기능 & 온디바이스 기술 | 공식 문서 & 데모 |
 | :--- | :--- | :--- | :---: |
-| 🎙️ **[termux-stt](https://github.com/uno-km/termux-stt)** | [![PyPI](https://img.shields.io/pypi/v/termux-stt?color=blue&style=flat-square)](https://pypi.org/project/termux-stt/) [![npm](https://img.shields.io/npm/v/termux-stt?color=red&style=flat-square)](https://www.npmjs.com/package/termux-stt) | **통합 온디바이스 STT & 순수 Python 128d X-Vector 화자 분리** (Whisper + Vosk + Sherpa) | **[Showcase](https://uno-km.github.io/termux-stt/showcase.html)** |
+| 🎙️ **[termux-stt](https://github.com/uno-km/termux-stt)** | [![Open Collective](https://img.shields.io/badge/Open_Collective-AOSF_Fund-004499?style=flat&logo=opencollective)](https://opencollective.com/ameva-foundation)
+[![GitHub Sponsors](https://img.shields.io/badge/GitHub_Sponsors-uno--km-ea4aaa?style=flat&logo=githubsponsors)](https://github.com/sponsors/uno-km)
+[![PyPI](https://img.shields.io/pypi/v/termux-stt?color=blue&style=flat-square)](https://pypi.org/project/termux-stt/) [![npm](https://img.shields.io/npm/v/termux-stt?color=red&style=flat-square)](https://www.npmjs.com/package/termux-stt) | **통합 온디바이스 STT & 순수 Python 128d X-Vector 화자 분리** (Whisper + Vosk + Sherpa) | **[Showcase](https://uno-km.github.io/termux-stt/showcase.html)** |
 | 🎨 **[termux-diffusion](https://github.com/uno-km/termux-diffusion)** | [![PyPI](https://img.shields.io/pypi/v/termux-diffusion?color=blue&style=flat-square)](https://pypi.org/project/termux-diffusion/) [![npm](https://img.shields.io/npm/v/termux-diffusion?color=red&style=flat-square)](https://www.npmjs.com/package/termux-diffusion) | **모바일 온디바이스 Stable Diffusion 이미지 생성** (bfloat16 ARM NEON 가속) | **[Docs](https://uno-km.github.io/termux-diffusion/)** |
 | 🌐 **[termux-playwright](https://github.com/uno-km/termux-playwright)** | [![PyPI](https://img.shields.io/pypi/v/termux-playwright?color=blue&style=flat-square)](https://pypi.org/project/termux-playwright/) [![npm](https://img.shields.io/npm/v/termux-playwright?color=red&style=flat-square)](https://www.npmjs.com/package/termux-playwright) | **PRoot 없는 네이티브 헤드리스 Chromium 브라우저 자동화 & 스크래핑** | **[Docs](https://uno-km.github.io/termux-playwright/)** |
 | 🧠 **[termux-train](https://github.com/uno-km/termux-train)** | [![GitHub](https://img.shields.io/badge/GitHub-termux--train-black?style=flat-square&logo=github)](https://github.com/uno-km/termux-train) | **모바일 순수 C++ Autograd 신경망 역전파 훈련 & LoRA 미세조정** | **[Repo](https://github.com/uno-km/termux-train)** |
@@ -433,3 +435,14 @@ This framework is built upon the exhaustive 15-part research series published on
 ## 📄 License
 
 Released under the **MIT License**. Maintained by **AMEVA Foundation & uno-km (쌩초보코딩단) / Eunho Kim**.
+
+
+---
+
+## 💖 Sponsorship & Community Backing
+
+AMEVA is an independent open-source public good governed under the **AMEVA Open-Source Foundation (AOSF)**. All sponsorship funds are 100% publicly audited and dedicated to physical ARM64 testbeds and CI/CD GPU runners.
+
+- **Open Collective (Non-Profit 501(c)(6))**: [https://opencollective.com/ameva-foundation](https://opencollective.com/ameva-foundation)
+- **GitHub Sponsors**: [https://github.com/sponsors/uno-km](https://github.com/sponsors/uno-km)
+- **Official Foundation Portal**: [https://uno-km.vercel.app/docs/foundation/sponsorship.html](https://uno-km.vercel.app/docs/foundation/sponsorship.html)
