@@ -54,7 +54,7 @@
 
 | 프로젝트 (Project) | 플랫폼 & 패키지 | 핵심 기능 & 온디바이스 기술 | 공식 문서 & 데모 |
 | :--- | :--- | :--- | :---: |
-| 🎙️ **[termux-stt](https://github.com/uno-km/termux-stt)** | [![Open Collective](https://img.shields.io/badge/Open_Collective-AOSF_Fund-004499?style=flat&logo=opencollective)](https://opencollective.com/ameva-foundation)
+| 🎙️ **[termux-stt](https://github.com/uno-km/termux-stt)** | [![Open Collective](https://img.shields.io/badge/Open_Collective-AOSF_Fund-004499?style=flat&logo=opencollective)](https://opencollective.com/ameva-fund)
 [![GitHub Sponsors](https://img.shields.io/badge/GitHub_Sponsors-uno--km-ea4aaa?style=flat&logo=githubsponsors)](https://github.com/sponsors/uno-km)
 [![PyPI](https://img.shields.io/pypi/v/termux-stt?color=blue&style=flat-square)](https://pypi.org/project/termux-stt/) [![npm](https://img.shields.io/npm/v/termux-stt?color=red&style=flat-square)](https://www.npmjs.com/package/termux-stt) | **통합 온디바이스 STT & 순수 Python 128d X-Vector 화자 분리** (Whisper + Vosk + Sherpa) | **[Showcase](https://uno-km.github.io/termux-stt/showcase.html)** |
 | 🎨 **[termux-diffusion](https://github.com/uno-km/termux-diffusion)** | [![PyPI](https://img.shields.io/pypi/v/termux-diffusion?color=blue&style=flat-square)](https://pypi.org/project/termux-diffusion/) [![npm](https://img.shields.io/npm/v/termux-diffusion?color=red&style=flat-square)](https://www.npmjs.com/package/termux-diffusion) | **모바일 온디바이스 Stable Diffusion 이미지 생성** (bfloat16 ARM NEON 가속) | **[Docs](https://uno-km.github.io/termux-diffusion/)** |
@@ -443,6 +443,6 @@ Released under the **MIT License**. Maintained by **AMEVA Foundation & uno-km (�
 
 AMEVA is an independent open-source public good governed under the **AMEVA Open-Source Foundation (AOSF)**. All sponsorship funds are 100% publicly audited and dedicated to physical ARM64 testbeds and CI/CD GPU runners.
 
-- **Open Collective (Non-Profit 501(c)(6))**: [https://opencollective.com/ameva-foundation](https://opencollective.com/ameva-foundation)
+- **Open Collective (Non-Profit 501(c)(6))**: [https://opencollective.com/ameva-fund](https://opencollective.com/ameva-fund)
 - **GitHub Sponsors**: [https://github.com/sponsors/uno-km](https://github.com/sponsors/uno-km)
 - **Official Foundation Portal**: [https://uno-km.vercel.app/docs/foundation/sponsorship.html](https://uno-km.vercel.app/docs/foundation/sponsorship.html)
