@@ -22,10 +22,10 @@
 </p>
 
 <p align="center">
-  <a href="https://uno-km.github.io/termux-stt/showcase.html"><img src="https://img.shields.io/badge/Live_Showcase-▶_Audio_Player-00f5d4?style=for-the-badge&logo=googlechrome&logoColor=0b132b" alt="Live Audio Showcase" /></a>
-  <a href="https://uno-km.github.io/termux-stt/"><img src="https://img.shields.io/badge/Docs-uno--km.github.io-004499?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Live Docs" /></a>
+  <a href="https://uno-km.vercel.app/lib/stt/"><img src="https://img.shields.io/badge/Official_Docs-uno--km.vercel.app%2Flib%2Fstt-004499?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Docs" /></a>
+  <a href="https://uno-km.vercel.app/lib/stt/demo.html"><img src="https://img.shields.io/badge/Live_Showcase-▶_Audio_Player-00f5d4?style=for-the-badge&logo=googlechrome&logoColor=0b132b" alt="Live Audio Showcase" /></a>
   <a href="https://github.com/uno-km/termux-stt"><img src="https://img.shields.io/github/stars/uno-km/termux-stt?style=for-the-badge&color=gold&logo=github" alt="GitHub Stars" /></a>
-  <a href="https://github.com/uno-km/termux-stt/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge" alt="License" /></a>
+  <a href="https://github.com/uno-km/termux-stt/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=for-the-badge" alt="License" /></a>
 </p>
 
 <p align="center">
@@ -33,13 +33,12 @@
   <img src="https://img.shields.io/badge/Engines-whisper.cpp%20%7C%20Vosk%20%7C%20Sherpa--ONNX-38bdf8?style=flat-square" alt="Engines" />
   <img src="https://img.shields.io/badge/Diarization-128d%20X--Vector%20+%20Pure%20Python-a855f7?style=flat-square" alt="Diarization" />
   <img src="https://img.shields.io/badge/RAM-Under%20350MB%20(Tiny%2FBase)-10b981?style=flat-square&logo=shield&logoColor=white" alt="RAM" />
-  <img src="https://img.shields.io/badge/Python-3.8%20%7C%203.9%20%7C%203.10%20%7C%203.11%20%7C%203.12-f59e0b?style=flat-square&logo=python&logoColor=white" alt="Python" />
-  <img src="https://img.shields.io/badge/Node.js-16%20%7C%2018%20%7C%2020%20%7C%2022-3178c6?style=flat-square&logo=nodedotjs&logoColor=white" alt="Node" />
+  <img src="https://img.shields.io/badge/Foundation-AOSF_Tier_1-orange?style=flat-square" alt="Foundation" />
 </p>
 
 <br/>
 
-**[🎧 Live Audio Showcase & Demo](https://uno-km.github.io/termux-stt/showcase.html)** • **[📖 Official Documentation Site](https://uno-km.github.io/termux-stt/)** • **[🌌 AMEVA Foundation](#-ameva-foundation--mobile-ai-ecosystem)** • **[⚡ Quickstart](#1-quick-scenario-playbook)** • **[🏛️ Architecture](#2-why-termux-stt-architectural-pillars)** • **[📊 Benchmarks](#3-empirical-benchmarks-galaxy-a35--exynos-1380)** • **[🔍 15-Part Blog Series](#7-15-part-empirical-research-blog-series)**
+**[🎧 Live Audio Showcase & Demo](https://uno-km.vercel.app/lib/stt/demo.html)** • **[📖 Official Documentation Site (13 Languages)](https://uno-km.vercel.app/lib/stt/)** • **[🌌 AMEVA Foundation](https://uno-km.vercel.app/docs/foundation/)** • **[⚡ Quickstart](#1-quick-scenario-playbook)** • **[🏛️ Architecture](#2-why-termux-stt-architectural-pillars)** • **[📊 Benchmarks](#3-empirical-benchmarks-galaxy-a35--exynos-1380)**
 
 </div>
 
