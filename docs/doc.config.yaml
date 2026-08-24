@@ -1,0 +1,62 @@
+# docs/doc.config.yaml
+name: "Termux-STT"
+package_name_pypi: "termux-stt"
+package_name_npm: "termux-stt"
+version: "v1.1.0"
+release_name: "Production Release"
+license: "Apache-2.0"
+platform: "Android ARM64 / Termux Bionic"
+github_repo_url: "https://github.com/uno-km/termux-stt"
+
+tagline_en: "Unified On-Device Speech-to-Text & Pure Python 128d X-Vector Speaker Diarization"
+tagline_ko: "통합 온디바이스 음성인식(STT) 및 순수 Python 128d X-Vector 화자 분리 프레임워크"
+
+quick_install_cmd: "pip install termux-stt\n# or: npm install termux-stt"
+
+why_challenge_en: "Transcribing and diarizing multi-speaker conversations on edge devices typically demands heavy PyTorch runtimes (>2GB) and severe GPU memory consumption."
+why_challenge_ko: "모바일 단말기에서 다중 화자 음성 인식 및 화자 분리를 수행하려면 2GB 이상의 무거운 PyTorch와 대용량 GPU 메모리를 요구합니다."
+
+description_en: "Integrates Whisper.cpp, Vosk, and Sherpa-ONNX with a closed-form pure-Python 128-dimensional X-Vector clustering algorithm that operates in under 80MB RAM."
+description_ko: "Whisper.cpp, Vosk, Sherpa-ONNX 3대 엔진을 통합하고, 닫힌 형태 순수 Python 128차원 X-Vector 클러스터링을 결합하여 80MB 미만의 메모리로 실시간 화자 분리를 구현합니다."
+
+features:
+  - title_en: "Triple STT Engine Integration"
+    title_ko: "3대 STT 엔진 통합 지원"
+    desc_en: "Seamlessly switches between Whisper.cpp (accuracy), Vosk (latency), and Sherpa-ONNX."
+    desc_ko: "Whisper.cpp(정밀도), Vosk(초저지연), Sherpa-ONNX 엔진을 상황에 맞게 유연하게 전환합니다."
+  - title_en: "Pure Python Speaker Diarization"
+    title_ko: "순수 Python 128d 화자 분리 알고리즘"
+    desc_en: "Lightweight cosine spectral clustering without external ML frameworks."
+    desc_ko: "PyTorch 없이 순수 대수 코사인 스펙트럼 클러스터링으로 화자를 정밀하게 분리합니다."
+  - title_en: "Zero Cloud Egress Audio Privacy"
+    title_ko: "100% 온디바이스 오디오 프라이버시"
+    desc_en: "Audio processing and transcription execute strictly on-device without cloud network calls."
+    desc_ko: "모든 음성 스트림과 텍스트 변환이 단말기 로컬 하드웨어에서만 구동되어 데이터 유출을 차단합니다."
+
+matrix_table:
+  - category: "Speech Recognition"
+    operations: "Whisper.cpp (tiny/base/small), Vosk Kaldi, Sherpa-ONNX"
+    status: "Production"
+  - category: "Speaker Diarization"
+    operations: "128d X-Vector Extraction, Cosine Spectral Clustering"
+    status: "Production"
+  - category: "Audio Runtimes"
+    operations: "Android AudioRecord, WAV/PCM Stream, Real-Time VAD"
+    status: "Production"
+
+code_example_py: |
+  import termux_stt as stt
+
+  # 1. Transcribe audio with speaker diarization
+  engine = stt.STTEngine(model="whisper-tiny")
+  result = engine.transcribe_with_diarization("meeting.wav")
+
+  for seg in result.segments:
+      print(f"[{seg.speaker}] ({seg.start:.1f}s - {seg.end:.1f}s): {seg.text}")
+
+code_example_js: |
+  import { STTEngine } from "termux-stt";
+
+  const engine = new STTEngine({ model: "whisper-tiny" });
+  const result = await engine.transcribe("meeting.wav");
+  console.log("Transcript:", result.text);

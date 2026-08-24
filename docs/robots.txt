@@ -1,5 +1,17 @@
 User-agent: *
 Allow: /
-Crawl-delay: 0
 
-Sitemap: https://uno-km.github.io/termux-stt/sitemap.xml
+# Allow all AI Crawlers
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: AntigravityBot
+Allow: /
+
+Sitemap: sitemap.xml

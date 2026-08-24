@@ -1,265 +1,291 @@
-/**
- * AMEVA Ecosystem - Multilingual Translation Dictionary (6 Languages)
- * English (en), Korean (ko), Japanese (ja), Chinese (zh), Spanish (es), Hindi (hi)
- */
-
-(function(global) {
-  'use strict';
-
-  const translations = {
-    en: {
-      common: {
-        brand: "termux-stt",
-        releaseTag: "v1.0.0 (Unified STT)",
-        pypiBtn: "PyPI (Python)",
-        npmBtn: "npm (Node.js)",
-        githubBtn: "GitHub",
-        footerText: "© 2026 termux-stt Project (uno-km). Released under the MIT License.",
-        nav: {
-          overview: "Overview",
-          home: "Home / Architecture",
-          installation: "Installation Guide",
-          quickstart: "Quickstart & Recipes",
-          showcase: "Live Audio Showcase",
-          models: "Model Hub & Registry",
-          advancedParams: "Advanced Parameters",
-          apiReference: "100% Full API Reference",
-          benchmarks: "Benchmarks & Hardware",
-          versions: "Version Archive"
-        }
-      },
-      home: {
-        title: "Android On-Device Unified STT Framework",
-        subtitle: "Whisper.cpp, Vosk, and Sherpa-ONNX unified with Speaker Diarization and 0 external ML dependencies on Termux.",
-        quickInstall: "Quick Install",
-        features: {
-          f1Title: "Multi-Engine Abstraction",
-          f1Desc: "Unified create_engine() API for whisper.cpp, vosk, and sherpa-onnx.",
-          f2Title: "Pure-Python Diarization",
-          f2Desc: "Cosine similarity & K-Means clustering in pure Python. Zero numpy/sklearn dependencies.",
-          f3Title: "Hybrid Pipeline",
-          f3Desc: "Vosk 128d X-Vector + Whisper STT under 1.5 GB RAM on mobile devices.",
-          f4Title: "Subprocess Isolation",
-          f4Desc: "C++ engines isolated in subprocesses. Host Python runtime never crashes on Segfault.",
-          f5Title: "Mobile Resilient",
-          f5Desc: "Built-in WakeLock, Doze mode bypass, and Android memory safeguards.",
-          f6Title: "Dual-Engine Ecosystem",
-          f6Desc: "First-class Python (pip) and Node.js (npm) packages with identical APIs."
-        }
+// AMEVA Auto-Generated i18n Dictionary
+if (window.i18nManager) {
+  window.i18nManager.registerTranslations({
+  "en": {
+    "common": {
+      "brand": "Termux-STT",
+      "releaseTag": "v1.1.0 (Production Release)",
+      "pypiBtn": "PyPI (pip)",
+      "npmBtn": "npm (Node.js)",
+      "githubBtn": "GitHub",
+      "footerText": "© 2026 AMEVA Open-Source Foundation. Released under the Apache-2.0 License.",
+      "nav": {
+        "overview": "Overview",
+        "reference": "Official Reference",
+        "ecosystem": "AMEVA Ecosystem",
+        "aiSpecs": "AI Agent Protocols",
+        "home": "Home / Architecture",
+        "installation": "Installation Guide",
+        "quickstart": "Quickstart & Recipes",
+        "apiReference": "API Reference",
+        "benchmarks": "Benchmarks & Profiling",
+        "advancedParams": "Advanced Parameters",
+        "versions": "Version Archive"
       }
     },
-    ko: {
-      common: {
-        brand: "termux-stt",
-        releaseTag: "v1.0.0 (통합 STT)",
-        pypiBtn: "PyPI (파이썬)",
-        npmBtn: "npm (Node.js)",
-        githubBtn: "깃허브",
-        footerText: "© 2026 termux-stt 프로젝트 (uno-km). MIT 라이선스.",
-        nav: {
-          overview: "개요",
-          home: "홈 / 아키텍처",
-          installation: "설치 가이드",
-          quickstart: "퀵스타트 & 레시피",
-          showcase: "실시간 음성 전사 데모",
-          models: "모델 허브 & 레지스트리",
-          advancedParams: "고급 제어 파라미터",
-          apiReference: "100% 전체 API 명세",
-          benchmarks: "벤치마크 & 하드웨어",
-          versions: "버전 아카이브"
-        }
-      },
-      home: {
-        title: "안드로이드 온디바이스 통합 음성인식(STT) 프레임워크",
-        subtitle: "Whisper.cpp, Vosk, Sherpa-ONNX를 단 3줄로 통합. 화자 분리 내장, 순수 Python 수학 연산으로 외부 ML 의존성 0개.",
-        quickInstall: "원터치 빠른 설치",
-        features: {
-          f1Title: "멀티 엔진 단일 추상화",
-          f1Desc: "whisper.cpp, vosk, sherpa-onnx를 create_engine() 단일 함수로 제어.",
-          f2Title: "순수 Python 화자 분리",
-          f2Desc: "외부 numpy/sklearn 없이 순수 Python으로 코사인 유사도 및 K-Means 클러스터링 구현.",
-          f3Title: "하이브리드 파이프라인",
-          f3Desc: "Vosk 128차원 X-Vector 화자 지문 + Whisper STT를 1.5GB 이하 RAM으로 구동.",
-          f4Title: "프로세스 격리 안정성",
-          f4Desc: "C++ 엔진을 서브프로세스로 격리하여 Segfault 발생 시에도 파이썬 프로세스 안전 생존.",
-          f5Title: "모바일 생존성 강화",
-          f5Desc: "WakeLock 자동 획득, Doze 모드 우회 및 Phantom Process 방어 내장.",
-          f6Title: "Python & Node.js 듀얼 지원",
-          f6Desc: "PyPI 및 npm 생태계 모두에서 완벽히 동일한 API와 CLI 제공."
-        }
-      }
-    },
-    ja: {
-      common: {
-        brand: "termux-stt",
-        releaseTag: "v1.0.0 (統合STT)",
-        pypiBtn: "PyPI (Python)",
-        npmBtn: "npm (Node.js)",
-        githubBtn: "GitHub",
-        footerText: "© 2026 termux-stt プロジェクト (uno-km). MITライセンス.",
-        nav: {
-          overview: "概要",
-          home: "ホーム / アーキテクチャ",
-          installation: "インストールガイド",
-          quickstart: "クイックスタート",
-          showcase: "リアル音声デモ",
-          models: "モデルハブ",
-          advancedParams: "詳細パラメータ",
-          apiReference: "完全APIリファレンス",
-          benchmarks: "ベンチマーク",
-          versions: "バージョン履歴"
-        }
-      },
-      home: {
-        title: "Android オンデバイス統合音声認識 (STT) フレームワーク",
-        subtitle: "Whisper.cpp、Vosk、Sherpa-ONNXを統合。話者分離内蔵、外部ML依存性ゼロ。",
-        quickInstall: "クイックインストール",
-        features: {
-          f1Title: "マルチエンジン統合",
-          f1Desc: "1つのAPIでwhisper.cpp、vosk、sherpa-onnxを透過的に制御。",
-          f2Title: "純Python話者分離",
-          f2Desc: "numpyやsklearn不要。純粋なPythonでK-Meansとコサイン類似度を実装。",
-          f3Title: "ハイブリッド構成",
-          f3Desc: "Vosk X-Vector + Whisper STTでメモリ1.5GB以下の高精度話者分離。",
-          f4Title: "プロセス分離",
-          f4Desc: "C++エンジンをサブプロセスで隔離し、クラッシュを防止。",
-          f5Title: "モバイル最適化",
-          f5Desc: "WakeLockとDozeモード回避を内蔵し、バックグラウンド処理を保護。",
-          f6Title: "デュアルエコシステム",
-          f6Desc: "PythonとNode.jsの両方で同一の使い勝手を提供。"
-        }
-      }
-    },
-    zh: {
-      common: {
-        brand: "termux-stt",
-        releaseTag: "v1.0.0 (统一STT)",
-        pypiBtn: "PyPI (Python)",
-        npmBtn: "npm (Node.js)",
-        githubBtn: "GitHub",
-        footerText: "© 2026 termux-stt 项目 (uno-km)。基于 MIT 许可证发布。",
-        nav: {
-          overview: "概览",
-          home: "主页 / 架构",
-          installation: "安装指南",
-          quickstart: "快速入门",
-          showcase: "实机语音演示",
-          models: "模型中心",
-          advancedParams: "高级参数",
-          apiReference: "完整 API 参考",
-          benchmarks: "性能基准",
-          versions: "版本归档"
-        }
-      },
-      home: {
-        title: "Android 端侧统一语音识别 (STT) 框架",
-        subtitle: "整合 Whisper.cpp、Vosk 与 Sherpa-ONNX，内置说话人分离，零外部机器学习依赖。",
-        quickInstall: "一键快速安装",
-        features: {
-          f1Title: "多引擎统一抽象",
-          f1Desc: "通过统一的 create_engine() 接口控制三大引擎。",
-          f2Title: "纯 Python 说话人分离",
-          f2Desc: "无需 numpy/sklearn，纯 Python 实现余弦相似度与 K-Means 聚类。",
-          f3Title: "混合流水线",
-          f3Desc: "Vosk X-Vector + Whisper STT，在移动设备上仅需不到 1.5GB 内存。",
-          f4Title: "子进程故障隔离",
-          f4Desc: "C++ 引擎运行于独立子进程，防止段错误影响主进程。",
-          f5Title: "移动端保活优化",
-          f5Desc: "内置 WakeLock 与 Doze 模式绕过机制。",
-          f6Title: "双引擎生态",
-          f6Desc: "同时提供 Python (pip) 与 Node.js (npm) 支持。"
-        }
-      }
-    },
-    es: {
-      common: {
-        brand: "termux-stt",
-        releaseTag: "v1.0.0 (STT Unificado)",
-        pypiBtn: "PyPI (Python)",
-        npmBtn: "npm (Node.js)",
-        githubBtn: "GitHub",
-        footerText: "© 2026 Proyecto termux-stt (uno-km). Publicado bajo la Licencia MIT.",
-        nav: {
-          overview: "Resumen",
-          home: "Inicio / Arquitectura",
-          installation: "Guía de Instalación",
-          quickstart: "Inicio Rápido",
-          showcase: "Demostración de Audio",
-          models: "Centro de Modelos",
-          advancedParams: "Parámetros Avanzados",
-          apiReference: "Referencia API Completa",
-          benchmarks: "Pruebas de Rendimiento",
-          versions: "Archivo de Versiones"
-        }
-      },
-      home: {
-        title: "Framework Unificado de Reconocimiento de Voz para Android",
-        subtitle: "Whisper.cpp, Vosk y Sherpa-ONNX unificados con diarización de hablantes y cero dependencias de ML.",
-        quickInstall: "Instalación Rápida",
-        features: {
-          f1Title: "Abstracción Multi-Motor",
-          f1Desc: "Interfaz unificada create_engine() para los tres motores STT.",
-          f2Title: "Diarización en Python Puro",
-          f2Desc: "Similitud de coseno y K-Means sin numpy ni sklearn.",
-          f3Title: "Pipeline Híbrido",
-          f3Desc: "Vosk X-Vector + Whisper STT con menos de 1.5 GB de RAM.",
-          f4Title: "Aislamiento de Procesos",
-          f4Desc: "Motores C++ en subprocesos para evitar caídas de la aplicación.",
-          f5Title: "Protección Móvil",
-          f5Desc: "WakeLock integrado y evasión del modo Doze.",
-          f6Title: "Ecosistema Dual",
-          f6Desc: "Paquetes oficiales en Python y Node.js con APIs idénticas."
-        }
-      }
-    },
-    hi: {
-      common: {
-        brand: "termux-stt",
-        releaseTag: "v1.0.0 (एकीकृत STT)",
-        pypiBtn: "PyPI (Python)",
-        npmBtn: "npm (Node.js)",
-        githubBtn: "GitHub",
-        footerText: "© 2026 termux-stt परियोजना (uno-km). MIT लाइसेंस के तहत जारी।",
-        nav: {
-          overview: "अवलोकन",
-          home: "होम / आर्कि테क्चर",
-          installation: "स्थापना निर्देशिका",
-          quickstart: "त्वरित शुरुआत",
-          showcase: "लाइव ऑडियो डेमो",
-          models: "मॉडल हब",
-          advancedParams: "उन्नत पैरामीटर",
-          apiReference: "पूर्ण API संदर्भ",
-          benchmarks: "बेंचमार्क",
-          versions: "संस्करण पुरालेख"
-        }
-      },
-      home: {
-        title: "एंड्रॉइड ऑन-डिवाइस एकीकृत वॉयस रिकग्निशन (STT) फ्रेम워크",
-        subtitle: "Whisper.cpp, Vosk, और Sherpa-ONNX का एकीकरण। स्पीकर डायराइजेशन और शून्य बाहरी एमएल निर्भरता।",
-        quickInstall: "त्वरित स्थापना",
-        features: {
-          f1Title: "मल्टी-इंजन अमूर्तता",
-          f1Desc: "तीन इंजनों के लिए एकीकृत create_engine() इंटरफ़ेस।",
-          f2Title: "प्योर पायथन डायराइजेशन",
-          f2Desc: "बिना numpy/sklearn के कोसाइन समानता और K-Means क्लस्टरिंग।",
-          f3Title: "हाइब्रिड पाइपलाइन",
-          f3Desc: "Vosk X-Vector + Whisper STT 1.5 GB से कम रैम में।",
-          f4Title: "प्रक्रिया अलगाव",
-          f4Desc: "C++ इंजन को सबप्रोसेस में अलग रखा गया है।",
-          f5Title: "मोबाइल सुरक्षा",
-          f5Desc: "WakeLock और Doze मोड सुरक्षा अंतर्निहित।",
-          f6Title: "दोहरा पारिस्थितिकी तंत्र",
-          f6Desc: "पायथन और Node.js दोनों में समान API उपलब्ध।"
+    "home": {
+      "title": "Termux-STT",
+      "subtitle": "Unified On-Device Speech-to-Text & Pure Python 128d X-Vector Speaker Diarization",
+      "quickInstallTitle": "1-Line Quick Installation",
+      "quickInstallDesc": "Install the official package directly into your runtime:",
+      "challengeTitle": "The Engineering Challenge",
+      "challengeText": "Transcribing and diarizing multi-speaker conversations on edge devices typically demands heavy PyTorch runtimes (>2GB) and severe GPU memory consumption.",
+      "breakthroughTitle": "The Architectural Breakthrough",
+      "breakthroughText": "Integrates Whisper.cpp, Vosk, and Sherpa-ONNX with a closed-form pure-Python 128-dimensional X-Vector clustering algorithm that operates in under 80MB RAM.",
+      "featuresTitle": "Key Capabilities & Built-in Hardening",
+      "matrixTitle": "Supported Compute Kernels & Operations",
+      "matrixCol1": "Subsystem Category",
+      "matrixCol2": "Operations & Kernels",
+      "matrixCol3": "Status",
+      "codeExampleTitle": "Canonical Usage Example",
+      "nextStepsTitle": "Getting Started & Deep Guides",
+      "linkInstall": "Detailed Installation Guide (Hardware dependencies, Termux setup, WebGPU flags)",
+      "linkQuickstart": "Quickstart Recipes & Common Execution Patterns",
+      "linkApi": "100% Full API Reference & Struct Definitions",
+      "features": {
+        "0": {
+          "title": "Triple STT Engine Integration",
+          "desc": "Seamlessly switches between Whisper.cpp (accuracy), Vosk (latency), and Sherpa-ONNX."
+        },
+        "1": {
+          "title": "Pure Python Speaker Diarization",
+          "desc": "Lightweight cosine spectral clustering without external ML frameworks."
+        },
+        "2": {
+          "title": "Zero Cloud Egress Audio Privacy",
+          "desc": "Audio processing and transcription execute strictly on-device without cloud network calls."
         }
       }
     }
-  };
-
-  if (global.I18n) {
-    global.I18n.registerTranslations(translations);
-  } else {
-    document.addEventListener('DOMContentLoaded', () => {
-      if (global.I18n) global.I18n.registerTranslations(translations);
-    });
+  },
+  "ko": {
+    "common": {
+      "brand": "Termux-STT",
+      "releaseTag": "v1.1.0 (Production Release)",
+      "pypiBtn": "PyPI 패키지",
+      "npmBtn": "npm 패키지",
+      "githubBtn": "GitHub 저장소",
+      "footerText": "© 2026 AMEVA 오픈소스 재단. Apache-2.0 라이선스로 배포됨.",
+      "nav": {
+        "overview": "개요",
+        "reference": "공식 레퍼런스",
+        "ecosystem": "AMEVA 생태계",
+        "aiSpecs": "AI 에이전트 프로토콜",
+        "home": "홈 / 아키텍처",
+        "installation": "설치 가이드",
+        "quickstart": "퀵스타트 & 레시피",
+        "apiReference": "전체 API 명세",
+        "benchmarks": "벤치마크 & 하드웨어",
+        "advancedParams": "고급 파라미터",
+        "versions": "버전 아카이브"
+      }
+    },
+    "home": {
+      "title": "Termux-STT",
+      "subtitle": "통합 온디바이스 음성인식(STT) 및 순수 Python 128d X-Vector 화자 분리 프레임워크",
+      "quickInstallTitle": "1줄 빠른 설치",
+      "quickInstallDesc": "환경에 맞는 공식 패키지를 즉시 설치하세요:",
+      "challengeTitle": "엔지니어링 도전 과제",
+      "challengeText": "모바일 단말기에서 다중 화자 음성 인식 및 화자 분리를 수행하려면 2GB 이상의 무거운 PyTorch와 대용량 GPU 메모리를 요구합니다.",
+      "breakthroughTitle": "아키텍처 혁신 및 해결책",
+      "breakthroughText": "Whisper.cpp, Vosk, Sherpa-ONNX 3대 엔진을 통합하고, 닫힌 형태 순수 Python 128차원 X-Vector 클러스터링을 결합하여 80MB 미만의 메모리로 실시간 화자 분리를 구현합니다.",
+      "featuresTitle": "핵심 역량 및 빌트인 보안/안정성",
+      "matrixTitle": "지원 연산 커널 및 모듈 매트릭스",
+      "matrixCol1": "서브시스템 분류",
+      "matrixCol2": "지원 연산 및 커널",
+      "matrixCol3": "상태",
+      "codeExampleTitle": "정석 사용법 코드 예제",
+      "nextStepsTitle": "시작하기 & 심층 가이드",
+      "linkInstall": "상세 설치 가이드 (하드웨어 의존성, Termux 설정, WebGPU 플래그)",
+      "linkQuickstart": "퀵스타트 레시피 및 주요 실행 패턴",
+      "linkApi": "100% 전체 API 명세 및 구조체 정의",
+      "features": {
+        "0": {
+          "title": "3대 STT 엔진 통합 지원",
+          "desc": "Whisper.cpp(정밀도), Vosk(초저지연), Sherpa-ONNX 엔진을 상황에 맞게 유연하게 전환합니다."
+        },
+        "1": {
+          "title": "순수 Python 128d 화자 분리 알고리즘",
+          "desc": "PyTorch 없이 순수 대수 코사인 스펙트럼 클러스터링으로 화자를 정밀하게 분리합니다."
+        },
+        "2": {
+          "title": "100% 온디바이스 오디오 프라이버시",
+          "desc": "모든 음성 스트림과 텍스트 변환이 단말기 로컬 하드웨어에서만 구동되어 데이터 유출을 차단합니다."
+        }
+      }
+    }
+  },
+  "ja": {
+    "common": {
+      "brand": "Termux-STT",
+      "releaseTag": "v1.1.0 (Production Release)",
+      "pypiBtn": "PyPIパッケージ",
+      "npmBtn": "npmパッケージ",
+      "githubBtn": "GitHub",
+      "footerText": "© 2026 AMEVA Open-Source Foundation. Apache-2.0 ライセンスの下で公開。",
+      "nav": {
+        "overview": "概要",
+        "reference": "公式リファレンス",
+        "ecosystem": "AMEVA エコシステム",
+        "aiSpecs": "AIエージェント仕様",
+        "home": "ホーム / アーキテクチャ",
+        "installation": "インストールガイド",
+        "quickstart": "クイックスタート",
+        "apiReference": "APIリファレンス",
+        "benchmarks": "ベンチマーク",
+        "advancedParams": "詳細パラメータ",
+        "versions": "バージョン履歴"
+      }
+    },
+    "home": {
+      "title": "Termux-STT",
+      "subtitle": "Unified On-Device Speech-to-Text & Pure Python 128d X-Vector Speaker Diarization",
+      "quickInstallTitle": "1行クイックインストール",
+      "quickInstallDesc": "ランタイムに公式パッケージを直接インストールします:",
+      "challengeTitle": "技術的課題",
+      "challengeText": "Transcribing and diarizing multi-speaker conversations on edge devices typically demands heavy PyTorch runtimes (>2GB) and severe GPU memory consumption.",
+      "breakthroughTitle": "アーキテクチャのブレークスルー",
+      "breakthroughText": "Integrates Whisper.cpp, Vosk, and Sherpa-ONNX with a closed-form pure-Python 128-dimensional X-Vector clustering algorithm that operates in under 80MB RAM.",
+      "featuresTitle": "コア機能と安定性",
+      "matrixTitle": "サポートされている演算とカーネル",
+      "matrixCol1": "サブシステム区分",
+      "matrixCol2": "サポート演算",
+      "matrixCol3": "状態",
+      "codeExampleTitle": "標準的なコード例",
+      "nextStepsTitle": "はじめに",
+      "linkInstall": "詳細インストールガイド",
+      "linkQuickstart": "クイックスタートレシピ",
+      "linkApi": "API仕様書"
+    }
+  },
+  "zh": {
+    "common": {
+      "brand": "Termux-STT",
+      "releaseTag": "v1.1.0 (Production Release)",
+      "pypiBtn": "PyPI (pip)",
+      "npmBtn": "npm (Node.js)",
+      "githubBtn": "GitHub",
+      "footerText": "© 2026 AMEVA 开源基金会。在 Apache-2.0 许可下发布。",
+      "nav": {
+        "overview": "概述",
+        "reference": "官方参考",
+        "ecosystem": "AMEVA 生态系统",
+        "aiSpecs": "AI 协议",
+        "home": "主页 / 架构",
+        "installation": "安装指南",
+        "quickstart": "快速入门",
+        "apiReference": "API 参考",
+        "benchmarks": "基准测试",
+        "advancedParams": "高级参数",
+        "versions": "版本归档"
+      }
+    },
+    "home": {
+      "title": "Termux-STT",
+      "subtitle": "Unified On-Device Speech-to-Text & Pure Python 128d X-Vector Speaker Diarization",
+      "quickInstallTitle": "一键快速安装",
+      "quickInstallDesc": "直接将官方包安装到您的环境中:",
+      "challengeTitle": "工程挑战",
+      "challengeText": "Transcribing and diarizing multi-speaker conversations on edge devices typically demands heavy PyTorch runtimes (>2GB) and severe GPU memory consumption.",
+      "breakthroughTitle": "架构突破",
+      "breakthroughText": "Integrates Whisper.cpp, Vosk, and Sherpa-ONNX with a closed-form pure-Python 128-dimensional X-Vector clustering algorithm that operates in under 80MB RAM.",
+      "featuresTitle": "核心特性与加固",
+      "matrixTitle": "支持的计算内核与操作",
+      "matrixCol1": "分类",
+      "matrixCol2": "操作与模块",
+      "matrixCol3": "状态",
+      "codeExampleTitle": "标准代码示例",
+      "nextStepsTitle": "开始使用",
+      "linkInstall": "详细安装指南",
+      "linkQuickstart": "快速入门方案",
+      "linkApi": "完整 API 规范"
+    }
+  },
+  "es": {
+    "common": {
+      "brand": "Termux-STT",
+      "releaseTag": "v1.1.0 (Production Release)",
+      "pypiBtn": "PyPI (pip)",
+      "npmBtn": "npm (Node.js)",
+      "githubBtn": "GitHub",
+      "footerText": "© 2026 Fundación AMEVA. Licencia Apache-2.0.",
+      "nav": {
+        "overview": "Visión General",
+        "reference": "Referencia Oficial",
+        "ecosystem": "Ecosistema AMEVA",
+        "aiSpecs": "Protocolos de IA",
+        "home": "Inicio / Arquitectura",
+        "installation": "Guía de Instalación",
+        "quickstart": "Inicio Rápido",
+        "apiReference": "Referencia de API",
+        "benchmarks": "Evaluaciones de Rendimiento",
+        "advancedParams": "Parámetros Avanzados",
+        "versions": "Archivo de Versiones"
+      }
+    },
+    "home": {
+      "title": "Termux-STT",
+      "subtitle": "Unified On-Device Speech-to-Text & Pure Python 128d X-Vector Speaker Diarization",
+      "quickInstallTitle": "Instalación Rápida en 1 Línea",
+      "quickInstallDesc": "Instale el paquete oficial directamente en su entorno:",
+      "challengeTitle": "El Desafío de Ingeniería",
+      "challengeText": "Transcribing and diarizing multi-speaker conversations on edge devices typically demands heavy PyTorch runtimes (>2GB) and severe GPU memory consumption.",
+      "breakthroughTitle": "El Avance Arquitectónico",
+      "breakthroughText": "Integrates Whisper.cpp, Vosk, and Sherpa-ONNX with a closed-form pure-Python 128-dimensional X-Vector clustering algorithm that operates in under 80MB RAM.",
+      "featuresTitle": "Capacidades Clave y Seguridad",
+      "matrixTitle": "Operaciones y Núcleos Soportados",
+      "matrixCol1": "Categoría",
+      "matrixCol2": "Operaciones",
+      "matrixCol3": "Estado",
+      "codeExampleTitle": "Ejemplo de Uso Estándar",
+      "nextStepsTitle": "Primeros Pasos",
+      "linkInstall": "Guía Detallada de Instalación",
+      "linkQuickstart": "Recetas de Inicio Rápido",
+      "linkApi": "Especificación de API"
+    }
+  },
+  "de": {
+    "common": {
+      "brand": "Termux-STT",
+      "releaseTag": "v1.1.0 (Production Release)",
+      "pypiBtn": "PyPI (pip)",
+      "npmBtn": "npm (Node.js)",
+      "githubBtn": "GitHub",
+      "footerText": "© 2026 AMEVA Open-Source Foundation. Lizenziert unter Apache-2.0.",
+      "nav": {
+        "overview": "Überblick",
+        "reference": "Offizielle Referenz",
+        "ecosystem": "AMEVA Ökosystem",
+        "aiSpecs": "KI-Agenten-Protokolle",
+        "home": "Startseite / Architektur",
+        "installation": "Installationsanleitung",
+        "quickstart": "Schnellstart & Rezepte",
+        "apiReference": "API-Referenz",
+        "benchmarks": "Benchmarks & Profiling",
+        "advancedParams": "Erweiterte Parameter",
+        "versions": "Versionsarchiv"
+      }
+    },
+    "home": {
+      "title": "Termux-STT",
+      "subtitle": "Unified On-Device Speech-to-Text & Pure Python 128d X-Vector Speaker Diarization",
+      "quickInstallTitle": "1-Zeilen-Schnellinstallation",
+      "quickInstallDesc": "Installieren Sie das offizielle Paket direkt in Ihre Laufzeitumgebung:",
+      "challengeTitle": "Die Technische Herausforderung",
+      "challengeText": "Transcribing and diarizing multi-speaker conversations on edge devices typically demands heavy PyTorch runtimes (>2GB) and severe GPU memory consumption.",
+      "breakthroughTitle": "Der Architektonische Durchbruch",
+      "breakthroughText": "Integrates Whisper.cpp, Vosk, and Sherpa-ONNX with a closed-form pure-Python 128-dimensional X-Vector clustering algorithm that operates in under 80MB RAM.",
+      "featuresTitle": "Kernfunktionen & Stabilität",
+      "matrixTitle": "Unterstützte Rechenkerne & Operationen",
+      "matrixCol1": "Kategorie",
+      "matrixCol2": "Operationen",
+      "matrixCol3": "Status",
+      "codeExampleTitle": "Standard-Codebeispiel",
+      "nextStepsTitle": "Erste Schritte",
+      "linkInstall": "Detaillierte Installationsanleitung",
+      "linkQuickstart": "Schnellstartanleitung",
+      "linkApi": "API-Spezifikation"
+    }
   }
-})(window);
+});
+};

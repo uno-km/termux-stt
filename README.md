@@ -38,154 +38,53 @@
 
 <br/>
 
-**[🎧 Live Audio Showcase & Demo](https://uno-km.vercel.app/lib/stt/demo.html)** • **[📖 Official Documentation Site (13 Languages)](https://uno-km.vercel.app/lib/stt/)** • **[🌌 AMEVA Foundation](https://uno-km.vercel.app/docs/foundation/)** • **[⚡ Quickstart](#1-quick-scenario-playbook)** • **[🏛️ Architecture](#2-why-termux-stt-architectural-pillars)** • **[📊 Benchmarks](#3-empirical-benchmarks-galaxy-a35--exynos-1380)**
+**[Live Audio Showcase & Demo](https://uno-km.vercel.app/lib/stt/demo.html)** • **[Official Documentation Site (13 Languages)](https://uno-km.vercel.app/lib/stt/)** • **[AMEVA Foundation](https://uno-km.vercel.app/docs/foundation/)** • **[Quickstart](#1-quick-scenario-playbook)** • **[Architecture](#2-why-termux-stt-architectural-pillars)** • **[Benchmarks](#3-empirical-benchmarks-galaxy-a35--exynos-1380)**
 
 </div>
 
 ---
 
-## 🌌 AMEVA Foundation — Mobile AI Ecosystem
+## AMEVA Foundation — Mobile AI Ecosystem
 
-> **"클라우드 구독료 0원, 데이터 외부 유출 0%. 모든 스마트폰을 완벽한 독립형 AI 워크스테이션으로."**
-> 
-> **AMEVA 재단(AMEVA Foundation)**은 안드로이드 모바일 환경에서 거대 AI 모델과 브라우저 자동화, 신경망 훈련, 화자 분리 음성인식을 완전한 온디바이스 (Client-Side Native) 온디바이스로 구동하는 차세대 오픈소스 생태계를 구축합니다.
+> **"$0 Cloud Egress, 0% External Data Leaks. Transforming every smartphone into an independent on-device AI workstation."**
+> The **AMEVA Open-Source Foundation (AOSF)** builds next-generation, client-centric AI runtimes spanning on-device large models, browser automation, neural network training, and speaker diarization.
 
 <div align="center">
 
-| 프로젝트 (Project) | 플랫폼 & 패키지 | 핵심 기능 & 온디바이스 기술 | 공식 문서 & 데모 |
+| Project | Platform & Packages | Core Capability & Technology | Documentation & Demo |
 | :--- | :--- | :--- | :---: |
-| 🎙️ **[termux-stt](https://github.com/uno-km/termux-stt)** | [![Open Collective](https://img.shields.io/badge/Open_Collective-AOSF_Fund-004499?style=flat&logo=opencollective)](https://opencollective.com/ameva-fund)
-[![GitHub Sponsors](https://img.shields.io/badge/GitHub_Sponsors-uno--km-ea4aaa?style=flat&logo=githubsponsors)](https://github.com/sponsors/uno-km)
-[![PyPI](https://img.shields.io/pypi/v/termux-stt?color=blue&style=flat-square)](https://pypi.org/project/termux-stt/) [![npm](https://img.shields.io/npm/v/termux-stt?color=red&style=flat-square)](https://www.npmjs.com/package/termux-stt) | **통합 온디바이스 STT & 순수 Python 128d X-Vector 화자 분리** (Whisper + Vosk + Sherpa) | **[Showcase](https://uno-km.github.io/termux-stt/showcase.html)** |
-| 🎨 **[termux-diffusion](https://github.com/uno-km/termux-diffusion)** | [![PyPI](https://img.shields.io/pypi/v/termux-diffusion?color=blue&style=flat-square)](https://pypi.org/project/termux-diffusion/) [![npm](https://img.shields.io/npm/v/termux-diffusion?color=red&style=flat-square)](https://www.npmjs.com/package/termux-diffusion) | **모바일 온디바이스 Stable Diffusion 이미지 생성** (bfloat16 ARM NEON 가속) | **[Docs](https://uno-km.github.io/termux-diffusion/)** |
-| 🌐 **[termux-playwright](https://github.com/uno-km/termux-playwright)** | [![PyPI](https://img.shields.io/pypi/v/termux-playwright?color=blue&style=flat-square)](https://pypi.org/project/termux-playwright/) [![npm](https://img.shields.io/npm/v/termux-playwright?color=red&style=flat-square)](https://www.npmjs.com/package/termux-playwright) | **PRoot 없는 네이티브 헤드리스 Chromium 브라우저 자동화 & 스크래핑** | **[Docs](https://uno-km.github.io/termux-playwright/)** |
-| 🧠 **[termux-train](https://github.com/uno-km/termux-train)** | [![GitHub](https://img.shields.io/badge/GitHub-termux--train-black?style=flat-square&logo=github)](https://github.com/uno-km/termux-train) | **모바일 순수 C++ Autograd 신경망 역전파 훈련 & LoRA 미세조정** | **[Repo](https://github.com/uno-km/termux-train)** |
-| 🖥️ **[AMEVA Workstation](https://github.com/uno-km/AMEVA-Workstation-Web)** | [![WebGPU](https://img.shields.io/badge/WebGPU-100%25_On--Device-00f5d4?style=flat-square)](https://ameva-workstation-web-core.vercel.app/) | **100% 브라우저 로컬 WebGPU 멀티모달 문서 지능 & 오피스 워크스페이스** | **[Live Demo](https://ameva-workstation-web-core.vercel.app/)** |
-| ⚡ **[AMEVA-Forge](https://github.com/uno-km/ameva-forge)** | [![WebGPU](https://img.shields.io/badge/3D_Studio-WebGPU-purple?style=flat-square)](https://uno-km.github.io/ameva-forge/demo.html) | **실시간 3D 뉴럴 스튜디오 & WebGPU 비주얼라이제이션 엔진** | **[Live Demo](https://uno-km.github.io/ameva-forge/demo.html)** |
+| 🎙️ **[termux-stt](https://github.com/uno-km/termux-stt)** | [![Open Collective](https://img.shields.io/badge/Open_Collective-AOSF_Fund-004499?style=flat&logo=opencollective)](https://opencollective.com/ameva-fund) [![GitHub Sponsors](https://img.shields.io/badge/GitHub_Sponsors-uno--km-ea4aaa?style=flat&logo=githubsponsors)](https://github.com/sponsors/uno-km)<br/>[![PyPI](https://img.shields.io/pypi/v/termux-stt?color=blue&style=flat-square)](https://pypi.org/project/termux-stt/) [![npm](https://img.shields.io/npm/v/termux-stt?color=red&style=flat-square)](https://www.npmjs.com/package/termux-stt) | **Integrated On-Device STT & Pure Python 128d X-Vector Diarization** (Whisper + Vosk + Sherpa) | **[Showcase](https://uno-km.github.io/termux-stt/showcase.html)** • **[Docs](https://uno-km.vercel.app/lib/stt/)** |
+| 🎨 **[termux-diffusion](https://github.com/uno-km/termux-diffusion)** | [![PyPI](https://img.shields.io/pypi/v/termux-diffusion?color=blue&style=flat-square)](https://pypi.org/project/termux-diffusion/) [![npm](https://img.shields.io/npm/v/termux-diffusion?color=red&style=flat-square)](https://www.npmjs.com/package/termux-diffusion) | **Mobile On-Device Stable Diffusion Image Generation** (bfloat16 ARM NEON acceleration) | **[Docs](https://uno-km.github.io/termux-diffusion/)** |
+| 🌐 **[termux-playwright](https://github.com/uno-km/termux-playwright)** | [![PyPI](https://img.shields.io/pypi/v/termux-playwright?color=blue&style=flat-square)](https://pypi.org/project/termux-playwright/) [![npm](https://img.shields.io/npm/v/termux-playwright?color=red&style=flat-square)](https://www.npmjs.com/package/termux-playwright) | **Non-Root Native Headless Chromium Browser Automation & Scraping** | **[Docs](https://uno-km.github.io/termux-playwright/)** |
+| 🧠 **[termux-train](https://github.com/uno-km/termux-train)** | [![PyPI](https://img.shields.io/pypi/v/termux-train.svg?color=blue&style=flat-square)](https://pypi.org/project/termux-train/) | **Mobile Native Autograd Neural Network Training & LoRA Fine-Tuning** | **[Docs](https://uno-km.vercel.app/lib/train/)** |
+| 🖥️ **[AMEVA Workstation](https://github.com/uno-km/AMEVA-Workstation-Web)** | [![WebGPU](https://img.shields.io/badge/WebGPU-100%25_On--Device-00f5d4?style=flat-square)](https://ameva-workstation-web-core.vercel.app/) | **100% Client-Side WebGPU Multimodal Document Intelligence Workspace** | **[Live Demo](https://ameva-workstation-web-core.vercel.app/)** |
+| ⚡ **[AMEVA-Forge](https://github.com/uno-km/ameva-forge)** | [![WebGPU](https://img.shields.io/badge/3D_Studio-WebGPU-purple?style=flat-square)](https://uno-km.github.io/ameva-forge/demo.html) | **Real-Time 3D Neural Studio & WebGPU Visualization Engine** | **[Live Demo](https://uno-km.github.io/ameva-forge/demo.html)** |
 
 </div>
-
----
-
-## 🎙️ 단 3줄로 끝내는 안드로이드 Termux 온디바이스 음성인식
-
-```python
-from termux_stt import create_engine
-
-# 1. 엔진 초기화 (최초 1회 모델 자동 다운로드 및 캐싱)
-engine = create_engine("whisper", model="base", lang="en")
-
-# 2. 오디오 전사 및 자막 생성 (WAV, MP3, M4A, FLAC 등 자동 16kHz 변환)
-result = engine.transcribe("speech.mp3")
-
-print(result.text)          # 전체 텍스트
-print(result.to_srt())       # 표준 SRT 자막
-```
-
-```bash
-# 또는 터미널에서 1줄 CLI 실행
-termux-stt transcribe --engine whisper --model base speech.mp3
-```
-
----
-
-## 🎧 Live Audio Showcase & On-Device Transcription Proof
-
-> **[▶ 웹 브라우저에서 실시간 음성 및 동기화 자막 체험하기 (Live Audio Showcase)](https://uno-km.github.io/termux-stt/showcase.html)**
-
-### 1. 실측 오디오 스펙 & 전사 타임라인
-
-* **입력 오디오**: `continuous_speech.wav` (37.91초, 16000Hz Mono PCM)
-* **추론 엔진**: `whisper.cpp Base` (On-Device Local CPU)
-* **처리 시간**: **32.79초** (RTF: **0.865x**, 실시간보다 빠름)
-* **문장 반복률**: **0%** (모든 발화 구간이 각기 다른 내용으로 고유하게 전사됨)
-
-| No. | 타임스탬프 (시작 → 종료) | 전사된 문장 (Transcribed Text) |
-| :---: | :---: | :--- |
-| **01** | `00:00.00 → 00:09.36` | *"And so my fellow Americans, ask not what your country can do for you, ask what you can"* |
-| **02** | `00:09.36 → 00:11.60` | *"do for your country."* |
-| **03** | `00:11.60 → 00:16.18` | *He hoped there would be stew for dinner, turnips and carrots and bruised potatoes and* |
-| **04** | `00:16.18 → 00:22.00` | *fat mutton pieces to be ladled out in thick, peppered flour-fatten sauce.* |
-| **05** | `00:22.00 → 00:25.36` | *Stuff it into you, his belly counseled him.* |
-| **06** | `00:25.36 → 00:29.88` | *After early nightfall, the yellow lamps would light up here and there, the squalid quarter* |
-| **07** | `00:29.88 → 00:37.14` | *of the brothels.* |
-
-### 2. 자동 생성된 SRT 자막 파일
-
-```srt
-1
-00:00:00,000 --> 00:00:09,360
-"And so my fellow Americans, ask not what your country can do for you, ask what you can
-
-2
-00:00:09,360 --> 00:00:11,600
-do for your country."
-
-3
-00:00:11,600 --> 00:00:16,180
-He hoped there would be stew for dinner, turnips and carrots and bruised potatoes and
-
-4
-00:00:16,180 --> 00:00:22,000
-fat mutton pieces to be ladled out in thick, peppered flour-fatten sauce.
-
-5
-00:00:22,000 --> 00:00:25,360
-Stuff it into you, his belly counseled him.
-
-6
-00:00:25,360 --> 00:00:29,880
-After early nightfall, the yellow lamps would light up here and there, the squalid quarter
-
-7
-00:00:29,880 --> 00:00:37,140
-of the brothels.
-```
-
----
-
-## 💡 What is termux-stt?
-
-`termux-stt` is an all-in-one, production-ready speech-to-text and speaker diarization framework engineered natively for **Android Termux (ARM64 / aarch64)**.
-
-Standard mobile STT setups force developers to endure 30+ minutes of manual CMake builds, broken PyPI wheels on Android Bionic, 2GB+ PyTorch binaries that trigger Android Low Memory Killer (OOM), and broken platform guards.
-
-**`termux-stt` eliminates all friction with a 3-line unified API:**
-- **Zero-PyTorch Dependency**: Replaces heavy ML frameworks with C++ binary subprocess isolation and Pure Python clustering math.
-- **Multi-Engine Unification**: Run `whisper.cpp`, `Vosk`, or `Sherpa-ONNX` via the exact same `create_engine()` interface.
-- **Built-in Hybrid Diarization**: Combines Vosk 128d X-Vector voice fingerprints with Whisper STT under 1.5 GB RAM.
-- **Empirically Proven**: Engineered from 15 comprehensive benchmarks on Samsung Galaxy A35 (Exynos 1380, 6GB RAM).
 
 ---
 
 ## 1. Quick Scenario Playbook
 
-### [Install] Scenario 1: Clean Install (Fresh Setup on Android Termux)
+### Installation
 
-#### [Python] Python (`pip`):
+#### Python SDK:
 ```bash
-# 1. Grant Storage & Microphone Permissions in Termux
-termux-setup-storage
-
-# 2. Install Dependencies & Provision Native Engines
-pkg update -y && pkg install python clang make cmake git ffmpeg termux-api -y
-pip install termux-stt && termux-stt-install
+pkg update -y && pkg install python ffmpeg git -y
+pip install termux-stt && termux-stt install
 ```
 
-#### [Node.js] Node.js / TypeScript (`npm`):
+#### Node.js / TypeScript:
 ```bash
-# 1. Grant Storage & Microphone Permissions
-termux-setup-storage
-
-# 2. Install Dependencies & Provision Native Engines
-pkg update -y && pkg install nodejs-lts clang make cmake git ffmpeg termux-api -y
+pkg update -y && pkg install nodejs-lts ffmpeg git -y
 npm install -g termux-stt && npx termux-stt install
 ```
 
 ---
 
-### [Instant] Scenario 2: Instant Transcription (Ready to Run)
+## License
 
+<<<<<<< Updated upstream
 #### Option A: One-Line CLI
 ```bash
 # Transcribe audio file with default Whisper engine (Korean)
@@ -446,3 +345,6 @@ AMEVA is an independent open-source public good governed under the **AMEVA Open-
 - **Open Collective (Non-Profit 501(c)(6))**: [https://opencollective.com/ameva-fund](https://opencollective.com/ameva-fund)
 - **GitHub Sponsors**: [https://github.com/sponsors/uno-km](https://github.com/sponsors/uno-km)
 - **Official Foundation Portal**: [https://uno-km.vercel.app/docs/foundation/sponsorship.html](https://uno-km.vercel.app/docs/foundation/sponsorship.html)
+=======
+Apache License 2.0. Copyright (c) 2026 uno-km (AMEVA Foundation).
+>>>>>>> Stashed changes

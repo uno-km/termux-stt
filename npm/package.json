@@ -1,6 +1,6 @@
 {
   "name": "termux-stt",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Production-Grade On-Device Speech-to-Text & Speaker Diarization Framework for Android Termux & Samsung Galaxy",
   "main": "index.js",
   "types": "index.d.ts",
@@ -38,7 +38,7 @@
     "snapdragon",
     "arm64"
   ],
-  "author": "uno-km (쌩초보코딩단) <hosequelbo@gmail.com>",
+  "author": "uno-km (AMEVA Foundation) <hosequelbo@gmail.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/uno-km/termux-stt/issues"

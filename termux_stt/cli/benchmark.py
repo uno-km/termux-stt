@@ -1,13 +1,15 @@
 import os
 import time
 
-import psutil
-
 from termux_stt.engine.base import EngineConfig
 from termux_stt.engine.whisper_engine import WhisperEngine
 
 
 def run_benchmark(args):
+    try:
+        import psutil
+    except ImportError:
+        psutil = None
     if not os.path.exists(args.audio):
         print(f"Error: Audio file {args.audio} not found.")
         return
@@ -25,15 +27,21 @@ def run_benchmark(args):
 
     engine = WhisperEngine(config)
 
-    process = psutil.Process(os.getpid())
-    mem_before = process.memory_info().rss / (1024 * 1024)
+    if psutil:
+        process = psutil.Process(os.getpid())
+        mem_before = process.memory_info().rss / (1024 * 1024)
+    else:
+        mem_before = 0.0
 
     start_time = time.time()
     result = engine.transcribe(args.audio)
     end_time = time.time()
 
-    mem_after = process.memory_info().rss / (1024 * 1024)
-    mem_peak = mem_after - mem_before
+    if psutil:
+        mem_after = process.memory_info().rss / (1024 * 1024)
+        mem_peak = mem_after - mem_before
+    else:
+        mem_peak = 0.0
 
     execution_time = end_time - start_time
     rtf = execution_time / audio_duration if audio_duration > 0 else 0
