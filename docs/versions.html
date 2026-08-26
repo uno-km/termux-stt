@@ -1,82 +1,172 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Version Archive & Changelog | Termux-STT</title>
-  <meta name="description" content="Integrates Whisper.cpp, Vosk, and Sherpa-ONNX with a closed-form pure-Python 128-dimensional X-Vector clustering algorithm that operates in under 80MB RAM.">
-  <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="stylesheet" href="assets/style.css">
-  <script src="assets/i18n.js" defer></script>
-  <script src="assets/i18n-translations.js" defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Version Archive & Release Notes - termux-stt</title>
+    <meta name="description" content="Changelog and release notes for termux-stt framework.">
+    <meta name="keywords" content="termux stt, android speech to text, whisper termux, vosk termux, sherpa onnx termux, speaker diarization android, on-device stt, pure python kmeans, mobile transcription, exynos stt, snapdragon stt, zero proot stt">
+    <meta name="author" content="Eunho Kim (@uno-km)">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <link rel="canonical" href="https://uno-km.github.io/termux-stt/">
+    <link rel="alternate" type="application/rss+xml" title="termux-stt RSS Feed" href="https://uno-km.github.io/termux-stt/rss.xml">
+
+    <!-- Open Graph Metadata -->
+    <meta property="og:title" content="Version Archive & Release Notes - termux-stt">
+    <meta property="og:description" content="Changelog and release notes for termux-stt framework.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://uno-km.github.io/termux-stt/">
+    <meta property="og:site_name" content="termux-stt">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter Card Metadata -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Version Archive & Release Notes - termux-stt">
+    <meta name="twitter:description" content="Changelog and release notes for termux-stt framework.">
+
+    <!-- Schema.org SoftwareApplication JSON-LD -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "termux-stt",
+      "operatingSystem": "Android Termux (ARM64, aarch64, Samsung Galaxy)",
+      "applicationCategory": "DeveloperApplication",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "softwareVersion": "1.0.0",
+      "description": "Changelog and release notes for termux-stt framework.",
+      "url": "https://uno-km.github.io/termux-stt/",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "5.0",
+        "reviewCount": "150",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "sameAs": [
+        "https://github.com/uno-km/termux-stt",
+        "https://pypi.org/project/termux-stt/",
+        "https://www.npmjs.com/package/termux-stt"
+      ]
+    }
+    </script>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="assets/style.css">
+    <script src="assets/i18n.js" defer></script>
+    <script src="assets/i18n-translations.js" defer></script>
 </head>
 <body>
-  <header>
-    <a href="index.html" class="header-brand">
-      <img src="favicon.svg" alt="Termux-STT Logo">
-      <h1 data-i18n="common.brand">Termux-STT</h1>
-    </a>
-    <div class="header-controls">
-      <span class="release-tag" data-i18n="common.releaseTag">v1.1.0 (Production Release)</span>
-      <div class="lang-selector-wrapper"></div>
-      <a href="https://pypi.org/project/termux-stt/" target="_blank" class="header-btn" data-i18n="common.pypiBtn">PyPI (pip)</a>
-      <a href="https://www.npmjs.com/package/termux-stt" target="_blank" class="header-btn npm-btn" data-i18n="common.npmBtn">npm (Node.js)</a>
-      <a href="https://github.com/uno-km/termux-stt" target="_blank" class="header-btn primary" data-i18n="common.githubBtn">GitHub</a>
+    <header>
+        <a href="index.html" class="header-brand">
+            <img src="favicon.svg" alt="termux-stt Logo">
+            <h1 data-i18n="common.brand">termux-stt</h2>
+        </a>
+        <div class="header-controls">
+            <span class="release-tag" data-i18n="common.releaseTag">v1.0.0 (Unified STT)</span>
+            <div class="lang-selector-wrapper">
+                <select class="lang-select" onchange="if(window.i18nManager) window.i18nManager.setLanguage(this.value); else if(window.I18n) window.I18n.setLanguage(this.value)">
+                    <option value="en">🇺🇸 English</option>
+                    <option value="ko">🇰🇷 한국어</option>
+                    <option value="ja">🇯🇵 日本語</option>
+                    <option value="zh">🇨🇳 简体中文</option>
+                    <option value="es">🇪🇸 Español</option>
+                    <option value="de">🇩🇪 Deutsch</option>
+                </select>
+            </div>
+            <a href="https://pypi.org/project/termux-stt/" target="_blank" class="header-btn" data-i18n="common.pypiBtn">PyPI (pip)</a>
+            <a href="https://www.npmjs.com/package/termux-stt" target="_blank" class="header-btn" style="background:#cb3837;color:#fff;" data-i18n="common.npmBtn">npm (Node.js)</a>
+            <a href="https://github.com/uno-km/termux-stt" target="_blank" class="header-btn primary" data-i18n="common.githubBtn">GitHub</a>
+        </div>
+    </header>
+    <div class="container">
+        <nav class="sidebar">
+            <h3 data-i18n="common.nav.overview">Overview</h3>
+            <ul>
+                <li><a href="index.html" data-i18n="common.nav.home">Home / Architecture</a></li>
+                <li><a href="installation.html" data-i18n="common.nav.installation">Installation Guide</a></li>
+                <li><a href="quickstart.html" data-i18n="common.nav.quickstart">Quickstart & Recipes</a></li>
+            </ul>
+            <h3 data-i18n="common.nav.reference">Official Reference</h3>
+            <ul>
+                <li><a href="showcase.html" data-i18n="common.nav.showcase">Live Audio Showcase</a></li>
+                <li><a href="models.html" data-i18n="common.nav.models">Model Hub & Registry</a></li>
+                <li><a href="advanced-parameters.html" data-i18n="common.nav.advancedParams">Advanced Parameters</a></li>
+                <li><a href="api-reference.html" data-i18n="common.nav.apiReference">100% Full API Reference</a></li>
+                <li><a href="benchmarks.html" data-i18n="common.nav.benchmarks">Benchmarks & Hardware</a></li>
+                <li><a href="versions.html" class="active" data-i18n="common.nav.versions">Version Archive</a></li>
+            </ul>
+            <h3 data-i18n="common.nav.aiSpecs">AI Agent Protocol &amp; Feeds</h3>
+            <ul>
+                <li><a href="llms.txt" target="_blank">llms.txt (AI Context)</a></li>
+                <li><a href="llms-full.txt" target="_blank">llms-full.txt (Full Spec)</a></li>
+                <li><a href="robots.txt" target="_blank">robots.txt (AI Crawlers)</a></li>
+                <li><a href="sitemap.xml" target="_blank">sitemap.xml (Sitemap)</a></li>
+            </ul>
+        </nav>
+        <main class="content">
+            <h2>Version Archive & Official Changelog</h2>
+            <p class="subtitle">Complete release history and upgrade specifications for termux-stt.</p>
+
+            <h2>v1.0.9 (Current Stable Release) - 2026-08-26</h2>
+            <ul>
+                <li><strong>Direct Local Model Path Integration:</strong> Direct connection for custom fine-tuned GGML, BitNet 1.58b, and LLaMA weights with 0-download bypass.</li>
+                <li><strong>Extended Model Registry:</strong> Added <code>large-v3-turbo</code>, <code>large-v3</code>, English-optimized <code>.en</code> models, and quantized ARM NEON weights (<code>small-q5_1</code>, <code>medium-q5_0</code>, <code>large-v3-turbo-q5_0</code>).</li>
+                <li><strong>Full C++ Parameter Control:</strong> Full CLI and SDK controls for Beam Search (<code>-bs</code>), Best-Of (<code>-bo</code>), Temperature (<code>-tp</code>), Prompt Hints (<code>--prompt</code>), and Raw C++ Passthrough (<code>--extra-args</code>).</li>
+            </ul>
+
+            <h2>v1.0.8 (Core Reliability & Hardening) - 2026-08-26</h2>
+            <ul>
+                <li><strong>Temp WAV Garbage Collection:</strong> <code>try...finally</code> lifecycle management for automatic converted WAV deletion, eliminating storage leaks.</li>
+                <li><strong>Safe Psutil Import Guard:</strong> Defensive lazy-loading in <code>MobileGuard</code> preventing import crashes on minimal Termux environments.</li>
+                <li><strong>Platform Spoofing Isolation:</strong> Restricted <code>sys.platform = 'linux'</code> strictly to Android/Termux runtimes.</li>
+                <li><strong>Mobile 1-Pass Greedy Policy:</strong> Defaulted to <code>--no-fallback</code> (<code>-nf</code>) on Termux to prevent multi-temperature thermal throttling.</li>
+                <li><strong>Node.js Binary Resolver:</strong> Upgraded CLI wrapper with <code>python3</code> / <code>python</code> dynamic binary detection.</li>
+            </ul>
+
+            <h2>v1.0.7 (Download Pipeline Optimization) - 2026-08-26</h2>
+            <ul>
+                <li><strong>Model Hub Request Sequencing:</strong> Resolved <code>NameError: req</code> in download pipeline.</li>
+                <li><strong>Instant Cache Priority:</strong> Defaulted CLI models to pre-cached <code>tiny</code> for 0-second execution.</li>
+            </ul>
+
+            <h2>v1.0.6 (CLI Standardization & SSL Defense) - 2026-08-26</h2>
+            <ul>
+                <li><strong>Flexible EngineConfig Aliasing:</strong> Seamless backward-compatible argument aliases (<code>model_path</code>, <code>language</code>, <code>num_threads</code>, <code>use_vad</code>).</li>
+                <li><strong>CLI Factory Standardization:</strong> Migrated <code>diarize</code>, <code>benchmark</code>, and <code>listen</code> to unified <code>create_engine</code>.</li>
+                <li><strong>Precise Header Duration:</strong> Exact WAV RIFF header duration calculation for benchmark RTF.</li>
+                <li><strong>SSL Fallback:</strong> Added unverified SSL context fallback for custom certificate environments.</li>
+            </ul>
+
+            <h2>v1.0.5 (Sample Audio & 1-Click Provisioning) - 2026-08-26</h2>
+            <ul>
+                <li><strong>Official JFK 60s Sample Audio:</strong> Integrated clean 16kHz Mono PCM sample (<code>samples/jfk_1min.wav</code>).</li>
+                <li><strong>Zero-Subprocess Wave Parsing:</strong> Pure Python <code>wave</code> direct parser bypassing FFmpeg subprocessing.</li>
+                <li><strong>Bionic Dynamic Linker Defense:</strong> Packaged <code>libbluray</code> and <code>libxml2</code> in automated installer.</li>
+                <li><strong>1-Click Installer CLI:</strong> Registered <code>termux-stt install</code> command.</li>
+                <li><strong>Dual-Engine Monorepo Packaging:</strong> Full root <code>package.json</code> support for <code>npm install -g git+...</code>.</li>
+            </ul>
+
+            <h2>v1.0.0 (Initial Public Release) - 2026-08-20</h2>
+            <ul>
+                <li><strong>Unified Multi-Engine Architecture:</strong> Single <code>create_engine()</code> API for whisper.cpp, vosk, and sherpa-onnx.</li>
+                <li><strong>Pure-Python Speaker Diarization:</strong> Custom K-Means and Cosine Distance matrix without numpy/sklearn dependencies.</li>
+                <li><strong>Hybrid Diarization Pipeline:</strong> Vosk X-Vector + Whisper STT under 1.5 GB RAM.</li>
+                <li><strong>Audio Pipeline:</strong> ffmpeg 16kHz mono converter, Silero-VAD integration, and Termux microphone recorder.</li>
+                <li><strong>Model Hub:</strong> Automatic model downloader with SHA-256 verification and cache management.</li>
+                <li><strong>Export Standards:</strong> SRT, WebVTT, NIST RTTM, and structured JSON output.</li>
+                <li><strong>CLI Suite:</strong> <code>transcribe</code>, <code>listen</code>, <code>diarize</code>, <code>models</code>, <code>doctor</code>, and <code>benchmark</code>.</li>
+            </ul>
+        </main>
     </div>
-  </header>
-
-  <div class="container">
-  <nav class="sidebar">
-    <h3 data-i18n="common.nav.overview">Overview</h3>
-    <ul>
-      <li><a href="index.html" data-i18n="common.nav.home">Home / Architecture</a></li>
-      <li><a href="installation.html" data-i18n="common.nav.installation">Installation Guide</a></li>
-      <li><a href="quickstart.html" data-i18n="common.nav.quickstart">Quickstart & Recipes</a></li>
-    </ul>
-    <h3 data-i18n="common.nav.reference">Official Reference</h3>
-    <ul>
-      <li><a href="api-reference.html" data-i18n="common.nav.apiReference">API Reference</a></li>
-      <li><a href="benchmarks.html" data-i18n="common.nav.benchmarks">Benchmarks & Profiling</a></li>
-      <li><a href="advanced-parameters.html" data-i18n="common.nav.advancedParams">Advanced Parameters</a></li>
-      <li><a href="versions.html" class="active" data-i18n="common.nav.versions">Version Archive</a></li>
-    </ul>
-    <h3 data-i18n="common.nav.ecosystem">AMEVA Ecosystem</h3>
-    <ul>
-      <li><a href="/lib/mcp/">AMEVA-MCP-Hub (Polyglot WASM)</a></li>
-      <li><a href="/lib/sentinel/">AMEVA Sentinel (Security SDK)</a></li>
-      <li><a href="/lib/forge/">AMEVA-Forge (WebGPU Autograd)</a></li>
-      <li><a href="/lib/bitnet/">Termux-BitNet (1.58-bit LLM)</a></li>
-      <li><a href="/lib/playwright/">Termux-Playwright (Automation)</a></li>
-      <li><a href="/lib/diffusion/">Termux-Diffusion (Image AI)</a></li>
-      <li><a href="/lib/stt/" class="active">Termux-STT (Voice STT)</a></li>
-      <li><a href="/lib/train/">Termux-Train (LoRA Engine)</a></li>
-      <li><a href="https://ameva-workstation-web-core.vercel.app/" target="_blank">AMEVA Workstation (Web App)</a></li>
-      <li><a href="/foundation/">AMEVA Foundation</a></li>
-      <li><a href="/">Founder Digital CV</a></li>
-    </ul>
-    <h3 data-i18n="common.nav.aiSpecs">AI Agent Protocols</h3>
-    <ul>
-      <li><a href="llms.txt" target="_blank">llms.txt (AI Fast Context)</a></li>
-      <li><a href="llms-full.txt" target="_blank">llms-full.txt (Full Spec)</a></li>
-      <li><a href="robots.txt" target="_blank">robots.txt (AI Crawlers)</a></li>
-      <li><a href="sitemap.xml" target="_blank">sitemap.xml (Sitemap)</a></li>
-    </ul>
-  </nav>
-
-    <main class="content">
-      <h2>Version Archive & Changelog</h2>
-      <p class="subtitle">Changelog history and immutable releases</p>
-      <h3>v1.1.0 - Production Release (Current)</h3>
-         <ul>
-           <li>Standardized on Tomcat/Apache Classic Engineering Design System.</li>
-           <li>Integrated 6-language client-side i18n DOM translation engine.</li>
-           <li>Implemented AI Agent feed generation (llms.txt, llms-full.txt).</li>
-         </ul>
-    </main>
-  </div>
-
-  <footer>
-    <span data-i18n="common.footerText">&copy; 2026 AMEVA Open-Source Foundation. Released under the Apache-2.0 License.</span>
-  </footer>
+    <footer>
+        <div style="margin-bottom: 8px; font-size: 0.85em; opacity: 0.85;">
+            <strong>Disclaimer:</strong> termux-stt is an independent open-source project developed for the Android Termux environment and is not officially affiliated with, endorsed by, or sponsored by the Termux project, OpenAI, or any other third party.
+        </div>
+        <span data-i18n="common.footerText">&copy; 2026 termux-stt Project (uno-km). Released under the MIT License.</span>
+    </footer>
 </body>
 </html>

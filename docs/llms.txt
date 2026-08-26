@@ -1,25 +1,33 @@
-# Termux-STT (v1.1.0)
-> Unified On-Device Speech-to-Text & Pure Python 128d X-Vector Speaker Diarization
+# termux-stt
+> Android On-Device Unified STT Framework for Termux
 
-## Quick Specification for AI Coding Agents
-- Official Repo: https://github.com/uno-km/termux-stt
-- Installation: `pip install termux-stt
-# or: npm install termux-stt`
-- Architecture: Integrates Whisper.cpp, Vosk, and Sherpa-ONNX with a closed-form pure-Python 128-dimensional X-Vector clustering algorithm that operates in under 80MB RAM.
+## Core Features
+- Unified create_engine() interface for whisper.cpp, vosk, and sherpa-onnx
+- Built-in speaker diarization via pure-Python K-Means and Vosk 128d X-Vectors
+- Zero external ML dependencies (no numpy, no sklearn, no torch)
+- Subprocess crash isolation and Android mobile safeguards (WakeLock, Doze bypass)
+- Live Audio Showcase: https://uno-km.github.io/termux-stt/showcase.html
 
-## Canonical Code Pattern
+## Python Quickstart (3 Lines)
 ```python
-import termux_stt as stt
+from termux_stt import create_engine
 
-# 1. Transcribe audio with speaker diarization
-engine = stt.STTEngine(model="whisper-tiny")
-result = engine.transcribe_with_diarization("meeting.wav")
+# STT only
+engine = create_engine("whisper", model="base", lang="en")
+result = engine.transcribe("audio.wav")
+print(result.text)
 
+# STT + Speaker Diarization
+engine = create_engine("hybrid", lang="ko", num_speakers=2)
+result = engine.diarize("meeting.wav")
 for seg in result.segments:
-    print(f"[{seg.speaker}] ({seg.start:.1f}s - {seg.end:.1f}s): {seg.text}")
-
+    print(f"[{seg.speaker}] {seg.text}")
 ```
 
-## Key Constraints
-- Pure non-blocking architecture, zero memory leaks.
-- Strictly adhere to closed-form precision and WebGPU/Bionic ARM64 native targets.
+## Node.js Quickstart
+```javascript
+const { createEngine } = require("termux-stt");
+const engine = createEngine("whisper", { model: "base", lang: "ko" });
+const result = await engine.transcribe("audio.wav");
+console.log(result.text);
+```

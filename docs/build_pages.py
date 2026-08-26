@@ -1106,8 +1106,47 @@ def build_versions():
     <div class="container">
 {get_sidebar("versions.html")}
         <main class="content">
-            <h2>Version Archive</h2>
-            <p class="subtitle">Release history and upgrade guides for termux-stt.</p>
+            <h2>Version Archive & Official Changelog</h2>
+            <p class="subtitle">Complete release history and upgrade specifications for termux-stt.</p>
+
+            <h2>v1.0.9 (Current Stable Release) - 2026-08-26</h2>
+            <ul>
+                <li><strong>Direct Local Model Path Integration:</strong> Direct connection for custom fine-tuned GGML, BitNet 1.58b, and LLaMA weights with 0-download bypass.</li>
+                <li><strong>Extended Model Registry:</strong> Added <code>large-v3-turbo</code>, <code>large-v3</code>, English-optimized <code>.en</code> models, and quantized ARM NEON weights (<code>small-q5_1</code>, <code>medium-q5_0</code>, <code>large-v3-turbo-q5_0</code>).</li>
+                <li><strong>Full C++ Parameter Control:</strong> Full CLI and SDK controls for Beam Search (<code>-bs</code>), Best-Of (<code>-bo</code>), Temperature (<code>-tp</code>), Prompt Hints (<code>--prompt</code>), and Raw C++ Passthrough (<code>--extra-args</code>).</li>
+            </ul>
+
+            <h2>v1.0.8 (Core Reliability & Hardening) - 2026-08-26</h2>
+            <ul>
+                <li><strong>Temp WAV Garbage Collection:</strong> <code>try...finally</code> lifecycle management for automatic converted WAV deletion, eliminating storage leaks.</li>
+                <li><strong>Safe Psutil Import Guard:</strong> Defensive lazy-loading in <code>MobileGuard</code> preventing import crashes on minimal Termux environments.</li>
+                <li><strong>Platform Spoofing Isolation:</strong> Restricted <code>sys.platform = 'linux'</code> strictly to Android/Termux runtimes.</li>
+                <li><strong>Mobile 1-Pass Greedy Policy:</strong> Defaulted to <code>--no-fallback</code> (<code>-nf</code>) on Termux to prevent multi-temperature thermal throttling.</li>
+                <li><strong>Node.js Binary Resolver:</strong> Upgraded CLI wrapper with <code>python3</code> / <code>python</code> dynamic binary detection.</li>
+            </ul>
+
+            <h2>v1.0.7 (Download Pipeline Optimization) - 2026-08-26</h2>
+            <ul>
+                <li><strong>Model Hub Request Sequencing:</strong> Resolved <code>NameError: req</code> in download pipeline.</li>
+                <li><strong>Instant Cache Priority:</strong> Defaulted CLI models to pre-cached <code>tiny</code> for 0-second execution.</li>
+            </ul>
+
+            <h2>v1.0.6 (CLI Standardization & SSL Defense) - 2026-08-26</h2>
+            <ul>
+                <li><strong>Flexible EngineConfig Aliasing:</strong> Seamless backward-compatible argument aliases (<code>model_path</code>, <code>language</code>, <code>num_threads</code>, <code>use_vad</code>).</li>
+                <li><strong>CLI Factory Standardization:</strong> Migrated <code>diarize</code>, <code>benchmark</code>, and <code>listen</code> to unified <code>create_engine</code>.</li>
+                <li><strong>Precise Header Duration:</strong> Exact WAV RIFF header duration calculation for benchmark RTF.</li>
+                <li><strong>SSL Fallback:</strong> Added unverified SSL context fallback for custom certificate environments.</li>
+            </ul>
+
+            <h2>v1.0.5 (Sample Audio & 1-Click Provisioning) - 2026-08-26</h2>
+            <ul>
+                <li><strong>Official JFK 60s Sample Audio:</strong> Integrated clean 16kHz Mono PCM sample (<code>samples/jfk_1min.wav</code>).</li>
+                <li><strong>Zero-Subprocess Wave Parsing:</strong> Pure Python <code>wave</code> direct parser bypassing FFmpeg subprocessing.</li>
+                <li><strong>Bionic Dynamic Linker Defense:</strong> Packaged <code>libbluray</code> and <code>libxml2</code> in automated installer.</li>
+                <li><strong>1-Click Installer CLI:</strong> Registered <code>termux-stt install</code> command.</li>
+                <li><strong>Dual-Engine Monorepo Packaging:</strong> Full root <code>package.json</code> support for <code>npm install -g git+...</code>.</li>
+            </ul>
 
             <h2>v1.0.0 (Initial Public Release) - 2026-08-20</h2>
             <ul>
@@ -1118,8 +1157,6 @@ def build_versions():
                 <li><strong>Model Hub:</strong> Automatic model downloader with SHA-256 verification and cache management.</li>
                 <li><strong>Export Standards:</strong> SRT, WebVTT, NIST RTTM, and structured JSON output.</li>
                 <li><strong>CLI Suite:</strong> <code>transcribe</code>, <code>listen</code>, <code>diarize</code>, <code>models</code>, <code>doctor</code>, and <code>benchmark</code>.</li>
-                <li><strong>Dual-Engine Support:</strong> First-class Node.js npm package with identical capabilities.</li>
-                <li><strong>Live Showcase Page:</strong> Interactive web audio playback and synchronized SRT subtitle timeline.</li>
             </ul>
         </main>
     </div>

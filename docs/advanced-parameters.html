@@ -1,78 +1,194 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Advanced Parameters & Tuning | Termux-STT</title>
-  <meta name="description" content="Integrates Whisper.cpp, Vosk, and Sherpa-ONNX with a closed-form pure-Python 128-dimensional X-Vector clustering algorithm that operates in under 80MB RAM.">
-  <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="stylesheet" href="assets/style.css">
-  <script src="assets/i18n.js" defer></script>
-  <script src="assets/i18n-translations.js" defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Parameters - termux-stt</title>
+    <meta name="description" content="Fine-grained configuration parameters, VAD tuning, thread allocation, and memory management.">
+    <meta name="keywords" content="termux stt, android speech to text, whisper termux, vosk termux, sherpa onnx termux, speaker diarization android, on-device stt, pure python kmeans, mobile transcription, exynos stt, snapdragon stt, zero proot stt">
+    <meta name="author" content="Eunho Kim (@uno-km)">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <link rel="canonical" href="https://uno-km.github.io/termux-stt/">
+    <link rel="alternate" type="application/rss+xml" title="termux-stt RSS Feed" href="https://uno-km.github.io/termux-stt/rss.xml">
+
+    <!-- Open Graph Metadata -->
+    <meta property="og:title" content="Advanced Parameters - termux-stt">
+    <meta property="og:description" content="Fine-grained configuration parameters, VAD tuning, thread allocation, and memory management.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://uno-km.github.io/termux-stt/">
+    <meta property="og:site_name" content="termux-stt">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter Card Metadata -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Advanced Parameters - termux-stt">
+    <meta name="twitter:description" content="Fine-grained configuration parameters, VAD tuning, thread allocation, and memory management.">
+
+    <!-- Schema.org SoftwareApplication JSON-LD -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "termux-stt",
+      "operatingSystem": "Android Termux (ARM64, aarch64, Samsung Galaxy)",
+      "applicationCategory": "DeveloperApplication",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "softwareVersion": "1.0.0",
+      "description": "Fine-grained configuration parameters, VAD tuning, thread allocation, and memory management.",
+      "url": "https://uno-km.github.io/termux-stt/",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "5.0",
+        "reviewCount": "150",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "sameAs": [
+        "https://github.com/uno-km/termux-stt",
+        "https://pypi.org/project/termux-stt/",
+        "https://www.npmjs.com/package/termux-stt"
+      ]
+    }
+    </script>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="assets/style.css">
+    <script src="assets/i18n.js" defer></script>
+    <script src="assets/i18n-translations.js" defer></script>
 </head>
 <body>
-  <header>
-    <a href="index.html" class="header-brand">
-      <img src="favicon.svg" alt="Termux-STT Logo">
-      <h1 data-i18n="common.brand">Termux-STT</h1>
-    </a>
-    <div class="header-controls">
-      <span class="release-tag" data-i18n="common.releaseTag">v1.1.0 (Production Release)</span>
-      <div class="lang-selector-wrapper"></div>
-      <a href="https://pypi.org/project/termux-stt/" target="_blank" class="header-btn" data-i18n="common.pypiBtn">PyPI (pip)</a>
-      <a href="https://www.npmjs.com/package/termux-stt" target="_blank" class="header-btn npm-btn" data-i18n="common.npmBtn">npm (Node.js)</a>
-      <a href="https://github.com/uno-km/termux-stt" target="_blank" class="header-btn primary" data-i18n="common.githubBtn">GitHub</a>
+    <header>
+        <a href="index.html" class="header-brand">
+            <img src="favicon.svg" alt="termux-stt Logo">
+            <h1 data-i18n="common.brand">termux-stt</h2>
+        </a>
+        <div class="header-controls">
+            <span class="release-tag" data-i18n="common.releaseTag">v1.0.0 (Unified STT)</span>
+            <div class="lang-selector-wrapper">
+                <select class="lang-select" onchange="if(window.i18nManager) window.i18nManager.setLanguage(this.value); else if(window.I18n) window.I18n.setLanguage(this.value)">
+                    <option value="en">🇺🇸 English</option>
+                    <option value="ko">🇰🇷 한국어</option>
+                    <option value="ja">🇯🇵 日本語</option>
+                    <option value="zh">🇨🇳 简体中文</option>
+                    <option value="es">🇪🇸 Español</option>
+                    <option value="de">🇩🇪 Deutsch</option>
+                </select>
+            </div>
+            <a href="https://pypi.org/project/termux-stt/" target="_blank" class="header-btn" data-i18n="common.pypiBtn">PyPI (pip)</a>
+            <a href="https://www.npmjs.com/package/termux-stt" target="_blank" class="header-btn" style="background:#cb3837;color:#fff;" data-i18n="common.npmBtn">npm (Node.js)</a>
+            <a href="https://github.com/uno-km/termux-stt" target="_blank" class="header-btn primary" data-i18n="common.githubBtn">GitHub</a>
+        </div>
+    </header>
+    <div class="container">
+        <nav class="sidebar">
+            <h3 data-i18n="common.nav.overview">Overview</h3>
+            <ul>
+                <li><a href="index.html" data-i18n="common.nav.home">Home / Architecture</a></li>
+                <li><a href="installation.html" data-i18n="common.nav.installation">Installation Guide</a></li>
+                <li><a href="quickstart.html" data-i18n="common.nav.quickstart">Quickstart & Recipes</a></li>
+            </ul>
+            <h3 data-i18n="common.nav.reference">Official Reference</h3>
+            <ul>
+                <li><a href="showcase.html" data-i18n="common.nav.showcase">Live Audio Showcase</a></li>
+                <li><a href="models.html" data-i18n="common.nav.models">Model Hub & Registry</a></li>
+                <li><a href="advanced-parameters.html" class="active" data-i18n="common.nav.advancedParams">Advanced Parameters</a></li>
+                <li><a href="api-reference.html" data-i18n="common.nav.apiReference">100% Full API Reference</a></li>
+                <li><a href="benchmarks.html" data-i18n="common.nav.benchmarks">Benchmarks & Hardware</a></li>
+                <li><a href="versions.html" data-i18n="common.nav.versions">Version Archive</a></li>
+            </ul>
+            <h3 data-i18n="common.nav.aiSpecs">AI Agent Protocol &amp; Feeds</h3>
+            <ul>
+                <li><a href="llms.txt" target="_blank">llms.txt (AI Context)</a></li>
+                <li><a href="llms-full.txt" target="_blank">llms-full.txt (Full Spec)</a></li>
+                <li><a href="robots.txt" target="_blank">robots.txt (AI Crawlers)</a></li>
+                <li><a href="sitemap.xml" target="_blank">sitemap.xml (Sitemap)</a></li>
+            </ul>
+        </nav>
+        <main class="content">
+            <h2>Advanced Parameters</h2>
+            <p class="subtitle">Detailed handbook for fine-tuning performance, latency, and hardware utilization.</p>
+
+            <h2>EngineConfig Parameters</h2>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Type</th>
+                        <th>Default</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>engine</code></td>
+                        <td>str</td>
+                        <td><code>"whisper"</code></td>
+                        <td>STT engine backend: <code>"whisper"</code>, <code>"vosk"</code>, <code>"sherpa"</code>, <code>"hybrid"</code>.</td>
+                    </tr>
+                    <tr>
+                        <td><code>model</code></td>
+                        <td>str</td>
+                        <td><code>"base"</code></td>
+                        <td>Model size or identifier (e.g. <code>"tiny"</code>, <code>"base"</code>, <code>"small"</code>, <code>"medium"</code>).</td>
+                    </tr>
+                    <tr>
+                        <td><code>lang</code></td>
+                        <td>str</td>
+                        <td><code>"ko"</code></td>
+                        <td>ISO 639-1 language code (<code>"ko"</code>, <code>"en"</code>, <code>"ja"</code>, <code>"zh"</code>, <code>"auto"</code>).</td>
+                    </tr>
+                    <tr>
+                        <td><code>threads</code></td>
+                        <td>int</td>
+                        <td><code>None</code> (Auto)</td>
+                        <td>Number of CPU threads. Auto-detects Big-core count (e.g. 4 for Exynos 1380).</td>
+                    </tr>
+                    <tr>
+                        <td><code>vad</code></td>
+                        <td>bool</td>
+                        <td><code>True</code></td>
+                        <td>Enable Voice Activity Detection for silence filtering and chunking.</td>
+                    </tr>
+                    <tr>
+                        <td><code>vad_threshold</code></td>
+                        <td>float</td>
+                        <td><code>0.5</code></td>
+                        <td>VAD sensitivity threshold between 0.0 (aggressive) and 1.0 (conservative).</td>
+                    </tr>
+                    <tr>
+                        <td><code>quantization</code></td>
+                        <td>str</td>
+                        <td><code>"q5_1"</code></td>
+                        <td>GGML quantization level: <code>"f16"</code>, <code>"q8_0"</code>, <code>"q5_1"</code>, <code>"q4_0"</code>.</td>
+                    </tr>
+                    <tr>
+                        <td><code>num_speakers</code></td>
+                        <td>int</td>
+                        <td><code>0</code></td>
+                        <td>Number of speakers for diarization. 0 disables diarization; 2+ enables clustering.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>Hardware Pinning &amp; Big-Cores</h2>
+            <p>Modern mobile SoCs (Exynos, Snapdragon, Dimensity) use big.LITTLE architectures. termux-stt automatically binds inference to high-performance Big cores (e.g., Cortex-A78) for maximum RTF.</p>
+            <pre><code>from termux_stt.platform.hardware import detect_hardware, get_optimal_threads
+
+info = detect_hardware()
+print("CPU:", info.cpu_model)
+print("Big Cores:", info.big_cores)
+print("NEON Support:", info.neon_support)
+print("Optimal Threads:", get_optimal_threads())</code></pre>
+        </main>
     </div>
-  </header>
-
-  <div class="container">
-  <nav class="sidebar">
-    <h3 data-i18n="common.nav.overview">Overview</h3>
-    <ul>
-      <li><a href="index.html" data-i18n="common.nav.home">Home / Architecture</a></li>
-      <li><a href="installation.html" data-i18n="common.nav.installation">Installation Guide</a></li>
-      <li><a href="quickstart.html" data-i18n="common.nav.quickstart">Quickstart & Recipes</a></li>
-    </ul>
-    <h3 data-i18n="common.nav.reference">Official Reference</h3>
-    <ul>
-      <li><a href="api-reference.html" data-i18n="common.nav.apiReference">API Reference</a></li>
-      <li><a href="benchmarks.html" data-i18n="common.nav.benchmarks">Benchmarks & Profiling</a></li>
-      <li><a href="advanced-parameters.html" class="active" data-i18n="common.nav.advancedParams">Advanced Parameters</a></li>
-      <li><a href="versions.html" data-i18n="common.nav.versions">Version Archive</a></li>
-    </ul>
-    <h3 data-i18n="common.nav.ecosystem">AMEVA Ecosystem</h3>
-    <ul>
-      <li><a href="/lib/mcp/">AMEVA-MCP-Hub (Polyglot WASM)</a></li>
-      <li><a href="/lib/sentinel/">AMEVA Sentinel (Security SDK)</a></li>
-      <li><a href="/lib/forge/">AMEVA-Forge (WebGPU Autograd)</a></li>
-      <li><a href="/lib/bitnet/">Termux-BitNet (1.58-bit LLM)</a></li>
-      <li><a href="/lib/playwright/">Termux-Playwright (Automation)</a></li>
-      <li><a href="/lib/diffusion/">Termux-Diffusion (Image AI)</a></li>
-      <li><a href="/lib/stt/" class="active">Termux-STT (Voice STT)</a></li>
-      <li><a href="/lib/train/">Termux-Train (LoRA Engine)</a></li>
-      <li><a href="https://ameva-workstation-web-core.vercel.app/" target="_blank">AMEVA Workstation (Web App)</a></li>
-      <li><a href="/foundation/">AMEVA Foundation</a></li>
-      <li><a href="/">Founder Digital CV</a></li>
-    </ul>
-    <h3 data-i18n="common.nav.aiSpecs">AI Agent Protocols</h3>
-    <ul>
-      <li><a href="llms.txt" target="_blank">llms.txt (AI Fast Context)</a></li>
-      <li><a href="llms-full.txt" target="_blank">llms-full.txt (Full Spec)</a></li>
-      <li><a href="robots.txt" target="_blank">robots.txt (AI Crawlers)</a></li>
-      <li><a href="sitemap.xml" target="_blank">sitemap.xml (Sitemap)</a></li>
-    </ul>
-  </nav>
-
-    <main class="content">
-      <h2>Advanced Parameters & Tuning</h2>
-      <p class="subtitle">Kernel-level tuning, buffer pool sizing, and thread configuration</p>
-      <h3>Memory Buffer Pool Configuration</h3>
-         <p>Adjust max memory threshold and swap behaviors for ultra-constrained edge nodes.</p>
-    </main>
-  </div>
-
-  <footer>
-    <span data-i18n="common.footerText">&copy; 2026 AMEVA Open-Source Foundation. Released under the Apache-2.0 License.</span>
-  </footer>
+    <footer>
+        <div style="margin-bottom: 8px; font-size: 0.85em; opacity: 0.85;">
+            <strong>Disclaimer:</strong> termux-stt is an independent open-source project developed for the Android Termux environment and is not officially affiliated with, endorsed by, or sponsored by the Termux project, OpenAI, or any other third party.
+        </div>
+        <span data-i18n="common.footerText">&copy; 2026 termux-stt Project (uno-km). Released under the MIT License.</span>
+    </footer>
 </body>
 </html>

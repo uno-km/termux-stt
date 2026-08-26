@@ -2,7 +2,7 @@
 name: "Termux-STT"
 package_name_pypi: "termux-stt"
 package_name_npm: "termux-stt"
-version: "v1.1.0"
+version: "v1.0.9"
 release_name: "Production Release"
 license: "Apache-2.0"
 platform: "Android ARM64 / Termux Bionic"
