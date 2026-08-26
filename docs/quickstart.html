@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quickstart & Execution Recipes | Termux-STT</title>
-  <meta name="description" content="Integrates Whisper.cpp, Vosk, and Sherpa-ONNX with a closed-form pure-Python 128-dimensional X-Vector clustering algorithm that operates in under 80MB RAM.">
+  <meta name="description" content="Integrates Whisper.cpp, Vosk, and Sherpa-ONNX with a closed-form pure-Python 128-dimensional X-Vector clustering algorithm that operates in under 80MB RAM with zero cloud egress.">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="assets/style.css">
   <script src="assets/i18n.js" defer></script>
@@ -18,10 +18,10 @@
       <h1 data-i18n="common.brand">Termux-STT</h1>
     </a>
     <div class="header-controls">
-      <span class="release-tag" data-i18n="common.releaseTag">v1.0.9 (Production Release)</span>
+      <span class="release-tag" data-i18n="common.releaseTag">v1.0.9</span>
       <div class="lang-selector-wrapper"></div>
-      <a href="https://pypi.org/project/termux-stt/" target="_blank" class="header-btn" data-i18n="common.pypiBtn">PyPI (pip)</a>
-      <a href="https://www.npmjs.com/package/termux-stt" target="_blank" class="header-btn npm-btn" data-i18n="common.npmBtn">npm</a>
+      <a href="/foundation/index.html" class="header-btn" style="border-color:#2563eb;color:#2563eb;font-weight:600;" data-i18n="common.foundationBtn">Foundation</a>
+      <a href="https://pypi.org/project/termux-stt/" target="_blank" class="header-btn" title="PyPI: termux-stt | npm: termux-stt" data-i18n="common.pkgBtn">pip / npm</a>
       <a href="https://github.com/sponsors/uno-km" target="_blank" class="header-btn" style="border-color: #ea4aaa; color: #ea4aaa; font-weight: 700;">Sponsor</a>
       <a href="https://github.com/uno-km/termux-stt" target="_blank" class="header-btn primary" data-i18n="common.githubBtn">GitHub</a>
       <a href="/" class="header-btn" style="border-color:#004499;color:#004499;font-weight:600;" data-i18n="common.founderBtn">Founder CV</a>
@@ -30,21 +30,24 @@
 
   <div class="container">
   <nav class="sidebar">
-    <!-- Tier 1: Foundation Info -->
-    <h3 data-i18n="common.nav.foundation">Foundation Info</h3>
+    <!-- Tier 1: Primary Document / Foundation Navigation -->
+    <h3 data-i18n="common.nav.docNav">Document Navigation</h3>
     <ul>
-      <li><a href="/foundation/index.html">Foundation Portal</a></li>
-      <li><a href="/foundation/charter.html">Foundation Charter</a></li>
-      <li><a href="/foundation/governance.html">Governance & Merit</a></li>
-      <li><a href="/foundation/incubation.html">Incubation Policy</a></li>
-      <li><a href="/foundation/sponsorship.html">Sponsorship & Support</a></li>
-      <li><a href="/foundation/dashboard/">3D Neural Fabric Map</a></li>
+      <li><a href="index.html">Home / Architecture</a></li>
+      <li><a href="installation.html">Installation Guide</a></li>
+      <li><a href="quickstart.html" class="active">Quickstart & Recipes</a></li>
+      <li><a href="api-reference.html">API Reference</a></li>
+      <li><a href="showcase.html">Audio Showcase</a></li>
+      <li><a href="benchmarks.html">Benchmarks & Profiling</a></li>
+      <li><a href="advanced-parameters.html">Advanced Parameters</a></li>
+      <li><a href="versions.html">Version Archive</a></li>
     </ul>
     <!-- Tier 2: Flagship Libraries -->
     <h3 data-i18n="common.nav.libraries">Flagship Libraries</h3>
     <ul>
       <li><a href="/lib/sentinel/">AMEVA-Sentinel (Security SDK)</a></li>
       <li><a href="/lib/mcp/">AMEVA-MCP-Hub (Polyglot WASM)</a></li>
+      <li><a href="/lib/aichain/">Termux-AIChain (Zero-Dep Agent)</a></li>
       <li><a href="/lib/bitnet/">Termux-BitNet (1.58-bit LLM)</a></li>
       <li><a href="/lib/diffusion/">Termux-Diffusion (Image AI)</a></li>
       <li><a href="/lib/playwright/">Termux-Playwright (Automation)</a></li>
@@ -53,43 +56,80 @@
       <li><a href="/lib/forge/">AMEVA-Forge (WebGPU Autograd)</a></li>
       <li><a href="https://ameva-workstation-web-core.vercel.app/" target="_blank">AMEVA Workstation (Web App)</a></li>
     </ul>
-    <!-- Tier 3: Active Document Sections -->
-    <h3 data-i18n="common.nav.docNav">Document Navigation</h3>
-    <ul>
-      <li><a href="index.html" data-i18n="common.nav.home">Home / Architecture</a></li>
-      <li><a href="installation.html" data-i18n="common.nav.installation">Installation Guide</a></li>
-      <li><a href="quickstart.html" class="active" data-i18n="common.nav.quickstart">Quickstart & Recipes</a></li>
-      <li><a href="api-reference.html" data-i18n="common.nav.apiReference">API Reference</a></li>
-      <li><a href="benchmarks.html" data-i18n="common.nav.benchmarks">Benchmarks & Profiling</a></li>
-      <li><a href="advanced-parameters.html" data-i18n="common.nav.advancedParams">Advanced Parameters</a></li>
-      <li><a href="versions.html" data-i18n="common.nav.versions">Version Archive</a></li>
-    </ul>
-    <!-- Tier 4: AI Protocols & Specifications -->
+    <!-- Tier 3: AI Protocols & Specifications -->
     <h3 data-i18n="common.nav.aiSpecs">AI Agent Protocols</h3>
     <ul>
       <li><a href="llms.txt" target="_blank">llms.txt (AI Fast Context)</a></li>
       <li><a href="llms-full.txt" target="_blank">llms-full.txt (Full Spec)</a></li>
       <li><a href="robots.txt" target="_blank">robots.txt (AI Crawlers)</a></li>
       <li><a href="sitemap.xml" target="_blank">sitemap.xml (Sitemap)</a></li>
-      <li><a href="/" target="_blank">Founder Digital CV</a></li>
     </ul>
   </nav>
 
     <main class="content">
       <h2>Quickstart & Execution Recipes</h2>
       <p class="subtitle">Standard usage patterns and rapid prototyping code</p>
-      <h3>Basic Execution Recipe</h3>
-         <pre><code>import termux_stt as stt
+      <div class="alert alert-tip">
+  <span class="alert-title">Included 60.00s JFK Sample Audio</span>
+  <p><code>termux-stt</code> packages John F. Kennedy's 1961 Inaugural Address (<code>samples/jfk_1min.wav</code>, 16kHz Mono PCM) for instant out-of-the-box verification!</p>
+</div>
 
-# 1. Transcribe audio with speaker diarization
-engine = stt.STTEngine(model="whisper-tiny")
-result = engine.transcribe_with_diarization("meeting.wav")
+<h3>Recipe 1: 1-Line Subtitle Transcription (SRT / WebVTT / JSON)</h3>
+<pre><code># 1. Transcribe audio and export to synchronized SRT subtitles
+termux-stt transcribe samples/jfk_1min.wav --format srt > subtitles.srt
 
-for seg in result.segments:
-    print(f"[{seg.speaker}] ({seg.start:.1f}s - {seg.end:.1f}s): {seg.text}")
-</code></pre>
-         <h3>Production Asynchronous Batching</h3>
-         <p>Utilize weakref pooling and zero-copy streaming buffers for continuous pipelines.</p>
+# 2. Export directly to WebVTT for HTML5 video players
+termux-stt transcribe samples/jfk_1min.wav --format vtt > subtitles.vtt
+
+# 3. Export to structured JSON for data pipelines
+termux-stt transcribe samples/jfk_1min.wav --format json > output.json</code></pre>
+
+<h3>Recipe 2: 128d Speaker Diarization ("Who Spoke When?")</h3>
+<p>Run high-precision 2-speaker diarization using pure Python K-Means clustering without PyTorch:</p>
+<pre><code>termux-stt diarize samples/jfk_1min.wav --speakers 2 --format text</code></pre>
+<p><strong>Sample Output:</strong></p>
+<pre><code>[Speaker 0] Vice President Johnson, Mr. Speaker, Mr. Chief Justice, President Eisenhower...
+[Speaker 0] Nixon, President Truman, Reverend clergy, fellow citizens...
+[Speaker 1] We observe today not a victory of party, but a celebration of freedom...</code></pre>
+
+<h3>Recipe 3: Real-Time Microphone Streaming</h3>
+<p>Speak directly into your smartphone microphone with low latency and real-time Silero-VAD silence filtering:</p>
+<pre><code># CLI real-time listener (Press Ctrl+C to terminate)
+termux-stt listen --engine whisper --model tiny --lang ko</code></pre>
+
+<h3>Recipe 4: High-Precision Domain Prompting & Translation</h3>
+<pre><code># Provide context prompt hints for specialized medical/technical vocabularies and translate to English
+termux-stt transcribe meeting.wav \
+  --model small \
+  --prompt "AMEVA-Forge, WebGPU, ARM NEON, Bionic libc" \
+  --translate \
+  --format srt</code></pre>
+
+<h3>Recipe 5: Programmatic Python SDK Integration</h3>
+<pre><code>from termux_stt import create_engine
+
+# 1. Initialize Engine with optimal threads
+engine = create_engine("whisper", model="base", lang="en", threads=4)
+
+# 2. Transcribe Audio
+result = engine.transcribe("samples/jfk_1min.wav")
+
+print("Full Transcript:", result.text)
+print(f"Detected Duration: {result.duration:.2f}s")
+print("SRT Block:\n", result.to_srt())</code></pre>
+
+<h3>Recipe 6: Programmatic Node.js / TypeScript API</h3>
+<pre><code>const { createEngine } = require("termux-stt");
+
+async function transcribeAudio() {
+  const engine = createEngine("whisper", { model: "tiny", lang: "en", threads: 4 });
+  const result = await engine.transcribe("samples/jfk_1min.wav");
+  
+  console.log("Total Segments:", result.segments.length);
+  console.log("SRT Output:\n", result.toSrt());
+}
+transcribeAudio();</code></pre>
+
     </main>
   </div>
 

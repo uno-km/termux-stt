@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Advanced Parameters & Tuning | Termux-STT</title>
-  <meta name="description" content="Integrates Whisper.cpp, Vosk, and Sherpa-ONNX with a closed-form pure-Python 128-dimensional X-Vector clustering algorithm that operates in under 80MB RAM.">
+  <meta name="description" content="Integrates Whisper.cpp, Vosk, and Sherpa-ONNX with a closed-form pure-Python 128-dimensional X-Vector clustering algorithm that operates in under 80MB RAM with zero cloud egress.">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="assets/style.css">
   <script src="assets/i18n.js" defer></script>
@@ -18,10 +18,10 @@
       <h1 data-i18n="common.brand">Termux-STT</h1>
     </a>
     <div class="header-controls">
-      <span class="release-tag" data-i18n="common.releaseTag">v1.0.9 (Production Release)</span>
+      <span class="release-tag" data-i18n="common.releaseTag">v1.0.9</span>
       <div class="lang-selector-wrapper"></div>
-      <a href="https://pypi.org/project/termux-stt/" target="_blank" class="header-btn" data-i18n="common.pypiBtn">PyPI (pip)</a>
-      <a href="https://www.npmjs.com/package/termux-stt" target="_blank" class="header-btn npm-btn" data-i18n="common.npmBtn">npm</a>
+      <a href="/foundation/index.html" class="header-btn" style="border-color:#2563eb;color:#2563eb;font-weight:600;" data-i18n="common.foundationBtn">Foundation</a>
+      <a href="https://pypi.org/project/termux-stt/" target="_blank" class="header-btn" title="PyPI: termux-stt | npm: termux-stt" data-i18n="common.pkgBtn">pip / npm</a>
       <a href="https://github.com/sponsors/uno-km" target="_blank" class="header-btn" style="border-color: #ea4aaa; color: #ea4aaa; font-weight: 700;">Sponsor</a>
       <a href="https://github.com/uno-km/termux-stt" target="_blank" class="header-btn primary" data-i18n="common.githubBtn">GitHub</a>
       <a href="/" class="header-btn" style="border-color:#004499;color:#004499;font-weight:600;" data-i18n="common.founderBtn">Founder CV</a>
@@ -30,21 +30,24 @@
 
   <div class="container">
   <nav class="sidebar">
-    <!-- Tier 1: Foundation Info -->
-    <h3 data-i18n="common.nav.foundation">Foundation Info</h3>
+    <!-- Tier 1: Primary Document / Foundation Navigation -->
+    <h3 data-i18n="common.nav.docNav">Document Navigation</h3>
     <ul>
-      <li><a href="/foundation/index.html">Foundation Portal</a></li>
-      <li><a href="/foundation/charter.html">Foundation Charter</a></li>
-      <li><a href="/foundation/governance.html">Governance & Merit</a></li>
-      <li><a href="/foundation/incubation.html">Incubation Policy</a></li>
-      <li><a href="/foundation/sponsorship.html">Sponsorship & Support</a></li>
-      <li><a href="/foundation/dashboard/">3D Neural Fabric Map</a></li>
+      <li><a href="index.html">Home / Architecture</a></li>
+      <li><a href="installation.html">Installation Guide</a></li>
+      <li><a href="quickstart.html">Quickstart & Recipes</a></li>
+      <li><a href="api-reference.html">API Reference</a></li>
+      <li><a href="showcase.html">Audio Showcase</a></li>
+      <li><a href="benchmarks.html">Benchmarks & Profiling</a></li>
+      <li><a href="advanced-parameters.html" class="active">Advanced Parameters</a></li>
+      <li><a href="versions.html">Version Archive</a></li>
     </ul>
     <!-- Tier 2: Flagship Libraries -->
     <h3 data-i18n="common.nav.libraries">Flagship Libraries</h3>
     <ul>
       <li><a href="/lib/sentinel/">AMEVA-Sentinel (Security SDK)</a></li>
       <li><a href="/lib/mcp/">AMEVA-MCP-Hub (Polyglot WASM)</a></li>
+      <li><a href="/lib/aichain/">Termux-AIChain (Zero-Dep Agent)</a></li>
       <li><a href="/lib/bitnet/">Termux-BitNet (1.58-bit LLM)</a></li>
       <li><a href="/lib/diffusion/">Termux-Diffusion (Image AI)</a></li>
       <li><a href="/lib/playwright/">Termux-Playwright (Automation)</a></li>
@@ -53,33 +56,93 @@
       <li><a href="/lib/forge/">AMEVA-Forge (WebGPU Autograd)</a></li>
       <li><a href="https://ameva-workstation-web-core.vercel.app/" target="_blank">AMEVA Workstation (Web App)</a></li>
     </ul>
-    <!-- Tier 3: Active Document Sections -->
-    <h3 data-i18n="common.nav.docNav">Document Navigation</h3>
-    <ul>
-      <li><a href="index.html" data-i18n="common.nav.home">Home / Architecture</a></li>
-      <li><a href="installation.html" data-i18n="common.nav.installation">Installation Guide</a></li>
-      <li><a href="quickstart.html" data-i18n="common.nav.quickstart">Quickstart & Recipes</a></li>
-      <li><a href="api-reference.html" data-i18n="common.nav.apiReference">API Reference</a></li>
-      <li><a href="benchmarks.html" data-i18n="common.nav.benchmarks">Benchmarks & Profiling</a></li>
-      <li><a href="advanced-parameters.html" class="active" data-i18n="common.nav.advancedParams">Advanced Parameters</a></li>
-      <li><a href="versions.html" data-i18n="common.nav.versions">Version Archive</a></li>
-    </ul>
-    <!-- Tier 4: AI Protocols & Specifications -->
+    <!-- Tier 3: AI Protocols & Specifications -->
     <h3 data-i18n="common.nav.aiSpecs">AI Agent Protocols</h3>
     <ul>
       <li><a href="llms.txt" target="_blank">llms.txt (AI Fast Context)</a></li>
       <li><a href="llms-full.txt" target="_blank">llms-full.txt (Full Spec)</a></li>
       <li><a href="robots.txt" target="_blank">robots.txt (AI Crawlers)</a></li>
       <li><a href="sitemap.xml" target="_blank">sitemap.xml (Sitemap)</a></li>
-      <li><a href="/" target="_blank">Founder Digital CV</a></li>
     </ul>
   </nav>
 
     <main class="content">
       <h2>Advanced Parameters & Tuning</h2>
       <p class="subtitle">Kernel-level tuning, buffer pool sizing, and thread configuration</p>
-      <h3>Memory Buffer Pool Configuration</h3>
-         <p>Adjust max memory threshold and swap behaviors for ultra-constrained edge nodes.</p>
+      <h3>1. Whisper.cpp GGML Quantization Profiles</h3>
+<p>Select the optimal quantization level to balance memory footprint and acoustic precision:</p>
+<table class="data-table">
+  <thead>
+    <tr><th>Quantization Level</th><th>Memory Overhead</th><th>Relative Speed</th><th>Recommended Use Case</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>f16</code></td><td>100% (Baseline)</td><td>1.0x</td><td>Reference accuracy on desktop and high-end ARM nodes.</td></tr>
+    <tr><td><code>q8_0</code></td><td>55%</td><td>1.3x</td><td>Near-lossless precision with reduced RAM consumption.</td></tr>
+    <tr><td><code>q5_1</code> / <code>q5_0</code></td><td>35%</td><td>1.8x</td><td><strong>Optimal mobile default:</strong> High accuracy within minimal RAM.</td></tr>
+    <tr><td><code>q4_0</code></td><td>28%</td><td>2.2x</td><td>Extreme memory constraints (devices with &lt;2GB total RAM).</td></tr>
+  </tbody>
+</table>
+
+<h3>2. Advanced Decoding & Search Parameters</h3>
+<table class="data-table">
+  <thead>
+    <tr><th>CLI Flag</th><th>SDK Key</th><th>Default</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>--beam-size &lt;N&gt;</code></td>
+      <td><code>beam_size</code></td>
+      <td><code>1</code></td>
+      <td>Expands beam search width (e.g. <code>5</code>) for complex audio with overlapping speakers.</td>
+    </tr>
+    <tr>
+      <td><code>--best-of &lt;N&gt;</code></td>
+      <td><code>best_of</code></td>
+      <td><code>1</code></td>
+      <td>Number of candidate candidate sequences sampled during decoding.</td>
+    </tr>
+    <tr>
+      <td><code>--temperature &lt;T&gt;</code></td>
+      <td><code>temperature</code></td>
+      <td><code>0.0</code></td>
+      <td>Sampling temperature. <code>0.0</code> enables deterministic greedy search.</td>
+    </tr>
+    <tr>
+      <td><code>--no-fallback</code> / <code>-nf</code></td>
+      <td><code>no_fallback</code></td>
+      <td><code>True (Termux)</code></td>
+      <td>Prevents multi-temperature retry loops to avoid mobile CPU overheating.</td>
+    </tr>
+    <tr>
+      <td><code>--prompt &lt;TEXT&gt;</code></td>
+      <td><code>prompt</code></td>
+      <td><code>None</code></td>
+      <td>Provides vocabulary context hints (acronyms, domain terms, speaker names).</td>
+    </tr>
+    <tr>
+      <td><code>--translate</code> / <code>-tr</code></td>
+      <td><code>translate</code></td>
+      <td><code>False</code></td>
+      <td>Translates multilingual foreign speech directly into English text.</td>
+    </tr>
+    <tr>
+      <td><code>--extra-args "&lt;FLAGS&gt;"</code></td>
+      <td><code>extra_args</code></td>
+      <td><code>None</code></td>
+      <td>Raw C++ flag passthrough directly to the underlying whisper.cpp binary.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>3. Direct Local Custom Model Paths (BitNet / LLaMA / Fine-tuned Weights)</h3>
+<p>Pass local file paths directly to bypass ModelHub downloading and execute custom fine-tuned models:</p>
+<pre><code># Direct path to local fine-tuned or BitNet 1.58b GGML weights
+termux-stt transcribe audio.wav --model /sdcard/models/custom-whisper-q5_1.bin</code></pre>
+
+<h3>4. CPU Big-Core Pinning & Mobile Thermal Management</h3>
+<pre><code># Pin execution to 4 high-performance big cores (Cortex-A78 / X1)
+termux-stt transcribe audio.wav --threads 4</code></pre>
+
     </main>
   </div>
 

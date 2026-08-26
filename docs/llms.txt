@@ -3,23 +3,27 @@
 
 ## Quick Specification for AI Coding Agents
 - Official Repo: https://github.com/uno-km/termux-stt
-- Installation: `pip install termux-stt
-# or: npm install termux-stt`
-- Architecture: Integrates Whisper.cpp, Vosk, and Sherpa-ONNX with a closed-form pure-Python 128-dimensional X-Vector clustering algorithm that operates in under 80MB RAM.
+- Installation: `pip install --upgrade termux-stt && termux-stt install
+# or Node.js:
+npm install -g termux-stt && termux-stt install`
+- Architecture: Integrates Whisper.cpp, Vosk, and Sherpa-ONNX with a closed-form pure-Python 128-dimensional X-Vector clustering algorithm that operates in under 80MB RAM with zero cloud egress.
 
 ## Canonical Code Pattern
 ```python
-import termux_stt as stt
+from termux_stt import create_engine
 
-# 1. Transcribe audio with speaker diarization
-engine = stt.STTEngine(model="whisper-tiny")
-result = engine.transcribe_with_diarization("meeting.wav")
+# 1. Initialize Engine (auto-loads native ARM NEON binary & cached model)
+engine = create_engine("whisper", model="tiny", lang="en", threads=4)
 
-for seg in result.segments:
-    print(f"[{seg.speaker}] ({seg.start:.1f}s - {seg.end:.1f}s): {seg.text}")
+# 2. Transcribe Audio directly into Subtitles
+result = engine.transcribe("samples/jfk_1min.wav")
+print("Transcript:\n", result.text)
+print("SRT Subtitles:\n", result.to_srt())
+
+# 3. 2-Speaker Diarization without PyTorch
+hybrid = create_engine("hybrid", lang="en", num_speakers=2)
+diar_result = hybrid.diarize("samples/jfk_1min.wav")
+for seg in diar_result.segments:
+    print(f"[{seg.speaker}] ({seg.start:.1f}s -> {seg.end:.1f}s): {seg.text}")
 
 ```
-
-## Key Constraints
-- Pure non-blocking architecture, zero memory leaks.
-- Strictly adhere to closed-form precision and WebGPU/Bionic ARM64 native targets.

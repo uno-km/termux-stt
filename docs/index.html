@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Termux-STT | Official Documentation</title>
-  <meta name="description" content="Integrates Whisper.cpp, Vosk, and Sherpa-ONNX with a closed-form pure-Python 128-dimensional X-Vector clustering algorithm that operates in under 80MB RAM.">
+  <meta name="description" content="Integrates Whisper.cpp, Vosk, and Sherpa-ONNX with a closed-form pure-Python 128-dimensional X-Vector clustering algorithm that operates in under 80MB RAM with zero cloud egress.">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="assets/style.css">
   <script src="assets/i18n.js" defer></script>
@@ -18,10 +18,10 @@
       <h1 data-i18n="common.brand">Termux-STT</h1>
     </a>
     <div class="header-controls">
-      <span class="release-tag" data-i18n="common.releaseTag">v1.0.9 (Production Release)</span>
+      <span class="release-tag" data-i18n="common.releaseTag">v1.0.9</span>
       <div class="lang-selector-wrapper"></div>
-      <a href="https://pypi.org/project/termux-stt/" target="_blank" class="header-btn" data-i18n="common.pypiBtn">PyPI (pip)</a>
-      <a href="https://www.npmjs.com/package/termux-stt" target="_blank" class="header-btn npm-btn" data-i18n="common.npmBtn">npm</a>
+      <a href="/foundation/index.html" class="header-btn" style="border-color:#2563eb;color:#2563eb;font-weight:600;" data-i18n="common.foundationBtn">Foundation</a>
+      <a href="https://pypi.org/project/termux-stt/" target="_blank" class="header-btn" title="PyPI: termux-stt | npm: termux-stt" data-i18n="common.pkgBtn">pip / npm</a>
       <a href="https://github.com/sponsors/uno-km" target="_blank" class="header-btn" style="border-color: #ea4aaa; color: #ea4aaa; font-weight: 700;">Sponsor</a>
       <a href="https://github.com/uno-km/termux-stt" target="_blank" class="header-btn primary" data-i18n="common.githubBtn">GitHub</a>
       <a href="/" class="header-btn" style="border-color:#004499;color:#004499;font-weight:600;" data-i18n="common.founderBtn">Founder CV</a>
@@ -30,21 +30,24 @@
 
   <div class="container">
   <nav class="sidebar">
-    <!-- Tier 1: Foundation Info -->
-    <h3 data-i18n="common.nav.foundation">Foundation Info</h3>
+    <!-- Tier 1: Primary Document / Foundation Navigation -->
+    <h3 data-i18n="common.nav.docNav">Document Navigation</h3>
     <ul>
-      <li><a href="/foundation/index.html">Foundation Portal</a></li>
-      <li><a href="/foundation/charter.html">Foundation Charter</a></li>
-      <li><a href="/foundation/governance.html">Governance & Merit</a></li>
-      <li><a href="/foundation/incubation.html">Incubation Policy</a></li>
-      <li><a href="/foundation/sponsorship.html">Sponsorship & Support</a></li>
-      <li><a href="/foundation/dashboard/">3D Neural Fabric Map</a></li>
+      <li><a href="index.html" class="active">Home / Architecture</a></li>
+      <li><a href="installation.html">Installation Guide</a></li>
+      <li><a href="quickstart.html">Quickstart & Recipes</a></li>
+      <li><a href="api-reference.html">API Reference</a></li>
+      <li><a href="showcase.html">Audio Showcase</a></li>
+      <li><a href="benchmarks.html">Benchmarks & Profiling</a></li>
+      <li><a href="advanced-parameters.html">Advanced Parameters</a></li>
+      <li><a href="versions.html">Version Archive</a></li>
     </ul>
     <!-- Tier 2: Flagship Libraries -->
     <h3 data-i18n="common.nav.libraries">Flagship Libraries</h3>
     <ul>
       <li><a href="/lib/sentinel/">AMEVA-Sentinel (Security SDK)</a></li>
       <li><a href="/lib/mcp/">AMEVA-MCP-Hub (Polyglot WASM)</a></li>
+      <li><a href="/lib/aichain/">Termux-AIChain (Zero-Dep Agent)</a></li>
       <li><a href="/lib/bitnet/">Termux-BitNet (1.58-bit LLM)</a></li>
       <li><a href="/lib/diffusion/">Termux-Diffusion (Image AI)</a></li>
       <li><a href="/lib/playwright/">Termux-Playwright (Automation)</a></li>
@@ -53,34 +56,20 @@
       <li><a href="/lib/forge/">AMEVA-Forge (WebGPU Autograd)</a></li>
       <li><a href="https://ameva-workstation-web-core.vercel.app/" target="_blank">AMEVA Workstation (Web App)</a></li>
     </ul>
-    <!-- Tier 3: Active Document Sections -->
-    <h3 data-i18n="common.nav.docNav">Document Navigation</h3>
-    <ul>
-      <li><a href="index.html" class="active" data-i18n="common.nav.home">Home / Architecture</a></li>
-      <li><a href="installation.html" data-i18n="common.nav.installation">Installation Guide</a></li>
-      <li><a href="quickstart.html" data-i18n="common.nav.quickstart">Quickstart & Recipes</a></li>
-      <li><a href="api-reference.html" data-i18n="common.nav.apiReference">API Reference</a></li>
-      <li><a href="benchmarks.html" data-i18n="common.nav.benchmarks">Benchmarks & Profiling</a></li>
-      <li><a href="advanced-parameters.html" data-i18n="common.nav.advancedParams">Advanced Parameters</a></li>
-      <li><a href="versions.html" data-i18n="common.nav.versions">Version Archive</a></li>
-    </ul>
-    <!-- Tier 4: AI Protocols & Specifications -->
+    <!-- Tier 3: AI Protocols & Specifications -->
     <h3 data-i18n="common.nav.aiSpecs">AI Agent Protocols</h3>
     <ul>
       <li><a href="llms.txt" target="_blank">llms.txt (AI Fast Context)</a></li>
       <li><a href="llms-full.txt" target="_blank">llms-full.txt (Full Spec)</a></li>
       <li><a href="robots.txt" target="_blank">robots.txt (AI Crawlers)</a></li>
       <li><a href="sitemap.xml" target="_blank">sitemap.xml (Sitemap)</a></li>
-      <li><a href="/" target="_blank">Founder Digital CV</a></li>
     </ul>
   </nav>
 
     <main class="content">
-      <!-- Section 1: Main Title & Subtitle -->
       <h2 data-i18n="home.title">Termux-STT</h2>
       <p class="subtitle" data-i18n="home.subtitle">Unified On-Device Speech-to-Text & Pure Python 128d X-Vector Speaker Diarization</p>
 
-      <!-- Section 2: Badges Bar -->
       <div class="badges-bar">
         <a href="https://pypi.org/project/termux-stt/" target="_blank"><img src="https://img.shields.io/pypi/v/termux-stt.svg?color=004499" alt="PyPI Version"></a>
         <a href="https://pypistats.org/packages/termux-stt" target="_blank"><img src="https://img.shields.io/pypi/dm/termux-stt.svg?color=2563eb&label=PyPI%20Downloads" alt="PyPI Downloads"></a>
@@ -91,39 +80,48 @@
         <img src="https://img.shields.io/badge/platform-Android_ARM64_/_Termux_Bionic-blueviolet.svg" alt="Platform">
       </div>
 
-      <!-- Section 3: 1-Line Quick Installation Alert -->
       <div class="alert alert-tip">
         <span class="alert-title" data-i18n="home.quickInstallTitle">1-Line Quick Installation</span>
         <p data-i18n="home.quickInstallDesc">Install the official package directly into your runtime:</p>
-        <pre><code>pip install termux-stt
-# or: npm install termux-stt</code></pre>
+        <pre><code>pip install --upgrade termux-stt && termux-stt install
+# or Node.js:
+npm install -g termux-stt && termux-stt install</code></pre>
       </div>
 
-      <!-- Section 4: Engineering Challenge & Architectural Breakthrough -->
       <h3 data-i18n="home.challengeTitle">The Engineering Challenge</h3>
-      <p data-i18n="home.challengeText">Transcribing and diarizing multi-speaker conversations on edge devices typically demands heavy PyTorch runtimes (>2GB) and severe GPU memory consumption.</p>
+      <p data-i18n="home.challengeText">Transcribing and diarizing multi-speaker conversations on edge devices typically demands heavy PyTorch runtimes (>2GB), external GPU servers, and severe cloud network latency with audio privacy risks.</p>
 
       <h3 data-i18n="home.breakthroughTitle">The Architectural Breakthrough</h3>
-      <p data-i18n="home.breakthroughText">Integrates Whisper.cpp, Vosk, and Sherpa-ONNX with a closed-form pure-Python 128-dimensional X-Vector clustering algorithm that operates in under 80MB RAM.</p>
+      <p data-i18n="home.breakthroughText">Integrates Whisper.cpp, Vosk, and Sherpa-ONNX with a closed-form pure-Python 128-dimensional X-Vector clustering algorithm that operates in under 80MB RAM with zero cloud egress.</p>
 
-      <!-- Section 5: Key Capabilities Grid -->
       <h3 data-i18n="home.featuresTitle">Key Capabilities &amp; Built-in Hardening</h3>
       <div class="features-grid">
         <div class="feature-card">
           <h4 data-i18n="home.features.0.title">Triple STT Engine Integration</h4>
-          <p data-i18n="home.features.0.desc">Seamlessly switches between Whisper.cpp (accuracy), Vosk (latency), and Sherpa-ONNX.</p>
+          <p data-i18n="home.features.0.desc">Seamlessly switches between Whisper.cpp (accuracy), Vosk (latency), and Sherpa-ONNX with a single create_engine() factory.</p>
         </div>
         <div class="feature-card">
           <h4 data-i18n="home.features.1.title">Pure Python Speaker Diarization</h4>
-          <p data-i18n="home.features.1.desc">Lightweight cosine spectral clustering without external ML frameworks.</p>
+          <p data-i18n="home.features.1.desc">128-dimensional Vosk X-Vector embeddings combined with closed-form pure Python K-Means clustering without PyTorch or Scikit-Learn.</p>
         </div>
         <div class="feature-card">
-          <h4 data-i18n="home.features.2.title">Zero Cloud Egress Audio Privacy</h4>
-          <p data-i18n="home.features.2.desc">Audio processing and transcription execute strictly on-device without cloud network calls.</p>
+          <h4 data-i18n="home.features.2.title">Zero-Subprocess Audio Fastpath</h4>
+          <p data-i18n="home.features.2.desc">Direct pure-Python wave parser integration for standard 16kHz WAVs, bypassing FFmpeg subprocessing with zero Bionic linker errors.</p>
+        </div>
+        <div class="feature-card">
+          <h4 data-i18n="home.features.3.title">Zero Cloud Egress Audio Privacy</h4>
+          <p data-i18n="home.features.3.desc">Audio capture, acoustic feature extraction, and text transcription execute strictly on the local CPU without cloud telemetry leaks.</p>
+        </div>
+        <div class="feature-card">
+          <h4 data-i18n="home.features.4.title">Subprocess Crash Isolation</h4>
+          <p data-i18n="home.features.4.desc">Isolates native C++ binaries within dedicated process pools, ensuring C++ segfaults never compromise the host Python or Node.js runtime.</p>
+        </div>
+        <div class="feature-card">
+          <h4 data-i18n="home.features.5.title">Mobile Hardware Optimization</h4>
+          <p data-i18n="home.features.5.desc">Automatic big.LITTLE core thread pinning, Android WakeLock management, and 1-pass greedy decoding preventing thermal throttling.</p>
         </div>
       </div>
 
-      <!-- Section 6: Compute & Module Matrix -->
       <h3 data-i18n="home.matrixTitle">Supported Compute Kernels &amp; Operations</h3>
       <table class="data-table">
         <thead>
@@ -135,24 +133,33 @@
         </thead>
         <tbody>
           <tr>
-            <td><strong>Speech Recognition</strong></td>
-            <td>Whisper.cpp (tiny/base/small), Vosk Kaldi, Sherpa-ONNX</td>
+            <td><strong>Speech Recognition (STT)</strong></td>
+            <td>Whisper.cpp (tiny/base/small/medium/large-v3-turbo), Vosk Kaldi, Sherpa-ONNX</td>
             <td><span class="status-badge active">Production</span></td>
           </tr>
           <tr>
             <td><strong>Speaker Diarization</strong></td>
-            <td>128d X-Vector Extraction, Cosine Spectral Clustering</td>
+            <td>128d X-Vector Extraction, Pure-Python Cosine K-Means Spectral Clustering</td>
             <td><span class="status-badge active">Production</span></td>
           </tr>
           <tr>
-            <td><strong>Audio Runtimes</strong></td>
-            <td>Android AudioRecord, WAV/PCM Stream, Real-Time VAD</td>
+            <td><strong>Audio Preprocessing</strong></td>
+            <td>Zero-Subprocess Wave Parser, FFmpeg Auto-Fallback, Silero-VAD Silence Filter</td>
+            <td><span class="status-badge active">Production</span></td>
+          </tr>
+          <tr>
+            <td><strong>Subtitle & Data Formats</strong></td>
+            <td>SubRip (SRT), WebVTT (VTT), NIST Rich Transcription (RTTM), Structured JSON</td>
+            <td><span class="status-badge active">Production</span></td>
+          </tr>
+          <tr>
+            <td><strong>Platform Runtimes</strong></td>
+            <td>Android Termux (Bionic ARM64/aarch64), Python 3.8~3.13, Node.js 16~22</td>
             <td><span class="status-badge active">Production</span></td>
           </tr>
         </tbody>
       </table>
 
-      <!-- Section 7: Canonical Usage Example -->
       <h3 data-i18n="home.codeExampleTitle">Canonical Usage Example</h3>
       <div class="code-tab-group">
         <div class="code-tabs-header">
@@ -160,27 +167,40 @@
           <button class="code-tab-btn" type="button">Node.js (npm)</button>
         </div>
         <div class="code-tab-content" style="display:block;">
-          <pre><code>import termux_stt as stt
+          <pre><code>from termux_stt import create_engine
 
-# 1. Transcribe audio with speaker diarization
-engine = stt.STTEngine(model="whisper-tiny")
-result = engine.transcribe_with_diarization("meeting.wav")
+# 1. Initialize Engine (auto-loads native ARM NEON binary & cached model)
+engine = create_engine("whisper", model="tiny", lang="en", threads=4)
 
-for seg in result.segments:
-    print(f"[{seg.speaker}] ({seg.start:.1f}s - {seg.end:.1f}s): {seg.text}")
+# 2. Transcribe Audio directly into Subtitles
+result = engine.transcribe("samples/jfk_1min.wav")
+print("Transcript:\n", result.text)
+print("SRT Subtitles:\n", result.to_srt())
+
+# 3. 2-Speaker Diarization without PyTorch
+hybrid = create_engine("hybrid", lang="en", num_speakers=2)
+diar_result = hybrid.diarize("samples/jfk_1min.wav")
+for seg in diar_result.segments:
+    print(f"[{seg.speaker}] ({seg.start:.1f}s -> {seg.end:.1f}s): {seg.text}")
 </code></pre>
         </div>
         <div class="code-tab-content" style="display:none;">
-          <pre><code>import { STTEngine } from "termux-stt";
+          <pre><code>const { createEngine } = require("termux-stt");
 
-const engine = new STTEngine({ model: "whisper-tiny" });
-const result = await engine.transcribe("meeting.wav");
-console.log("Transcript:", result.text);
+async function main() {
+  // 1. Initialize Whisper Engine
+  const engine = createEngine("whisper", { model: "tiny", lang: "en", threads: 4 });
+
+  // 2. Transcribe Audio
+  const result = await engine.transcribe("samples/jfk_1min.wav");
+  console.log("Transcript:", result.text);
+  console.log("SRT Subtitles:\n", result.toSrt());
+}
+main();
 </code></pre>
         </div>
       </div>
 
-      <!-- Section 8: Getting Started Navigation -->
       <h3 data-i18n="home.nextStepsTitle">Getting Started &amp; Deep Guides</h3>
       <ul>
         <li><a href="installation.html" data-i18n="home.linkInstall">Detailed Installation Guide (Hardware dependencies, Termux setup, WebGPU flags)</a></li>

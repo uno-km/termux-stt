@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Complete API Reference | Termux-STT</title>
-  <meta name="description" content="Integrates Whisper.cpp, Vosk, and Sherpa-ONNX with a closed-form pure-Python 128-dimensional X-Vector clustering algorithm that operates in under 80MB RAM.">
+  <meta name="description" content="Integrates Whisper.cpp, Vosk, and Sherpa-ONNX with a closed-form pure-Python 128-dimensional X-Vector clustering algorithm that operates in under 80MB RAM with zero cloud egress.">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="assets/style.css">
   <script src="assets/i18n.js" defer></script>
@@ -18,10 +18,10 @@
       <h1 data-i18n="common.brand">Termux-STT</h1>
     </a>
     <div class="header-controls">
-      <span class="release-tag" data-i18n="common.releaseTag">v1.0.9 (Production Release)</span>
+      <span class="release-tag" data-i18n="common.releaseTag">v1.0.9</span>
       <div class="lang-selector-wrapper"></div>
-      <a href="https://pypi.org/project/termux-stt/" target="_blank" class="header-btn" data-i18n="common.pypiBtn">PyPI (pip)</a>
-      <a href="https://www.npmjs.com/package/termux-stt" target="_blank" class="header-btn npm-btn" data-i18n="common.npmBtn">npm</a>
+      <a href="/foundation/index.html" class="header-btn" style="border-color:#2563eb;color:#2563eb;font-weight:600;" data-i18n="common.foundationBtn">Foundation</a>
+      <a href="https://pypi.org/project/termux-stt/" target="_blank" class="header-btn" title="PyPI: termux-stt | npm: termux-stt" data-i18n="common.pkgBtn">pip / npm</a>
       <a href="https://github.com/sponsors/uno-km" target="_blank" class="header-btn" style="border-color: #ea4aaa; color: #ea4aaa; font-weight: 700;">Sponsor</a>
       <a href="https://github.com/uno-km/termux-stt" target="_blank" class="header-btn primary" data-i18n="common.githubBtn">GitHub</a>
       <a href="/" class="header-btn" style="border-color:#004499;color:#004499;font-weight:600;" data-i18n="common.founderBtn">Founder CV</a>
@@ -30,21 +30,24 @@
 
   <div class="container">
   <nav class="sidebar">
-    <!-- Tier 1: Foundation Info -->
-    <h3 data-i18n="common.nav.foundation">Foundation Info</h3>
+    <!-- Tier 1: Primary Document / Foundation Navigation -->
+    <h3 data-i18n="common.nav.docNav">Document Navigation</h3>
     <ul>
-      <li><a href="/foundation/index.html">Foundation Portal</a></li>
-      <li><a href="/foundation/charter.html">Foundation Charter</a></li>
-      <li><a href="/foundation/governance.html">Governance & Merit</a></li>
-      <li><a href="/foundation/incubation.html">Incubation Policy</a></li>
-      <li><a href="/foundation/sponsorship.html">Sponsorship & Support</a></li>
-      <li><a href="/foundation/dashboard/">3D Neural Fabric Map</a></li>
+      <li><a href="index.html">Home / Architecture</a></li>
+      <li><a href="installation.html">Installation Guide</a></li>
+      <li><a href="quickstart.html">Quickstart & Recipes</a></li>
+      <li><a href="api-reference.html" class="active">API Reference</a></li>
+      <li><a href="showcase.html">Audio Showcase</a></li>
+      <li><a href="benchmarks.html">Benchmarks & Profiling</a></li>
+      <li><a href="advanced-parameters.html">Advanced Parameters</a></li>
+      <li><a href="versions.html">Version Archive</a></li>
     </ul>
     <!-- Tier 2: Flagship Libraries -->
     <h3 data-i18n="common.nav.libraries">Flagship Libraries</h3>
     <ul>
       <li><a href="/lib/sentinel/">AMEVA-Sentinel (Security SDK)</a></li>
       <li><a href="/lib/mcp/">AMEVA-MCP-Hub (Polyglot WASM)</a></li>
+      <li><a href="/lib/aichain/">Termux-AIChain (Zero-Dep Agent)</a></li>
       <li><a href="/lib/bitnet/">Termux-BitNet (1.58-bit LLM)</a></li>
       <li><a href="/lib/diffusion/">Termux-Diffusion (Image AI)</a></li>
       <li><a href="/lib/playwright/">Termux-Playwright (Automation)</a></li>
@@ -53,39 +56,119 @@
       <li><a href="/lib/forge/">AMEVA-Forge (WebGPU Autograd)</a></li>
       <li><a href="https://ameva-workstation-web-core.vercel.app/" target="_blank">AMEVA Workstation (Web App)</a></li>
     </ul>
-    <!-- Tier 3: Active Document Sections -->
-    <h3 data-i18n="common.nav.docNav">Document Navigation</h3>
-    <ul>
-      <li><a href="index.html" data-i18n="common.nav.home">Home / Architecture</a></li>
-      <li><a href="installation.html" data-i18n="common.nav.installation">Installation Guide</a></li>
-      <li><a href="quickstart.html" data-i18n="common.nav.quickstart">Quickstart & Recipes</a></li>
-      <li><a href="api-reference.html" class="active" data-i18n="common.nav.apiReference">API Reference</a></li>
-      <li><a href="benchmarks.html" data-i18n="common.nav.benchmarks">Benchmarks & Profiling</a></li>
-      <li><a href="advanced-parameters.html" data-i18n="common.nav.advancedParams">Advanced Parameters</a></li>
-      <li><a href="versions.html" data-i18n="common.nav.versions">Version Archive</a></li>
-    </ul>
-    <!-- Tier 4: AI Protocols & Specifications -->
+    <!-- Tier 3: AI Protocols & Specifications -->
     <h3 data-i18n="common.nav.aiSpecs">AI Agent Protocols</h3>
     <ul>
       <li><a href="llms.txt" target="_blank">llms.txt (AI Fast Context)</a></li>
       <li><a href="llms-full.txt" target="_blank">llms-full.txt (Full Spec)</a></li>
       <li><a href="robots.txt" target="_blank">robots.txt (AI Crawlers)</a></li>
       <li><a href="sitemap.xml" target="_blank">sitemap.xml (Sitemap)</a></li>
-      <li><a href="/" target="_blank">Founder Digital CV</a></li>
     </ul>
   </nav>
 
     <main class="content">
       <h2>Complete API Reference</h2>
       <p class="subtitle">100% Full Class, Struct, and Method Documentation</p>
-      <h3>Engine Subsystem</h3>
-         <table class="data-table">
-           <thead><tr><th>Method / Struct</th><th>Signature</th><th>Description</th></tr></thead>
-           <tbody>
-             <tr><td><code>Engine.__init__</code></td><td><code>(device='auto', precision='fp16')</code></td><td>Initializes hardware backend accelerator</td></tr>
-             <tr><td><code>Engine.compute</code></td><td><code>(inputs: Tensor) -&gt; Tensor</code></td><td>Executes closed-form calculation with memory protection</td></tr>
-           </tbody>
-         </table>
+      <h3>1. Top-Level Engine Factory</h3>
+<table class="data-table">
+  <thead>
+    <tr><th>Function</th><th>Parameters</th><th>Return Type</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>create_engine</code></td>
+      <td><code>engine="whisper", model=None, lang="ko", threads=None, vad=True, quantization="q5_1", num_speakers=0, **kwargs</code></td>
+      <td><code>Engine</code></td>
+      <td>Instantiates and returns the configured concrete STT or Hybrid engine instance.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>2. Core Engine Methods (<code>Engine</code> Abstract Base)</h3>
+<table class="data-table">
+  <thead>
+    <tr><th>Method</th><th>Signature</th><th>Return Type</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>transcribe</code></td>
+      <td><code>(audio_path: str, **kwargs)</code></td>
+      <td><code>TranscriptResult</code></td>
+      <td>Transcribes audio file with subprocess crash isolation and returns full text with timestamped segments.</td>
+    </tr>
+    <tr>
+      <td><code>diarize</code></td>
+      <td><code>(audio_path: str, num_speakers: int = 2)</code></td>
+      <td><code>DiarizedResult</code></td>
+      <td>Runs the full hybrid diarization pipeline (128d X-Vector + K-Means + STT).</td>
+    </tr>
+    <tr>
+      <td><code>stream_mic</code></td>
+      <td><code>(duration: Optional[float] = None)</code></td>
+      <td><code>Iterator[Segment]</code></td>
+      <td>Streams live audio from the device microphone and yields transcribed segments in real time.</td>
+    </tr>
+    <tr>
+      <td><code>stream_file</code></td>
+      <td><code>(audio_path: str, chunk_sec: float = 5.0)</code></td>
+      <td><code>Iterator[Segment]</code></td>
+      <td>Streams audio from a file in chunks and yields transcription segments sequentially.</td>
+    </tr>
+    <tr>
+      <td><code>get_info</code></td>
+      <td><code>()</code></td>
+      <td><code>Dict[str, Any]</code></td>
+      <td>Returns engine status metadata, active model name, language, and hardware thread configuration.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>3. Data Structures & Subtitle Formatters</h3>
+
+<h4><code>TranscriptResult</code> Struct:</h4>
+<ul>
+  <li><code>text: str</code> - Full reconstructed transcription text.</li>
+  <li><code>language: str</code> - Detected or configured ISO 639-1 language code.</li>
+  <li><code>segments: List[Segment]</code> - Timestamped utterance segments.</li>
+  <li><code>duration: float</code> - Total audio duration in seconds.</li>
+  <li><code>to_srt() -> str</code> - Serializes segments into valid SubRip (SRT) format.</li>
+  <li><code>to_vtt() -> str</code> - Serializes segments into WebVTT format.</li>
+  <li><code>to_json() -> str</code> - Serializes transcript and segment offsets into valid JSON.</li>
+  <li><code>to_rttm() -> str</code> - Serializes segments into NIST Rich Transcription (RTTM) format.</li>
+</ul>
+
+<h4><code>Segment</code> Struct:</h4>
+<ul>
+  <li><code>start: float</code> - Start timestamp in seconds (precision: 0.001s).</li>
+  <li><code>end: float</code> - End timestamp in seconds.</li>
+  <li><code>text: str</code> - Transcribed text within the interval.</li>
+  <li><code>speaker: Optional[str]</code> - Assigned speaker cluster identifier (e.g. <code>"Speaker 0"</code>).</li>
+</ul>
+
+<h3>4. Model Management & Preprocessing Subsystems</h3>
+<table class="data-table">
+  <thead>
+    <tr><th>Module / Class</th><th>Method</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>ModelHub</code></td>
+      <td><code>ensure_model(engine, model_name) -> str</code></td>
+      <td>Verifies local cache or downloads model binary with SHA-256 integrity verification.</td>
+    </tr>
+    <tr>
+      <td><code>preprocessor</code></td>
+      <td><code>preprocess(audio_path, target_sr=16000, force_mono=True) -> str</code></td>
+      <td>Direct pure-Python WAV parser or auto-converting FFmpeg fallback.</td>
+    </tr>
+    <tr>
+      <td><code>MobileGuard</code></td>
+      <td><code>acquire_wakelock() / monitor_memory()</code></td>
+      <td>Acquires Android CPU WakeLock and monitors process RSS against OOM limits.</td>
+    </tr>
+  </tbody>
+</table>
+
     </main>
   </div>
 
