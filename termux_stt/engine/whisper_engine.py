@@ -48,13 +48,16 @@ class WhisperEngine(Engine):
             if found:
                 return found
 
+        prefix = os.environ.get("PREFIX", "/data/data/com.termux/files/usr")
         candidates = [
-            Path("/usr/local/bin/whisper-cli"),
+            Path(prefix) / "bin" / "whisper-cli",
+            Path(prefix) / "bin" / "whisper-cpp",
             Path.home() / ".local" / "bin" / "whisper-cli",
             Path.home() / ".local" / "bin" / "whisper-cpp",
-            Path("/usr/local/bin/whisper-cpp"),
             Path("/data/data/com.termux/files/home/.local/bin/whisper-cli"),
             Path("/data/data/com.termux/files/home/.local/bin/whisper-cpp"),
+            Path("/usr/local/bin/whisper-cli"),
+            Path("/usr/local/bin/whisper-cpp"),
         ]
         for p in candidates:
             if p.exists():
@@ -93,108 +96,118 @@ class WhisperEngine(Engine):
         """Transcribe an audio file using whisper.cpp."""
         from termux_stt.audio.preprocessor import preprocess
         from termux_stt.models.hub import ModelHub
+        from termux_stt.platform.hardware import is_termux
         from termux_stt.platform.process_pool import run_isolated
 
         # 1. Preprocess to 16 kHz mono WAV
         wav_path = preprocess(audio_path, target_sr=16000, force_mono=True)
+        is_temp_wav = os.path.abspath(wav_path) != os.path.abspath(audio_path)
 
-        # 2. Ensure model is downloaded
-        model_path = ModelHub.ensure_model('whisper', self.model)
+        try:
+            # 2. Ensure model is downloaded
+            model_path = ModelHub.ensure_model('whisper', self.model)
 
-        # 3. Build command with all whisper.cpp control flags
-        binary = self._get_binary_path()
-        cmd = [
-            binary,
-            "-m", model_path,
-            "-l", self.lang,
-            "-t", str(self.threads),
-            "-oj",  # output JSON
-            "-f", wav_path,
-        ]
+            # 3. Build command with all whisper.cpp control flags
+            binary = self._get_binary_path()
+            cmd = [
+                binary,
+                "-m", model_path,
+                "-l", self.lang,
+                "-t", str(self.threads),
+                "-oj",  # output JSON
+                "-f", wav_path,
+            ]
 
-        # Extract options from kwargs or self.config.extra
-        opts = {**self.config.extra, **kwargs}
+            # Extract options from kwargs or self.config.extra
+            opts = {**self.config.extra, **kwargs}
 
-        if "prompt" in opts or "initial_prompt" in opts:
-            prompt_val = opts.get("prompt") or opts.get("initial_prompt")
-            cmd.extend(["--prompt", str(prompt_val)])
-        if "beam_size" in opts:
-            cmd.extend(["-bs", str(opts["beam_size"])])
-        if "best_of" in opts:
-            cmd.extend(["-bo", str(opts["best_of"])])
-        if "temperature" in opts:
-            cmd.extend(["-tp", str(opts["temperature"])])
-        if opts.get("translate", False):
-            cmd.append("-tr")
-        if "max_len" in opts:
-            cmd.extend(["-ml", str(opts["max_len"])])
-        if opts.get("split_on_word", False):
-            cmd.append("-sow")
-        if opts.get("no_fallback", False):
-            cmd.append("-nf")
-        if "suppress_regex" in opts:
-            cmd.extend(["--suppress-regex", str(opts["suppress_regex"])])
-        if "grammar" in opts:
-            cmd.extend(["--grammar", str(opts["grammar"])])
-        if opts.get("dtw", False):
-            cmd.append("-dtw")
+            if "prompt" in opts or "initial_prompt" in opts:
+                prompt_val = opts.get("prompt") or opts.get("initial_prompt")
+                cmd.extend(["--prompt", str(prompt_val)])
+            if "beam_size" in opts:
+                cmd.extend(["-bs", str(opts["beam_size"])])
+            if "best_of" in opts:
+                cmd.extend(["-bo", str(opts["best_of"])])
+            if "temperature" in opts:
+                cmd.extend(["-tp", str(opts["temperature"])])
+            if opts.get("translate", False):
+                cmd.append("-tr")
+            if "max_len" in opts:
+                cmd.extend(["-ml", str(opts["max_len"])])
+            if opts.get("split_on_word", False):
+                cmd.append("-sow")
+            # Default to no_fallback on Termux unless explicitly disabled
+            if opts.get("no_fallback", is_termux()):
+                cmd.append("-nf")
+            if "suppress_regex" in opts:
+                cmd.extend(["--suppress-regex", str(opts["suppress_regex"])])
+            if "grammar" in opts:
+                cmd.extend(["--grammar", str(opts["grammar"])])
+            if opts.get("dtw", False):
+                cmd.append("-dtw")
 
-        # Passthrough raw extra_args if provided (list or string)
-        extra_args = opts.get("extra_args")
-        if extra_args:
-            if isinstance(extra_args, list):
-                cmd.extend(extra_args)
-            elif isinstance(extra_args, str):
-                import shlex
-                cmd.extend(shlex.split(extra_args))
+            # Passthrough raw extra_args if provided (list or string)
+            extra_args = opts.get("extra_args")
+            if extra_args:
+                if isinstance(extra_args, list):
+                    cmd.extend(extra_args)
+                elif isinstance(extra_args, str):
+                    import shlex
+                    cmd.extend(shlex.split(extra_args))
 
-        logger.info("Running whisper.cpp: %s", " ".join(cmd))
-        result = run_isolated(cmd)
+            logger.info("Running whisper.cpp: %s", " ".join(cmd))
+            result = run_isolated(cmd)
 
-        if result.returncode != 0:
-            raise RuntimeError(
-                f"whisper.cpp exited with code {result.returncode}: "
-                f"{result.stderr}"
-            )
+            if result.returncode != 0:
+                raise RuntimeError(
+                    f"whisper.cpp exited with code {result.returncode}: "
+                    f"{result.stderr}"
+                )
 
-        # 4. Parse JSON result (written to <wav>.json)
-        json_file = f"{wav_path}.json"
-        segments: List[Segment] = []
-        full_text = ""
+            # 4. Parse JSON result (written to <wav>.json)
+            json_file = f"{wav_path}.json"
+            segments: List[Segment] = []
+            full_text = ""
 
-        if os.path.exists(json_file):
-            with open(json_file, "r", encoding="utf-8") as fh:
-                segments = self._parse_whisper_json(fh.read())
-            full_text = " ".join(s.text for s in segments)
-            try:
-                os.remove(json_file)
-            except OSError:
-                pass
-
-        # Fallback: parse stdout directly if JSON was missing or empty
-        if not segments and result.stdout:
-            import re
-            pattern = re.compile(r"\[(\d{2}):(\d{2}):([\d\.]+)\s*-->\s*(\d{2}):(\d{2}):([\d\.]+)\]\s*(.*)")
-            for line in result.stdout.splitlines():
-                m = pattern.search(line)
-                if m:
-                    h1, m1, s1, h2, m2, s2, txt = m.groups()
-                    t0 = int(h1) * 3600 + int(m1) * 60 + float(s1)
-                    t1 = int(h2) * 3600 + int(m2) * 60 + float(s2)
-                    txt = txt.strip()
-                    if txt:
-                        segments.append(Segment(start=t0, end=t1, text=txt))
-            if segments:
+            if os.path.exists(json_file):
+                with open(json_file, "r", encoding="utf-8") as fh:
+                    segments = self._parse_whisper_json(fh.read())
                 full_text = " ".join(s.text for s in segments)
-            elif result.stdout.strip():
-                full_text = result.stdout.strip()
-                segments = [Segment(start=0.0, end=0.0, text=full_text)]
+                try:
+                    os.remove(json_file)
+                except OSError:
+                    pass
 
-        return TranscriptResult(
-            text=full_text,
-            language=self.lang,
-            segments=segments,
-        )
+            # Fallback: parse stdout directly if JSON was missing or empty
+            if not segments and result.stdout:
+                import re
+                pattern = re.compile(r"\[(\d{2}):(\d{2}):([\d\.]+)\s*-->\s*(\d{2}):(\d{2}):([\d\.]+)\]\s*(.*)")
+                for line in result.stdout.splitlines():
+                    m = pattern.search(line)
+                    if m:
+                        h1, m1, s1, h2, m2, s2, txt = m.groups()
+                        t0 = int(h1) * 3600 + int(m1) * 60 + float(s1)
+                        t1 = int(h2) * 3600 + int(m2) * 60 + float(s2)
+                        txt = txt.strip()
+                        if txt:
+                            segments.append(Segment(start=t0, end=t1, text=txt))
+                if segments:
+                    full_text = " ".join(s.text for s in segments)
+                elif result.stdout.strip():
+                    full_text = result.stdout.strip()
+                    segments = [Segment(start=0.0, end=0.0, text=full_text)]
+
+            return TranscriptResult(
+                text=full_text,
+                language=self.lang,
+                segments=segments,
+            )
+        finally:
+            if is_temp_wav and os.path.exists(wav_path):
+                try:
+                    os.remove(wav_path)
+                except OSError:
+                    pass
 
     def stream_mic(
         self, duration: Optional[float] = None

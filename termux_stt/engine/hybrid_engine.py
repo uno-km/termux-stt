@@ -91,51 +91,60 @@ class HybridEngine(Engine):
 
         # 1. Preprocess
         wav_path = preprocess(audio_path, target_sr=16000, force_mono=True)
+        import os
+        is_temp_wav = os.path.abspath(wav_path) != os.path.abspath(audio_path)
 
-        # 2. Vosk X-Vector extraction
         try:
-            xvectors = self._vosk.extract_xvectors(wav_path, chunk_sec=2.0)
-        except Exception as exc:
-            logger.warning("X-Vector extraction failed: %s — falling back", exc)
-            xvectors = []
+            # 2. Vosk X-Vector extraction
+            try:
+                xvectors = self._vosk.extract_xvectors(wav_path, chunk_sec=2.0)
+            except Exception as exc:
+                logger.warning("X-Vector extraction failed: %s — falling back", exc)
+                xvectors = []
 
-        # 3. Pure Python K-Means clustering
-        speaker_labels = []
-        if xvectors and len(xvectors) >= num_speakers:
-            vectors = [xv[2] for xv in xvectors]  # (start, end, vector)
-            kmeans = KMeans(n_clusters=num_speakers)
-            kmeans.fit(vectors)
+            # 3. Pure Python K-Means clustering
+            speaker_labels = []
+            if xvectors and len(xvectors) >= num_speakers:
+                vectors = [xv[2] for xv in xvectors]  # (start, end, vector)
+                kmeans = KMeans(n_clusters=num_speakers)
+                kmeans.fit(vectors)
 
-            speaker_labels = [
-                (xv[0], xv[1], label)
-                for xv, label in zip(xvectors, kmeans.labels_)
-            ]
-        elif xvectors:
-            # Fewer chunks than speakers — assign sequentially
-            speaker_labels = [
-                (xv[0], xv[1], i % num_speakers)
-                for i, xv in enumerate(xvectors)
-            ]
+                speaker_labels = [
+                    (xv[0], xv[1], label)
+                    for xv, label in zip(xvectors, kmeans.labels_)
+                ]
+            elif xvectors:
+                # Fewer chunks than speakers — assign sequentially
+                speaker_labels = [
+                    (xv[0], xv[1], i % num_speakers)
+                    for i, xv in enumerate(xvectors)
+                ]
 
-        # 4. Whisper STT transcription
-        stt_result = self._whisper.transcribe(wav_path)
+            # 4. Whisper STT transcription
+            stt_result = self._whisper.transcribe(wav_path)
 
-        # 5. Align speakers to transcript segments
-        mapper = SpeakerMapper()
-        aligned = mapper.align(stt_result.segments, speaker_labels)
+            # 5. Align speakers to transcript segments
+            mapper = SpeakerMapper()
+            aligned = mapper.align(stt_result.segments, speaker_labels)
 
-        # 6. Build result
-        unique_speakers = sorted(
-            set(s.speaker for s in aligned if s.speaker)
-        )
+            # 6. Build result
+            unique_speakers = sorted(
+                set(s.speaker for s in aligned if s.speaker)
+            )
 
-        return DiarizedResult(
-            text=" ".join(s.text for s in aligned),
-            language=stt_result.language,
-            segments=aligned,
-            duration=stt_result.duration,
-            speakers=unique_speakers,
-        )
+            return DiarizedResult(
+                text=" ".join(s.text for s in aligned),
+                language=stt_result.language,
+                segments=aligned,
+                duration=stt_result.duration,
+                speakers=unique_speakers,
+            )
+        finally:
+            if is_temp_wav and os.path.exists(wav_path):
+                try:
+                    os.remove(wav_path)
+                except OSError:
+                    pass
 
     def stream_mic(
         self, duration: Optional[float] = None

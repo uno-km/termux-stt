@@ -6,6 +6,7 @@ and provides both speech-to-text and 128-dimensional X-Vector extraction.
 
 import json
 import logging
+import os
 import sys
 import wave
 from typing import Any, Dict, Iterator, List, Optional, Tuple
@@ -64,9 +65,12 @@ class VoskEngine(Engine):
 
     @staticmethod
     def _spoof_platform() -> None:
-        """Spoof ``sys.platform`` to ``'linux'`` for Vosk on Android."""
-        if 'linux' not in sys.platform:
-            logger.info("Spoofing sys.platform to 'linux' for Vosk compatibility")
+        """Spoof ``sys.platform`` to ``'linux'`` only on Android / Termux."""
+        from termux_stt.platform.hardware import is_termux
+
+        is_android = hasattr(os, "uname") and "android" in os.uname().release.lower()
+        if (is_termux() or is_android) and 'linux' not in sys.platform:
+            logger.info("Spoofing sys.platform to 'linux' for Vosk Android/Termux compatibility")
             sys.platform = 'linux'
 
     # ------------------------------------------------------------------

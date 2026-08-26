@@ -3,7 +3,10 @@ import os
 import subprocess
 from typing import Any, Dict
 
-import psutil
+try:
+    import psutil
+except ImportError:
+    psutil = None
 
 logger = logging.getLogger(__name__)
 
@@ -59,13 +62,19 @@ class MobileGuard:
     @staticmethod
     def monitor_memory() -> Dict[str, Any]:
         """Return memory usage of current process and system."""
+        if psutil is None:
+            return {
+                "rss_mb": 0.0,
+                "available_ram_mb": 0.0,
+                "percent_used": 0.0,
+            }
         process = psutil.Process(os.getpid())
         mem_info = process.memory_info()
         sys_mem = psutil.virtual_memory()
         return {
             "rss_mb": mem_info.rss / (1024 * 1024),
             "available_ram_mb": sys_mem.available / (1024 * 1024),
-            "percent_used": sys_mem.percent
+            "percent_used": sys_mem.percent,
         }
 
     def __enter__(self):
