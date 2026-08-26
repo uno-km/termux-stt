@@ -7,6 +7,7 @@ from termux_stt.cli.doctor import run_doctor
 from termux_stt.cli.listen import run_listen
 from termux_stt.cli.models_cmd import run_models
 from termux_stt.cli.transcribe import run_transcribe
+from termux_stt.platform.installer import main as run_install
 
 
 def main():
@@ -27,6 +28,9 @@ def main():
     common_parser.add_argument("--translate", action="store_true", help="Translate source audio to English")
     common_parser.add_argument("--extra-args", type=str, default=None, help="Raw CLI arguments passed directly to the engine")
     common_parser.add_argument("--verbose", action="store_true", help="Enable verbose logging")
+
+    # Install subcommand
+    subparsers.add_parser("install", help="1-Click automatic installer for native engines and dependencies")
 
     # Transcribe subcommand
     parser_transcribe = subparsers.add_parser("transcribe", parents=[common_parser], help="Transcribe audio file")
@@ -60,7 +64,9 @@ def main():
 
     args = parser.parse_args()
 
-    if args.command == "transcribe":
+    if args.command == "install":
+        run_install()
+    elif args.command == "transcribe":
         run_transcribe(args)
     elif args.command == "listen":
         run_listen(args)
@@ -75,6 +81,7 @@ def main():
     else:
         parser.print_help()
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()
