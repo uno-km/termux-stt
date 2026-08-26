@@ -77,48 +77,61 @@ pip install termux-stt && termux-stt install
 #### Node.js / TypeScript:
 ```bash
 pkg update -y && pkg install nodejs-lts ffmpeg git -y
-npm install -g termux-stt && npx termux-stt install
+---
+
+## 1. Quick Scenario Playbook
+
+### 1-Click Installation
+
+#### Python SDK:
+```bash
+pip install termux-stt && termux-stt install
+```
+
+#### Node.js / TypeScript:
+```bash
+npm install -g termux-stt && termux-stt install
 ```
 
 ---
 
-## License
+### 🎙️ Try with the Included Sample Audio! (JFK 1-Minute Speech)
 
-<<<<<<< Updated upstream
-#### Option A: One-Line CLI
+`termux-stt` includes John F. Kennedy's 1961 Inaugural Address (60.00s 16kHz Mono PCM) in `samples/jfk_1min.wav` for instant out-of-the-box testing.
+
+#### Option A: CLI One-Liner (Python / npm)
 ```bash
-# Transcribe audio file with default Whisper engine (Korean)
-termux-stt transcribe meeting.wav
+# 1. Transcribe the 60s sample speech with Whisper (auto-generates SRT subtitles)
+termux-stt transcribe samples/jfk_1min.wav --engine whisper --model tiny --format srt
 
-# Export directly to Subtitles (SRT or VTT)
-termux-stt transcribe --format srt meeting.wav > subtitles.srt
+# 2. Transcribe and separate speakers (128d X-Vector Diarization)
+termux-stt diarize samples/jfk_1min.wav --speakers 2 --format text
 
-# Use ultra-fast Vosk engine
-termux-stt transcribe --engine vosk --model small-ko voice_memo.wav
+# 3. Benchmark on-device latency & RTF
+termux-stt benchmark --audio samples/jfk_1min.wav --model tiny
 ```
 
-#### Option B: Python SDK Integration
+#### Option B: Python SDK
 ```python
 from termux_stt import create_engine
 
-# 1. Initialize Engine (auto-downloads model on first call)
-engine = create_engine("whisper", model="base", lang="ko")
+# 1. Initialize Whisper Engine (auto-loads native ARM NEON binary)
+engine = create_engine("whisper", model="tiny", lang="en", threads=4)
 
-# 2. Transcribe Audio
-result = engine.transcribe("meeting.wav")
+# 2. Transcribe JFK 60s speech
+result = engine.transcribe("samples/jfk_1min.wav")
 
-print("Transcript:", result.text)
-print("Detected Language:", result.language)
-print("Duration:", f"{result.duration:.2f}s")
+print("Transcript:\n", result.text)
+print("SRT Subtitles:\n", result.to_srt())
 ```
 
-#### Option C: Node.js / TypeScript Integration
+#### Option C: Node.js / TypeScript
 ```javascript
 const { createEngine } = require("termux-stt");
 
 async function main() {
-  const engine = createEngine("whisper", { model: "base", lang: "ko" });
-  const result = await engine.transcribe("meeting.wav");
+  const engine = createEngine("whisper", { model: "tiny", lang: "en", threads: 4 });
+  const result = await engine.transcribe("samples/jfk_1min.wav");
   
   console.log("Transcript:", result.text);
   console.log("SRT Subtitles:\n", result.toSrt());
@@ -127,6 +140,8 @@ main();
 ```
 
 ---
+
+## 2. Advanced Scenarios
 
 ### [Streaming] Scenario 3: Real-Time Microphone Streaming
 

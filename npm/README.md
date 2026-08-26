@@ -20,17 +20,19 @@ pkg update -y && pkg install nodejs-lts ffmpeg git -y
 npm install -g termux-stt
 ```
 
-### 1.2 CLI Usage
+### 1.2 CLI Usage & Instant Sample Test
+
+`termux-stt` includes a 60-second JFK inaugural address speech (`samples/jfk_1min.wav`) for immediate testing:
 
 ```bash
-# 1. Initialize native voice recognition engines
-npx termux-stt install
+# 1. 1-Click Environment Setup (Installs ffmpeg & compiles whisper.cpp NEON)
+termux-stt install
 
-# 2. Transcribe local audio file
-npx termux-stt transcribe meeting.wav --engine whisper --model base
+# 2. Transcribe sample speech with Whisper Tiny (Generates SRT subtitles)
+termux-stt transcribe samples/jfk_1min.wav --engine whisper --model tiny --format srt
 
-# 3. Transcribe with 128d Speaker Diarization
-npx termux-stt diarize interview.wav
+# 3. Transcribe with 128d Pure Python Speaker Diarization
+termux-stt diarize samples/jfk_1min.wav --speakers 2
 ```
 
 ---
@@ -38,12 +40,13 @@ npx termux-stt diarize interview.wav
 ## 2. Programmatic Node.js API
 
 ```javascript
-const { createSTTEngine } = require('termux-stt');
+const { createEngine } = require('termux-stt');
 
 async function main() {
-  const engine = createSTTEngine({ engine: 'whisper', model: 'base' });
-  const result = await engine.transcribe('sample.wav');
+  const engine = createEngine('whisper', { model: 'tiny', lang: 'en', threads: 4 });
+  const result = await engine.transcribe('samples/jfk_1min.wav');
   console.log('Transcription:', result.text);
+  console.log('SRT Subtitles:\n', result.toSrt());
 }
 
 main();
