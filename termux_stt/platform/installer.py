@@ -24,14 +24,14 @@ class EngineInstaller:
 
     @classmethod
     def install_system_dependencies(cls) -> bool:
-        """Install required Termux packages (ffmpeg, clang, cmake, make, git)."""
-        print("[*] Provisioning native system packages (ffmpeg, cmake, clang, git)...")
+        """Install required Termux packages (ffmpeg, libbluray, libxml2, clang, cmake, make, git)."""
+        print("[*] Provisioning native system packages (ffmpeg, libbluray, libxml2, cmake, clang, git)...")
         if not shutil.which("pkg"):
             logger.warning("'pkg' command not found, skipping system package provisioning.")
             return True
 
         try:
-            cmd = ["pkg", "install", "-y", "ffmpeg", "cmake", "make", "clang", "git", "termux-api"]
+            cmd = ["pkg", "install", "-y", "ffmpeg", "libbluray", "libxml2", "cmake", "make", "clang", "git", "termux-api"]
             res = subprocess.run(cmd, check=False)
             return res.returncode == 0
         except Exception as e:

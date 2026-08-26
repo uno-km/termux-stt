@@ -27,17 +27,33 @@ def is_supported_format(path: str) -> bool:
     return ext.lower() in SUPPORTED_FORMATS
 
 def get_audio_info(path: str) -> Dict[str, Any]:
-    """Get audio metadata using ffprobe."""
+    """Get audio metadata using pure Python wave module first, then ffprobe."""
     if not os.path.exists(path):
         raise FileNotFoundError(f"File not found: {path}")
 
+    # 1. Fast Pure Python WAV parser (Zero external dependencies)
+    try:
+        import wave
+        with wave.open(path, "rb") as wf:
+            channels = wf.getnchannels()
+            sample_rate = wf.getframerate()
+            n_frames = wf.getnframes()
+            duration = n_frames / float(sample_rate) if sample_rate > 0 else 0.0
+            return {
+                "format": {"format_name": "wav", "duration": duration},
+                "streams": [{"codec_type": "audio", "codec_name": "pcm_s16le", "sample_rate": sample_rate, "channels": channels, "duration": duration}],
+            }
+    except Exception:
+        pass
+
+    # 2. ffprobe fallback for non-WAV formats
     cmd = [
         "ffprobe",
         "-v", "quiet",
         "-print_format", "json",
         "-show_format",
         "-show_streams",
-        path
+        path,
     ]
     try:
         result = subprocess.run(cmd, capture_output=True, text=True, check=True)
@@ -46,6 +62,7 @@ def get_audio_info(path: str) -> Dict[str, Any]:
         raise RuntimeError(f"Failed to probe audio file: {e}")
     except json.JSONDecodeError as e:
         raise RuntimeError(f"Failed to parse ffprobe output: {e}")
+
 
 def load_audio(path: str) -> AudioData:
     """Load audio file and return AudioData."""
