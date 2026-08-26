@@ -1,13 +1,30 @@
-# termux-stt - Full Architecture & API Specification
+# Termux-STT Full Technical Specification (v1.0.9)
+Official Documentation & Deep Architecture Reference for Autonomous AI Agents.
 
-## 1. Overview
-termux-stt is an on-device Speech-to-Text (STT) and Speaker Diarization framework engineered specifically for the Android Termux environment.
+## 1. System Overview
+Unified On-Device Speech-to-Text & Pure Python 128d X-Vector Speaker Diarization
+Integrates Whisper.cpp, Vosk, and Sherpa-ONNX with a closed-form pure-Python 128-dimensional X-Vector clustering algorithm that operates in under 80MB RAM.
 
-## 2. Supported Engines
-- whisper.cpp: High accuracy GGML-quantized STT
-- vosk: Ultra-lightweight Kaldi-based STT & 128d X-Vector speaker embedding
-- sherpa-onnx: Next-gen Kaldi ONNX runtime for streaming & offline STT
-- hybrid: Vosk X-Vector + Whisper STT + Pure Python K-Means
+## 2. Package & Installation
+- PyPI: termux-stt
+- Command: pip install termux-stt
+# or: npm install termux-stt
+- Repository: https://github.com/uno-km/termux-stt
 
-## 3. Pure Python Math
-Clustering and similarity calculation are implemented in pure Python to eliminate large native ML dependencies (numpy, scipy, scikit-learn).
+## 3. Core Capabilities
+- **Triple STT Engine Integration**: Seamlessly switches between Whisper.cpp (accuracy), Vosk (latency), and Sherpa-ONNX.
+- **Pure Python Speaker Diarization**: Lightweight cosine spectral clustering without external ML frameworks.
+- **Zero Cloud Egress Audio Privacy**: Audio processing and transcription execute strictly on-device without cloud network calls.
+
+## 4. Canonical Implementation
+```python
+import termux_stt as stt
+
+# 1. Transcribe audio with speaker diarization
+engine = stt.STTEngine(model="whisper-tiny")
+result = engine.transcribe_with_diarization("meeting.wav")
+
+for seg in result.segments:
+    print(f"[{seg.speaker}] ({seg.start:.1f}s - {seg.end:.1f}s): {seg.text}")
+
+```

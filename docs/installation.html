@@ -1,166 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Installation Guide - termux-stt</title>
-    <meta name="description" content="Complete installation guide for termux-stt on Android Termux. Python pip, Node.js npm, and engine build scripts.">
-    <meta name="keywords" content="termux stt, android speech to text, whisper termux, vosk termux, sherpa onnx termux, speaker diarization android, on-device stt, pure python kmeans, mobile transcription, exynos stt, snapdragon stt, zero proot stt">
-    <meta name="author" content="Eunho Kim (@uno-km)">
-    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-    <link rel="canonical" href="https://uno-km.github.io/termux-stt/">
-    <link rel="alternate" type="application/rss+xml" title="termux-stt RSS Feed" href="https://uno-km.github.io/termux-stt/rss.xml">
-
-    <!-- Open Graph Metadata -->
-    <meta property="og:title" content="Installation Guide - termux-stt">
-    <meta property="og:description" content="Complete installation guide for termux-stt on Android Termux. Python pip, Node.js npm, and engine build scripts.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://uno-km.github.io/termux-stt/">
-    <meta property="og:site_name" content="termux-stt">
-    <meta property="og:locale" content="en_US">
-
-    <!-- Twitter Card Metadata -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Installation Guide - termux-stt">
-    <meta name="twitter:description" content="Complete installation guide for termux-stt on Android Termux. Python pip, Node.js npm, and engine build scripts.">
-
-    <!-- Schema.org SoftwareApplication JSON-LD -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
-      "name": "termux-stt",
-      "operatingSystem": "Android Termux (ARM64, aarch64, Samsung Galaxy)",
-      "applicationCategory": "DeveloperApplication",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      },
-      "softwareVersion": "1.0.0",
-      "description": "Complete installation guide for termux-stt on Android Termux. Python pip, Node.js npm, and engine build scripts.",
-      "url": "https://uno-km.github.io/termux-stt/",
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "5.0",
-        "reviewCount": "150",
-        "bestRating": "5",
-        "worstRating": "1"
-      },
-      "sameAs": [
-        "https://github.com/uno-km/termux-stt",
-        "https://pypi.org/project/termux-stt/",
-        "https://www.npmjs.com/package/termux-stt"
-      ]
-    }
-    </script>
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <link rel="stylesheet" href="assets/style.css">
-    <script src="assets/i18n.js" defer></script>
-    <script src="assets/i18n-translations.js" defer></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Installation & Setup Guide | Termux-STT</title>
+  <meta name="description" content="Integrates Whisper.cpp, Vosk, and Sherpa-ONNX with a closed-form pure-Python 128-dimensional X-Vector clustering algorithm that operates in under 80MB RAM.">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="assets/style.css">
+  <script src="assets/i18n.js" defer></script>
+  <script src="assets/i18n-translations.js" defer></script>
+  <script src="assets/common.js" defer></script>
 </head>
 <body>
-    <header>
-        <a href="index.html" class="header-brand">
-            <img src="favicon.svg" alt="termux-stt Logo">
-            <h1 data-i18n="common.brand">termux-stt</h2>
-        </a>
-        <div class="header-controls">
-            <span class="release-tag" data-i18n="common.releaseTag">v1.0.0 (Unified STT)</span>
-            <div class="lang-selector-wrapper">
-                <select class="lang-select" onchange="if(window.i18nManager) window.i18nManager.setLanguage(this.value); else if(window.I18n) window.I18n.setLanguage(this.value)">
-                    <option value="en">🇺🇸 English</option>
-                    <option value="ko">🇰🇷 한국어</option>
-                    <option value="ja">🇯🇵 日本語</option>
-                    <option value="zh">🇨🇳 简体中文</option>
-                    <option value="es">🇪🇸 Español</option>
-                    <option value="de">🇩🇪 Deutsch</option>
-                </select>
-            </div>
-            <a href="https://pypi.org/project/termux-stt/" target="_blank" class="header-btn" data-i18n="common.pypiBtn">PyPI (pip)</a>
-            <a href="https://www.npmjs.com/package/termux-stt" target="_blank" class="header-btn" style="background:#cb3837;color:#fff;" data-i18n="common.npmBtn">npm (Node.js)</a>
-            <a href="https://github.com/uno-km/termux-stt" target="_blank" class="header-btn primary" data-i18n="common.githubBtn">GitHub</a>
-        </div>
-    </header>
-    <div class="container">
-        <nav class="sidebar">
-            <h3 data-i18n="common.nav.overview">Overview</h3>
-            <ul>
-                <li><a href="index.html" data-i18n="common.nav.home">Home / Architecture</a></li>
-                <li><a href="installation.html" class="active" data-i18n="common.nav.installation">Installation Guide</a></li>
-                <li><a href="quickstart.html" data-i18n="common.nav.quickstart">Quickstart & Recipes</a></li>
-            </ul>
-            <h3 data-i18n="common.nav.reference">Official Reference</h3>
-            <ul>
-                <li><a href="showcase.html" data-i18n="common.nav.showcase">Live Audio Showcase</a></li>
-                <li><a href="models.html" data-i18n="common.nav.models">Model Hub & Registry</a></li>
-                <li><a href="advanced-parameters.html" data-i18n="common.nav.advancedParams">Advanced Parameters</a></li>
-                <li><a href="api-reference.html" data-i18n="common.nav.apiReference">100% Full API Reference</a></li>
-                <li><a href="benchmarks.html" data-i18n="common.nav.benchmarks">Benchmarks & Hardware</a></li>
-                <li><a href="versions.html" data-i18n="common.nav.versions">Version Archive</a></li>
-            </ul>
-            <h3 data-i18n="common.nav.aiSpecs">AI Agent Protocol &amp; Feeds</h3>
-            <ul>
-                <li><a href="llms.txt" target="_blank">llms.txt (AI Context)</a></li>
-                <li><a href="llms-full.txt" target="_blank">llms-full.txt (Full Spec)</a></li>
-                <li><a href="robots.txt" target="_blank">robots.txt (AI Crawlers)</a></li>
-                <li><a href="sitemap.xml" target="_blank">sitemap.xml (Sitemap)</a></li>
-            </ul>
-        </nav>
-        <main class="content">
-            <h2>Installation Guide</h2>
-            <p class="subtitle">Setup termux-stt in Android Termux environment with zero compilation headaches.</p>
-
-            <h2>Prerequisites in Termux</h2>
-            <pre><code># Update Termux packages
-pkg update && pkg upgrade -y
-
-# Install essential dependencies
-pkg install -y python ffmpeg git cmake make clang libandroid-wordexp</code></pre>
-
-            <h2>Package Installation</h2>
-            <div class="tabs-container">
-                <div class="tabs-header">
-                    <button class="tab-btn active" data-tab="pip-inst">Python</button>
-                    <button class="tab-btn" data-tab="npm-inst">Node.js</button>
-                    <button class="tab-btn" data-tab="src-inst">From Source</button>
-                </div>
-                <div class="tab-content active" data-tab-content="pip-inst">
-                    <pre><code># Install from PyPI
-pip install termux-stt
-
-# Run automated engine setup
-termux-stt-install</code></pre>
-                </div>
-                <div class="tab-content" data-tab-content="npm-inst">
-                    <pre><code># Install globally or locally
-npm install -g termux-stt</code></pre>
-                </div>
-                <div class="tab-content" data-tab-content="src-inst">
-                    <pre><code>git clone https://github.com/uno-km/termux-stt.git
-cd termux-stt
-pip install -e .
-bash scripts/install_whisper_cpp.sh</code></pre>
-                </div>
-            </div>
-
-            <h2>Android Environment Tweaks (Recommended)</h2>
-            <div class="alert alert-warning">
-                <strong>Phantom Process Killer Fix (Android 12+):</strong><br>
-                Execute this command via ADB from PC to prevent Android from killing long-running STT processes:
-                <pre><code>adb shell "/system/bin/device_config put activity_manager max_phantom_processes 2147483647"</code></pre>
-            </div>
-
-            <h2>Verification</h2>
-            <pre><code># Run built-in system diagnostics
-termux-stt doctor</code></pre>
-        </main>
+  <header>
+    <a href="index.html" class="header-brand">
+      <img src="favicon.svg" alt="Termux-STT Logo">
+      <h1 data-i18n="common.brand">Termux-STT</h1>
+    </a>
+    <div class="header-controls">
+      <span class="release-tag" data-i18n="common.releaseTag">v1.0.9 (Production Release)</span>
+      <div class="lang-selector-wrapper"></div>
+      <a href="https://pypi.org/project/termux-stt/" target="_blank" class="header-btn" data-i18n="common.pypiBtn">PyPI (pip)</a>
+      <a href="https://www.npmjs.com/package/termux-stt" target="_blank" class="header-btn npm-btn" data-i18n="common.npmBtn">npm</a>
+      <a href="https://github.com/sponsors/uno-km" target="_blank" class="header-btn" style="border-color: #ea4aaa; color: #ea4aaa; font-weight: 700;">Sponsor</a>
+      <a href="https://github.com/uno-km/termux-stt" target="_blank" class="header-btn primary" data-i18n="common.githubBtn">GitHub</a>
+      <a href="/" class="header-btn" style="border-color:#004499;color:#004499;font-weight:600;" data-i18n="common.founderBtn">Founder CV</a>
     </div>
-    <footer>
-        <div style="margin-bottom: 8px; font-size: 0.85em; opacity: 0.85;">
-            <strong>Disclaimer:</strong> termux-stt is an independent open-source project developed for the Android Termux environment and is not officially affiliated with, endorsed by, or sponsored by the Termux project, OpenAI, or any other third party.
-        </div>
-        <span data-i18n="common.footerText">&copy; 2026 termux-stt Project (uno-km). Released under the MIT License.</span>
-    </footer>
+  </header>
+
+  <div class="container">
+  <nav class="sidebar">
+    <!-- Tier 1: Foundation Info -->
+    <h3 data-i18n="common.nav.foundation">Foundation Info</h3>
+    <ul>
+      <li><a href="/foundation/index.html">Foundation Portal</a></li>
+      <li><a href="/foundation/charter.html">Foundation Charter</a></li>
+      <li><a href="/foundation/governance.html">Governance & Merit</a></li>
+      <li><a href="/foundation/incubation.html">Incubation Policy</a></li>
+      <li><a href="/foundation/sponsorship.html">Sponsorship & Support</a></li>
+      <li><a href="/foundation/dashboard/">3D Neural Fabric Map</a></li>
+    </ul>
+    <!-- Tier 2: Flagship Libraries -->
+    <h3 data-i18n="common.nav.libraries">Flagship Libraries</h3>
+    <ul>
+      <li><a href="/lib/sentinel/">AMEVA-Sentinel (Security SDK)</a></li>
+      <li><a href="/lib/mcp/">AMEVA-MCP-Hub (Polyglot WASM)</a></li>
+      <li><a href="/lib/bitnet/">Termux-BitNet (1.58-bit LLM)</a></li>
+      <li><a href="/lib/diffusion/">Termux-Diffusion (Image AI)</a></li>
+      <li><a href="/lib/playwright/">Termux-Playwright (Automation)</a></li>
+      <li><a href="/lib/stt/" class="active">Termux-STT (Voice STT)</a></li>
+      <li><a href="/lib/train/">Termux-Train (LoRA Engine)</a></li>
+      <li><a href="/lib/forge/">AMEVA-Forge (WebGPU Autograd)</a></li>
+      <li><a href="https://ameva-workstation-web-core.vercel.app/" target="_blank">AMEVA Workstation (Web App)</a></li>
+    </ul>
+    <!-- Tier 3: Active Document Sections -->
+    <h3 data-i18n="common.nav.docNav">Document Navigation</h3>
+    <ul>
+      <li><a href="index.html" data-i18n="common.nav.home">Home / Architecture</a></li>
+      <li><a href="installation.html" class="active" data-i18n="common.nav.installation">Installation Guide</a></li>
+      <li><a href="quickstart.html" data-i18n="common.nav.quickstart">Quickstart & Recipes</a></li>
+      <li><a href="api-reference.html" data-i18n="common.nav.apiReference">API Reference</a></li>
+      <li><a href="benchmarks.html" data-i18n="common.nav.benchmarks">Benchmarks & Profiling</a></li>
+      <li><a href="advanced-parameters.html" data-i18n="common.nav.advancedParams">Advanced Parameters</a></li>
+      <li><a href="versions.html" data-i18n="common.nav.versions">Version Archive</a></li>
+    </ul>
+    <!-- Tier 4: AI Protocols & Specifications -->
+    <h3 data-i18n="common.nav.aiSpecs">AI Agent Protocols</h3>
+    <ul>
+      <li><a href="llms.txt" target="_blank">llms.txt (AI Fast Context)</a></li>
+      <li><a href="llms-full.txt" target="_blank">llms-full.txt (Full Spec)</a></li>
+      <li><a href="robots.txt" target="_blank">robots.txt (AI Crawlers)</a></li>
+      <li><a href="sitemap.xml" target="_blank">sitemap.xml (Sitemap)</a></li>
+      <li><a href="/" target="_blank">Founder Digital CV</a></li>
+    </ul>
+  </nav>
+
+    <main class="content">
+      <h2>Installation & Setup Guide</h2>
+      <p class="subtitle">Hardware acceleration, Termux setup, and dependency management</p>
+      <div class="alert alert-tip">
+           <span class="alert-title">Prerequisites</span>
+           <p>Ensure Python 3.9+ or Node.js 18+ is installed on your Linux / Android / Desktop environment.</p>
+         </div>
+         <h3>Package Managers</h3>
+         <pre><code>pip install termux-stt
+# or: npm install termux-stt</code></pre>
+         <h3>Verification Check</h3>
+         <pre><code>python -c "import termux-stt; print('Installation OK')"</code></pre>
+    </main>
+  </div>
+
+  <footer>
+    <span data-i18n="common.footerText">&copy; 2026 AMEVA Open-Source Foundation. Released under the Apache-2.0 License.</span>
+  </footer>
 </body>
 </html>

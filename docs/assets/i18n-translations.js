@@ -4,15 +4,16 @@ if (window.i18nManager) {
   "en": {
     "common": {
       "brand": "Termux-STT",
-      "releaseTag": "v1.1.0 (Production Release)",
+      "releaseTag": "v1.0.9 (Production Release)",
       "pypiBtn": "PyPI (pip)",
       "npmBtn": "npm (Node.js)",
       "githubBtn": "GitHub",
+      "founderBtn": "Founder CV",
       "footerText": "© 2026 AMEVA Open-Source Foundation. Released under the Apache-2.0 License.",
       "nav": {
-        "overview": "Overview",
-        "reference": "Official Reference",
-        "ecosystem": "AMEVA Ecosystem",
+        "foundation": "Foundation Info",
+        "libraries": "Flagship Libraries",
+        "docNav": "Document Navigation",
         "aiSpecs": "AI Agent Protocols",
         "home": "Home / Architecture",
         "installation": "Installation Guide",
@@ -39,9 +40,9 @@ if (window.i18nManager) {
       "matrixCol3": "Status",
       "codeExampleTitle": "Canonical Usage Example",
       "nextStepsTitle": "Getting Started & Deep Guides",
-      "linkInstall": "Detailed Installation Guide (Hardware dependencies, Termux setup, WebGPU flags)",
-      "linkQuickstart": "Quickstart Recipes & Common Execution Patterns",
-      "linkApi": "100% Full API Reference & Struct Definitions",
+      "linkInstall": "Detailed Installation Guide",
+      "linkQuickstart": "Quickstart Recipes",
+      "linkApi": "API Reference Specification",
       "features": {
         "0": {
           "title": "Triple STT Engine Integration",
@@ -61,23 +62,24 @@ if (window.i18nManager) {
   "ko": {
     "common": {
       "brand": "Termux-STT",
-      "releaseTag": "v1.1.0 (Production Release)",
+      "releaseTag": "v1.0.9 (Production Release)",
       "pypiBtn": "PyPI 패키지",
       "npmBtn": "npm 패키지",
       "githubBtn": "GitHub 저장소",
+      "founderBtn": "설립자 CV",
       "footerText": "© 2026 AMEVA 오픈소스 재단. Apache-2.0 라이선스로 배포됨.",
       "nav": {
-        "overview": "개요",
-        "reference": "공식 레퍼런스",
-        "ecosystem": "AMEVA 생태계",
+        "foundation": "재단 소개 (AOSF)",
+        "libraries": "플래그십 라이브러리",
+        "docNav": "문서 상세 목차",
         "aiSpecs": "AI 에이전트 프로토콜",
         "home": "홈 / 아키텍처",
         "installation": "설치 가이드",
         "quickstart": "퀵스타트 & 레시피",
         "apiReference": "전체 API 명세",
         "benchmarks": "벤치마크 & 하드웨어",
-        "advancedParams": "고급 파라미터",
-        "versions": "버전 아카이브"
+        "advancedParams": "고급 파라미터 제어",
+        "versions": "버전 릴리즈 아카이브"
       }
     },
     "home": {
@@ -96,9 +98,9 @@ if (window.i18nManager) {
       "matrixCol3": "상태",
       "codeExampleTitle": "정석 사용법 코드 예제",
       "nextStepsTitle": "시작하기 & 심층 가이드",
-      "linkInstall": "상세 설치 가이드 (하드웨어 의존성, Termux 설정, WebGPU 플래그)",
-      "linkQuickstart": "퀵스타트 레시피 및 주요 실행 패턴",
-      "linkApi": "100% 전체 API 명세 및 구조체 정의",
+      "linkInstall": "상세 설치 가이드",
+      "linkQuickstart": "퀵스타트 & 실무 레시피",
+      "linkApi": "전체 API 상세 규격서",
       "features": {
         "0": {
           "title": "3대 STT 엔진 통합 지원",
@@ -118,15 +120,16 @@ if (window.i18nManager) {
   "ja": {
     "common": {
       "brand": "Termux-STT",
-      "releaseTag": "v1.1.0 (Production Release)",
+      "releaseTag": "v1.0.9 (Production Release)",
       "pypiBtn": "PyPIパッケージ",
       "npmBtn": "npmパッケージ",
       "githubBtn": "GitHub",
+      "founderBtn": "創設者CV",
       "footerText": "© 2026 AMEVA Open-Source Foundation. Apache-2.0 ライセンスの下で公開。",
       "nav": {
-        "overview": "概要",
-        "reference": "公式リファレンス",
-        "ecosystem": "AMEVA エコシステム",
+        "foundation": "財団情報 (AOSF)",
+        "libraries": "フラッグシップライブラリ",
+        "docNav": "ドキュメント目次",
         "aiSpecs": "AIエージェント仕様",
         "home": "ホーム / アーキテクチャ",
         "installation": "インストールガイド",
@@ -139,7 +142,7 @@ if (window.i18nManager) {
     },
     "home": {
       "title": "Termux-STT",
-      "subtitle": "Unified On-Device Speech-to-Text & Pure Python 128d X-Vector Speaker Diarization",
+      "subtitle": "ブラウザおよびエッジ環境向けの高パフォーマンスオープンソースシステムライブラリ",
       "quickInstallTitle": "1行クイックインストール",
       "quickInstallDesc": "ランタイムに公式パッケージを直接インストールします:",
       "challengeTitle": "技術的課題",
@@ -156,135 +159,6 @@ if (window.i18nManager) {
       "linkInstall": "詳細インストールガイド",
       "linkQuickstart": "クイックスタートレシピ",
       "linkApi": "API仕様書"
-    }
-  },
-  "zh": {
-    "common": {
-      "brand": "Termux-STT",
-      "releaseTag": "v1.1.0 (Production Release)",
-      "pypiBtn": "PyPI (pip)",
-      "npmBtn": "npm (Node.js)",
-      "githubBtn": "GitHub",
-      "footerText": "© 2026 AMEVA 开源基金会。在 Apache-2.0 许可下发布。",
-      "nav": {
-        "overview": "概述",
-        "reference": "官方参考",
-        "ecosystem": "AMEVA 生态系统",
-        "aiSpecs": "AI 协议",
-        "home": "主页 / 架构",
-        "installation": "安装指南",
-        "quickstart": "快速入门",
-        "apiReference": "API 参考",
-        "benchmarks": "基准测试",
-        "advancedParams": "高级参数",
-        "versions": "版本归档"
-      }
-    },
-    "home": {
-      "title": "Termux-STT",
-      "subtitle": "Unified On-Device Speech-to-Text & Pure Python 128d X-Vector Speaker Diarization",
-      "quickInstallTitle": "一键快速安装",
-      "quickInstallDesc": "直接将官方包安装到您的环境中:",
-      "challengeTitle": "工程挑战",
-      "challengeText": "Transcribing and diarizing multi-speaker conversations on edge devices typically demands heavy PyTorch runtimes (>2GB) and severe GPU memory consumption.",
-      "breakthroughTitle": "架构突破",
-      "breakthroughText": "Integrates Whisper.cpp, Vosk, and Sherpa-ONNX with a closed-form pure-Python 128-dimensional X-Vector clustering algorithm that operates in under 80MB RAM.",
-      "featuresTitle": "核心特性与加固",
-      "matrixTitle": "支持的计算内核与操作",
-      "matrixCol1": "分类",
-      "matrixCol2": "操作与模块",
-      "matrixCol3": "状态",
-      "codeExampleTitle": "标准代码示例",
-      "nextStepsTitle": "开始使用",
-      "linkInstall": "详细安装指南",
-      "linkQuickstart": "快速入门方案",
-      "linkApi": "完整 API 规范"
-    }
-  },
-  "es": {
-    "common": {
-      "brand": "Termux-STT",
-      "releaseTag": "v1.1.0 (Production Release)",
-      "pypiBtn": "PyPI (pip)",
-      "npmBtn": "npm (Node.js)",
-      "githubBtn": "GitHub",
-      "footerText": "© 2026 Fundación AMEVA. Licencia Apache-2.0.",
-      "nav": {
-        "overview": "Visión General",
-        "reference": "Referencia Oficial",
-        "ecosystem": "Ecosistema AMEVA",
-        "aiSpecs": "Protocolos de IA",
-        "home": "Inicio / Arquitectura",
-        "installation": "Guía de Instalación",
-        "quickstart": "Inicio Rápido",
-        "apiReference": "Referencia de API",
-        "benchmarks": "Evaluaciones de Rendimiento",
-        "advancedParams": "Parámetros Avanzados",
-        "versions": "Archivo de Versiones"
-      }
-    },
-    "home": {
-      "title": "Termux-STT",
-      "subtitle": "Unified On-Device Speech-to-Text & Pure Python 128d X-Vector Speaker Diarization",
-      "quickInstallTitle": "Instalación Rápida en 1 Línea",
-      "quickInstallDesc": "Instale el paquete oficial directamente en su entorno:",
-      "challengeTitle": "El Desafío de Ingeniería",
-      "challengeText": "Transcribing and diarizing multi-speaker conversations on edge devices typically demands heavy PyTorch runtimes (>2GB) and severe GPU memory consumption.",
-      "breakthroughTitle": "El Avance Arquitectónico",
-      "breakthroughText": "Integrates Whisper.cpp, Vosk, and Sherpa-ONNX with a closed-form pure-Python 128-dimensional X-Vector clustering algorithm that operates in under 80MB RAM.",
-      "featuresTitle": "Capacidades Clave y Seguridad",
-      "matrixTitle": "Operaciones y Núcleos Soportados",
-      "matrixCol1": "Categoría",
-      "matrixCol2": "Operaciones",
-      "matrixCol3": "Estado",
-      "codeExampleTitle": "Ejemplo de Uso Estándar",
-      "nextStepsTitle": "Primeros Pasos",
-      "linkInstall": "Guía Detallada de Instalación",
-      "linkQuickstart": "Recetas de Inicio Rápido",
-      "linkApi": "Especificación de API"
-    }
-  },
-  "de": {
-    "common": {
-      "brand": "Termux-STT",
-      "releaseTag": "v1.1.0 (Production Release)",
-      "pypiBtn": "PyPI (pip)",
-      "npmBtn": "npm (Node.js)",
-      "githubBtn": "GitHub",
-      "footerText": "© 2026 AMEVA Open-Source Foundation. Lizenziert unter Apache-2.0.",
-      "nav": {
-        "overview": "Überblick",
-        "reference": "Offizielle Referenz",
-        "ecosystem": "AMEVA Ökosystem",
-        "aiSpecs": "KI-Agenten-Protokolle",
-        "home": "Startseite / Architektur",
-        "installation": "Installationsanleitung",
-        "quickstart": "Schnellstart & Rezepte",
-        "apiReference": "API-Referenz",
-        "benchmarks": "Benchmarks & Profiling",
-        "advancedParams": "Erweiterte Parameter",
-        "versions": "Versionsarchiv"
-      }
-    },
-    "home": {
-      "title": "Termux-STT",
-      "subtitle": "Unified On-Device Speech-to-Text & Pure Python 128d X-Vector Speaker Diarization",
-      "quickInstallTitle": "1-Zeilen-Schnellinstallation",
-      "quickInstallDesc": "Installieren Sie das offizielle Paket direkt in Ihre Laufzeitumgebung:",
-      "challengeTitle": "Die Technische Herausforderung",
-      "challengeText": "Transcribing and diarizing multi-speaker conversations on edge devices typically demands heavy PyTorch runtimes (>2GB) and severe GPU memory consumption.",
-      "breakthroughTitle": "Der Architektonische Durchbruch",
-      "breakthroughText": "Integrates Whisper.cpp, Vosk, and Sherpa-ONNX with a closed-form pure-Python 128-dimensional X-Vector clustering algorithm that operates in under 80MB RAM.",
-      "featuresTitle": "Kernfunktionen & Stabilität",
-      "matrixTitle": "Unterstützte Rechenkerne & Operationen",
-      "matrixCol1": "Kategorie",
-      "matrixCol2": "Operationen",
-      "matrixCol3": "Status",
-      "codeExampleTitle": "Standard-Codebeispiel",
-      "nextStepsTitle": "Erste Schritte",
-      "linkInstall": "Detaillierte Installationsanleitung",
-      "linkQuickstart": "Schnellstartanleitung",
-      "linkApi": "API-Spezifikation"
     }
   }
 });

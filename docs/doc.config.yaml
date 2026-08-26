@@ -60,3 +60,61 @@ code_example_js: |
   const engine = new STTEngine({ model: "whisper-tiny" });
   const result = await engine.transcribe("meeting.wav");
   console.log("Transcript:", result.text);
+
+changelog:
+  - version: "v1.0.9"
+    date: "2026-08-26"
+    title: "Direct Local Model Paths & Quantized Models"
+    type: "Production Release (Latest)"
+    changes:
+      - "Direct Local Model Path Integration: Direct connection for custom fine-tuned GGML, BitNet 1.58b, and LLaMA weights with 0-download bypass."
+      - "Extended Model Registry: Added large-v3-turbo, large-v3, English-optimized .en models, and quantized ARM NEON weights (small-q5_1, medium-q5_0, large-v3-turbo-q5_0)."
+      - "Full C++ Parameter Control: Full CLI and SDK controls for Beam Search (-bs), Best-Of (-bo), Temperature (-tp), Prompt Hints (--prompt), and Raw C++ Passthrough (--extra-args)."
+  - version: "v1.0.8"
+    date: "2026-08-26"
+    title: "5-Point Core Reliability & Hardening"
+    type: "Stable Release"
+    changes:
+      - "Temp WAV Garbage Collection: try...finally lifecycle management for automatic converted WAV deletion, eliminating storage leaks."
+      - "Safe Psutil Import Guard: Defensive lazy-loading in MobileGuard preventing import crashes on minimal Termux environments."
+      - "Platform Spoofing Isolation: Restricted sys.platform = 'linux' strictly to Android/Termux runtimes."
+      - "Mobile 1-Pass Greedy Policy: Defaulted to --no-fallback (-nf) on Termux to prevent multi-temperature thermal throttling."
+      - "Node.js Binary Resolver: Upgraded CLI wrapper with python3 / python dynamic binary detection."
+  - version: "v1.0.7"
+    date: "2026-08-26"
+    title: "Download Pipeline Optimization"
+    type: "Patch Release"
+    changes:
+      - "Model Hub Request Sequencing: Resolved NameError: req in download pipeline."
+      - "Instant Cache Priority: Defaulted CLI models to pre-cached tiny for 0-second execution."
+  - version: "v1.0.6"
+    date: "2026-08-26"
+    title: "CLI Standardization & SSL Defense"
+    type: "Patch Release"
+    changes:
+      - "Flexible EngineConfig Aliasing: Seamless backward-compatible argument aliases (model_path, language, num_threads, use_vad)."
+      - "CLI Factory Standardization: Migrated diarize, benchmark, and listen to unified create_engine."
+      - "Precise Header Duration: Exact WAV RIFF header duration calculation for benchmark RTF."
+      - "SSL Fallback: Added unverified SSL context fallback for custom certificate environments."
+  - version: "v1.0.5"
+    date: "2026-08-26"
+    title: "Official JFK Sample Audio & 1-Click Installer"
+    type: "Feature Release"
+    changes:
+      - "Official JFK 60s Sample Audio: Integrated clean 16kHz Mono PCM sample (samples/jfk_1min.wav)."
+      - "Zero-Subprocess Wave Parsing: Pure Python wave direct parser bypassing FFmpeg subprocessing."
+      - "Bionic Dynamic Linker Defense: Packaged libbluray and libxml2 in automated installer."
+      - "1-Click Installer CLI: Registered termux-stt install command."
+      - "Dual-Engine Monorepo Packaging: Full root package.json support for npm install -g git+...."
+  - version: "v1.0.0"
+    date: "2026-08-20"
+    title: "Initial Public Release"
+    type: "Initial Release"
+    changes:
+      - "Unified Multi-Engine Architecture: Single create_engine() API for whisper.cpp, vosk, and sherpa-onnx."
+      - "Pure-Python Speaker Diarization: Custom K-Means and Cosine Distance matrix without numpy/sklearn dependencies."
+      - "Hybrid Diarization Pipeline: Vosk X-Vector + Whisper STT under 1.5 GB RAM."
+      - "Audio Pipeline: ffmpeg 16kHz mono converter, Silero-VAD integration, and Termux microphone recorder."
+      - "Model Hub: Automatic model downloader with SHA-256 verification and cache management."
+      - "Export Standards: SRT, WebVTT, NIST RTTM, and structured JSON output."
+      - "CLI Suite: transcribe, listen, diarize, models, doctor, and benchmark."
