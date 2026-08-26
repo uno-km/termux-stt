@@ -44,10 +44,20 @@ class ModelHub:
         os.makedirs(os.path.dirname(dest), exist_ok=True)
         print(f"Downloading model from {url} to {dest}...")
 
-        headers = {"User-Agent": "termux-stt/1.0.0"}
-        req = urllib.request.Request(url, headers=headers)
+        import ssl
+        try:
+            ctx = ssl.create_default_context()
+        except Exception:
+            ctx = None
 
-        with urllib.request.urlopen(req) as response, open(dest, 'wb') as out_file:
+        def _open_url(request):
+            try:
+                return urllib.request.urlopen(request, context=ctx)
+            except Exception:
+                insecure_ctx = ssl._create_unverified_context()
+                return urllib.request.urlopen(request, context=insecure_ctx)
+
+        with _open_url(req) as response, open(dest, 'wb') as out_file:
             total_size = int(response.info().get('Content-Length', 0))
             downloaded = 0
             block_size = 65536

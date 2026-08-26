@@ -1,21 +1,20 @@
 import time
 
-from termux_stt.engine.base import EngineConfig
-from termux_stt.engine.whisper_engine import WhisperEngine
+from termux_stt import create_engine
 
 
 def run_listen(args):
-    config = EngineConfig(
-        model_path=args.model or "default",
-        language=args.lang,
-        num_threads=args.threads,
-        use_vad=args.vad
+    engine_name = getattr(args, "engine", "whisper")
+    engine = create_engine(
+        engine=engine_name,
+        model=getattr(args, "model", None),
+        lang=getattr(args, "lang", "ko"),
+        threads=getattr(args, "threads", None),
+        vad=getattr(args, "vad", True),
     )
 
-    if args.engine != "whisper":
+    if engine_name != "whisper":
         print("Warning: Real-time listening is currently best supported with whisper engine.")
-
-    engine = WhisperEngine(config)
 
     print(f"Listening with {args.engine}... (Press Ctrl+C to stop)")
     start_time = time.time()

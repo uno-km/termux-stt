@@ -1,8 +1,8 @@
 import os
 import time
 
-from termux_stt.engine.base import EngineConfig
-from termux_stt.engine.whisper_engine import WhisperEngine
+from termux_stt import create_engine
+from termux_stt.audio.loader import get_audio_info
 
 
 def run_benchmark(args):
@@ -14,18 +14,23 @@ def run_benchmark(args):
         print(f"Error: Audio file {args.audio} not found.")
         return
 
-    print(f"Starting benchmark on {args.audio} with {args.engine} engine...")
+    engine_name = getattr(args, "engine", "whisper")
+    print(f"Starting benchmark on {args.audio} with {engine_name} engine...")
 
-    # Placeholder for actual audio duration extraction
-    audio_duration = 10.0
+    # Extract actual audio duration
+    try:
+        info = get_audio_info(args.audio)
+        audio_duration = float(info.get("format", {}).get("duration", 10.0))
+    except Exception:
+        audio_duration = 10.0
 
-    config = EngineConfig(
-        model_path=args.model or "default",
-        language=args.lang,
-        num_threads=args.threads
+    engine = create_engine(
+        engine=engine_name,
+        model=getattr(args, "model", None),
+        lang=getattr(args, "lang", "ko"),
+        threads=getattr(args, "threads", None),
+        vad=getattr(args, "vad", True),
     )
-
-    engine = WhisperEngine(config)
 
     if psutil:
         process = psutil.Process(os.getpid())

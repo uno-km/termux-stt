@@ -1,18 +1,17 @@
-from termux_stt.engine.base import EngineConfig
-from termux_stt.engine.hybrid_engine import HybridEngine
+from termux_stt import create_engine
 from termux_stt.export.json_export import save_json, to_json
 from termux_stt.export.rttm import save_rttm, to_rttm
 
 
 def run_diarize(args):
-    config = EngineConfig(
-        model_path=args.model or "default",
-        language=args.lang,
-        num_threads=args.threads,
-        use_vad=args.vad
+    engine = create_engine(
+        engine="hybrid",
+        model=args.model,
+        lang=getattr(args, "lang", "ko"),
+        threads=getattr(args, "threads", None),
+        vad=getattr(args, "vad", True),
+        num_speakers=getattr(args, "speakers", 2),
     )
-
-    engine = HybridEngine(config)
 
     print(f"Diarizing {args.file} with {args.speakers} speakers...")
     result = engine.diarize(args.file, num_speakers=args.speakers)
