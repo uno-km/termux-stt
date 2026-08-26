@@ -57,6 +57,9 @@ class ModelHub:
                 insecure_ctx = ssl._create_unverified_context()
                 return urllib.request.urlopen(request, context=insecure_ctx)
 
+        headers = {"User-Agent": "termux-stt/1.0.0"}
+        req = urllib.request.Request(url, headers=headers)
+
         with _open_url(req) as response, open(dest, 'wb') as out_file:
             total_size = int(response.info().get('Content-Length', 0))
             downloaded = 0

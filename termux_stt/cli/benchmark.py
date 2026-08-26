@@ -26,7 +26,7 @@ def run_benchmark(args):
 
     engine = create_engine(
         engine=engine_name,
-        model=getattr(args, "model", None),
+        model=getattr(args, "model", None) or "tiny",
         lang=getattr(args, "lang", "ko"),
         threads=getattr(args, "threads", None),
         vad=getattr(args, "vad", True),

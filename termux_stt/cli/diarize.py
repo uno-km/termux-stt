@@ -6,7 +6,7 @@ from termux_stt.export.rttm import save_rttm, to_rttm
 def run_diarize(args):
     engine = create_engine(
         engine="hybrid",
-        model=args.model,
+        model=getattr(args, "model", None) or "tiny",
         lang=getattr(args, "lang", "ko"),
         threads=getattr(args, "threads", None),
         vad=getattr(args, "vad", True),
