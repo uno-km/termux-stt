@@ -9,9 +9,18 @@ __all__ = ["MODEL_REGISTRY", "get_model_info", "list_models", "get_default_model
 MODEL_REGISTRY = {
     "whisper": {
         "tiny": {"url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-tiny.bin", "sha256": "", "size": "75MB", "description": "Whisper Tiny (ggml)"},
+        "tiny.en": {"url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-tiny.en.bin", "sha256": "", "size": "75MB", "description": "Whisper Tiny English (ggml)"},
         "base": {"url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.bin", "sha256": "", "size": "142MB", "description": "Whisper Base (ggml)"},
+        "base.en": {"url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.en.bin", "sha256": "", "size": "142MB", "description": "Whisper Base English (ggml)"},
         "small": {"url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.bin", "sha256": "", "size": "466MB", "description": "Whisper Small (ggml)"},
-        "medium": {"url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-medium.bin", "sha256": "", "size": "1.5GB", "description": "Whisper Medium (ggml)"}
+        "small.en": {"url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.en.bin", "sha256": "", "size": "466MB", "description": "Whisper Small English (ggml)"},
+        "small-q5_1": {"url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small-q5_1.bin", "sha256": "", "size": "182MB", "description": "Whisper Small Q5_1 (Quantized)"},
+        "medium": {"url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-medium.bin", "sha256": "", "size": "1.5GB", "description": "Whisper Medium (ggml)"},
+        "medium.en": {"url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-medium.en.bin", "sha256": "", "size": "1.5GB", "description": "Whisper Medium English (ggml)"},
+        "medium-q5_0": {"url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-medium-q5_0.bin", "sha256": "", "size": "539MB", "description": "Whisper Medium Q5_0 (Quantized)"},
+        "large-v3-turbo": {"url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-turbo.bin", "sha256": "", "size": "1.6GB", "description": "Whisper Large-v3-Turbo (Ultra-Accuracy)"},
+        "large-v3-turbo-q5_0": {"url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-turbo-q5_0.bin", "sha256": "", "size": "560MB", "description": "Whisper Large-v3-Turbo Q5_0 (Quantized)"},
+        "large-v3": {"url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3.bin", "sha256": "", "size": "3.1GB", "description": "Whisper Large-v3 (Full Precision)"},
     },
     "vosk": {
         "small-ko-0.22": {"url": "https://alphacephei.com/vosk/models/vosk-model-small-ko-0.22.zip", "sha256": "", "size": "42MB", "description": "Vosk Small Korean"},

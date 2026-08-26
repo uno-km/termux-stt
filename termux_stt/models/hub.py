@@ -87,6 +87,10 @@ class ModelHub:
     @classmethod
     def ensure_model(cls, engine: str, model_name: str, url: str = "", sha256: str = "") -> str:
         """Get model path, downloading it if necessary."""
+        # 1. Direct local file path support (Custom fine-tuned / BitNet / LLaMA / GGML models)
+        if os.path.exists(model_name) and os.path.isfile(model_name):
+            return os.path.abspath(model_name)
+
         dest = cls._get_model_path(engine, model_name)
         if os.path.exists(dest) and os.path.getsize(dest) > 0:
             if sha256 and not cls.verify_integrity(dest, sha256):
