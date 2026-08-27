@@ -15,9 +15,20 @@
 
 ### 1.1 Installation
 
+#### 1-Click Automated Setup:
 ```bash
 pkg update -y && pkg install nodejs-lts ffmpeg git -y
 npm install -g termux-stt
+termux-stt install
+```
+
+#### Manual Pre-Compiled Binary Download (Direct GitHub Release):
+```bash
+mkdir -p ~/.local/bin
+curl -sL "https://github.com/uno-km/termux-stt/releases/download/v1.1.1/whisper-cli-arm64-android" -o ~/.local/bin/whisper-cli
+chmod 755 ~/.local/bin/whisper-cli
+ln -sf ~/.local/bin/whisper-cli ~/.local/bin/whisper-cpp
+export PATH=$HOME/.local/bin:$PATH
 ```
 
 ### 1.2 CLI Usage & Instant Sample Test
@@ -25,13 +36,10 @@ npm install -g termux-stt
 `termux-stt` includes a 60-second JFK inaugural address speech (`samples/jfk_1min.wav`) for immediate testing:
 
 ```bash
-# 1. 1-Click Environment Setup (Installs ffmpeg & compiles whisper.cpp NEON)
-termux-stt install
-
-# 2. Transcribe sample speech with Whisper Tiny (Generates SRT subtitles)
+# 1. Transcribe sample speech with Whisper Tiny (Generates SRT subtitles)
 termux-stt transcribe samples/jfk_1min.wav --engine whisper --model tiny --format srt
 
-# 3. Transcribe with 128d Pure Python Speaker Diarization
+# 2. Transcribe with 128d Pure Python Speaker Diarization
 termux-stt diarize samples/jfk_1min.wav --speakers 2
 ```
 

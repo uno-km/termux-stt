@@ -2,11 +2,16 @@
 
 All notable changes to the `termux-stt` framework are documented in this file.
 
-## [v1.0.9] - 2026-08-26
+## [v1.1.1] - 2026-08-27
+### Added & Optimized
+- **Zero-Compilation Prebuilt ARM64 Dispatch**: Integrated 1-second direct download for pre-compiled ARM64 Bionic whisper-cli binaries in `EngineInstaller`.
+- **Lightweight System Dependencies**: Defers heavy `clang`, `cmake`, and `make` installation to the offline fallback stage, drastically reducing initial setup time and mobile storage usage.
+- **Direct GitHub Release Manual**: Updated documentation and READMEs for pip and npm with explicit manual curl installation one-liners.
+
+## [v1.1.0] - 2026-08-26
 ### Added
-- **Direct Local Model Path Support**: Passing local file paths (e.g. `/sdcard/models/custom.bin`) directly connects to native engine with zero download step, supporting custom fine-tuned weights, BitNet, and GGML models.
-- **Flagship & Quantized Model Registry**: Registered `large-v3-turbo`, `large-v3`, English-optimized `.en` models, and ARM NEON quantized weights (`small-q5_1`, `medium-q5_0`, `large-v3-turbo-q5_0`).
-- **Advanced Parameter Control**: Full CLI and SDK controls for Beam Search (`-bs`), Best-Of (`-bo`), Temperature (`-tp`), Prompt Context Hints (`--prompt`), Real-Time English Translation (`--translate`), and Raw C++ Flag Passthrough (`--extra-args`).
+- **Fuzzy Typo Suggestion**: `difflib`-based model recommendations and catalog guidance upon misspelled model identifiers.
+- **Output Directory Auto-Creation**: Recursive auto-creation of missing parent directories during CLI transcribe/diarize.
 
 ---
 

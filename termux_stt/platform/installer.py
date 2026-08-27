@@ -22,16 +22,22 @@ PREFIX_BIN = Path(PREFIX) / "bin"
 class EngineInstaller:
     """Automated installer for native dependencies and C++ engines."""
 
+    PREBUILT_WHISPER_URLS = [
+        "https://github.com/uno-km/termux-stt/releases/download/v1.1.1/whisper-cli-arm64-android",
+        "https://github.com/uno-km/termux-stt/releases/download/v1.1.0/whisper-cli-arm64-android",
+        "https://github.com/uno-km/termux-stt/releases/download/v1.0.0/whisper-cli-arm64-android",
+    ]
+
     @classmethod
     def install_system_dependencies(cls) -> bool:
-        """Install required Termux packages (ffmpeg, libbluray, libxml2, clang, cmake, make, git)."""
-        print("[*] Provisioning native system packages (ffmpeg, libbluray, libxml2, cmake, clang, git)...")
+        """Install required Termux runtime packages (ffmpeg, libbluray, libxml2, git)."""
+        print("[*] Provisioning native system packages (ffmpeg, libbluray, libxml2, git)...")
         if not shutil.which("pkg"):
             logger.warning("'pkg' command not found, skipping system package provisioning.")
             return True
 
         try:
-            cmd = ["pkg", "install", "-y", "ffmpeg", "libbluray", "libxml2", "cmake", "make", "clang", "git", "termux-api"]
+            cmd = ["pkg", "install", "-y", "ffmpeg", "libbluray", "libxml2", "git", "termux-api", "curl"]
             res = subprocess.run(cmd, check=False)
             return res.returncode == 0
         except Exception as e:
@@ -39,15 +45,69 @@ class EngineInstaller:
             return False
 
     @classmethod
+    def _download_prebuilt_whisper(cls) -> bool:
+        """Attempt to download precompiled ARM64 Bionic whisper-cli binary."""
+        import urllib.request
+        LOCAL_BIN.mkdir(parents=True, exist_ok=True)
+        target_path = LOCAL_BIN / "whisper-cli"
+
+        print("[*] Attempting 1-second direct download of pre-compiled whisper.cpp ARM64 binary...")
+        for url in cls.PREBUILT_WHISPER_URLS:
+            try:
+                req = urllib.request.Request(
+                    url,
+                    headers={"User-Agent": "termux-stt-installer/1.1.1 (Android; ARM64)"}
+                )
+                with urllib.request.urlopen(req, timeout=10) as response, open(target_path, 'wb') as out_file:
+                    shutil.copyfileobj(response, out_file)
+
+                # Check if downloaded file is valid executable (>100KB)
+                if target_path.exists() and target_path.stat().st_size > 100 * 1024:
+                    target_path.chmod(0o755)
+                    # Also link/copy to whisper-cpp
+                    shutil.copy2(target_path, LOCAL_BIN / "whisper-cpp")
+                    (LOCAL_BIN / "whisper-cpp").chmod(0o755)
+
+                    # Copy to PREFIX/bin if writable
+                    try:
+                        if PREFIX_BIN.exists() and os.access(PREFIX_BIN, os.W_OK):
+                            shutil.copy2(target_path, PREFIX_BIN / "whisper-cli")
+                            shutil.copy2(target_path, PREFIX_BIN / "whisper-cpp")
+                            (PREFIX_BIN / "whisper-cli").chmod(0o755)
+                            (PREFIX_BIN / "whisper-cpp").chmod(0o755)
+                    except Exception:
+                        pass
+
+                    print(f"[+] Pre-compiled whisper.cpp binary successfully installed to {target_path}")
+                    return True
+                else:
+                    if target_path.exists():
+                        target_path.unlink()
+            except Exception as e:
+                logger.debug(f"Prebuilt download attempt failed for {url}: {e}")
+                continue
+
+        print("[-] Pre-built binary download unavailable or offline. Falling back to local native compilation...")
+        return False
+
+    @classmethod
     def install_whisper_cpp(cls) -> bool:
-        """Build and install whisper.cpp with ARM NEON acceleration."""
-        print("[*] Setting up whisper.cpp native engine with ARM NEON...")
+        """Install whisper.cpp: Priority 1 = Pre-built download, Priority 2 = Local ARM NEON build."""
         LOCAL_BIN.mkdir(parents=True, exist_ok=True)
 
         # Check if already installed and executable
         if (PREFIX_BIN / "whisper-cli").exists() or (PREFIX_BIN / "whisper-cpp").exists() or (LOCAL_BIN / "whisper-cli").exists() or (LOCAL_BIN / "whisper-cpp").exists():
             print("[+] whisper.cpp binary is already present.")
             return True
+
+        # Priority 1: Fast Direct Pre-built Download
+        if cls._download_prebuilt_whisper():
+            return True
+
+        # Priority 2: Fallback to Local CMake & Clang compilation
+        print("[*] Setting up whisper.cpp native engine via local compiler with ARM NEON...")
+        if shutil.which("pkg"):
+            subprocess.run(["pkg", "install", "-y", "cmake", "make", "clang"], check=False)
 
         build_dir = Path(HOME) / "tmp" / "whisper.cpp"
         build_dir.parent.mkdir(parents=True, exist_ok=True)
@@ -92,7 +152,7 @@ class EngineInstaller:
                     shutil.copy2(bin_source, LOCAL_BIN / target_name)
                     (LOCAL_BIN / target_name).chmod(0o755)
 
-                print(f"[+] Successfully installed whisper.cpp binary to {LOCAL_BIN}")
+                print(f"[+] Successfully compiled and installed whisper.cpp binary to {LOCAL_BIN}")
                 return True
 
         except Exception as e:

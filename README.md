@@ -64,33 +64,54 @@
 
 ---
 
-## 1. Quick Scenario Playbook
+## 1. Installation & Provisioning
 
-### Installation
+### Method A: 1-Click Automated Installation (Recommended)
+`termux-stt install` automatically provisions lightweight system dependencies (`ffmpeg`, `libbluray`, `libxml2`) and fetches the **pre-compiled Bionic ARM64 `whisper-cli` binary from GitHub Releases in <1s** (with automatic local Clang/NEON compilation fallback if offline).
 
 #### Python SDK:
 ```bash
 pkg update -y && pkg install python ffmpeg git -y
-pip install termux-stt && termux-stt install
+pip install --upgrade termux-stt && termux-stt install
 ```
 
 #### Node.js / TypeScript:
 ```bash
 pkg update -y && pkg install nodejs-lts ffmpeg git -y
----
-
-## 1. Quick Scenario Playbook
-
-### 1-Click Installation
-
-#### Python SDK:
-```bash
-pip install termux-stt && termux-stt install
+npm install -g termux-stt && termux-stt install
 ```
 
-#### Node.js / TypeScript:
+---
+
+### Method B: Manual Pre-Compiled Binary Download (Direct GitHub Release)
+If you prefer to manually download the pre-compiled ARM64 native binary without building from source:
+
 ```bash
-npm install -g termux-stt && termux-stt install
+# 1. Download official ARM64 Bionic binary directly into ~/.local/bin
+mkdir -p ~/.local/bin
+curl -sL "https://github.com/uno-km/termux-stt/releases/download/v1.1.1/whisper-cli-arm64-android" -o ~/.local/bin/whisper-cli
+chmod 755 ~/.local/bin/whisper-cli
+ln -sf ~/.local/bin/whisper-cli ~/.local/bin/whisper-cpp
+
+# 2. Ensure PATH includes ~/.local/bin
+export PATH=$HOME/.local/bin:$PATH
+
+# 3. Verify installation
+whisper-cli --help
+```
+
+---
+
+### Method C: Manual Source Compilation (From Scratch)
+If you wish to compile `whisper.cpp` directly with Snapdragon / Cortex NEON vector optimizations:
+
+```bash
+pkg install -y clang cmake make git ffmpeg
+git clone --depth 1 https://github.com/ggerganov/whisper.cpp.git ~/tmp/whisper.cpp
+cmake -B ~/tmp/whisper.cpp/build -S ~/tmp/whisper.cpp -DWHISPER_NEON=ON -DCMAKE_BUILD_TYPE=Release
+cmake --build ~/tmp/whisper.cpp/build -j$(nproc)
+cp ~/tmp/whisper.cpp/build/bin/whisper-cli ~/.local/bin/whisper-cli
+chmod 755 ~/.local/bin/whisper-cli
 ```
 
 ---

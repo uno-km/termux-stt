@@ -12,7 +12,7 @@ Quick Start
 >>> print(result.text)
 """
 
-__version__ = '1.1.0'
+__version__ = '1.1.1'
 __author__ = 'Eunho Kim (@uno-km)'
 
 
