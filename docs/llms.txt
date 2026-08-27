@@ -1,4 +1,4 @@
-# Termux-STT (v1.0.9)
+# Termux-STT (v1.1.0)
 > Unified On-Device Speech-to-Text & Pure Python 128d X-Vector Speaker Diarization
 
 ## Quick Specification for AI Coding Agents

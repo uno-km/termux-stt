@@ -4,7 +4,7 @@ if (window.i18nManager) {
   "en": {
     "common": {
       "brand": "Termux-STT",
-      "releaseTag": "v1.0.9",
+      "releaseTag": "v1.1.0",
       "pkgBtn": "pip / npm",
       "pypiBtn": "PyPI",
       "npmBtn": "npm",
@@ -30,7 +30,7 @@ if (window.i18nManager) {
   "ko": {
     "common": {
       "brand": "Termux-STT",
-      "releaseTag": "v1.0.9",
+      "releaseTag": "v1.1.0",
       "pkgBtn": "패키지 (pip / npm)",
       "pypiBtn": "PyPI 패키지",
       "npmBtn": "npm 패키지",

@@ -177,3 +177,156 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+// ── 6. AmevaUI Global Enterprise SDK Suite (SSOT v3.2) ─────────────────────
+window.AmevaUI = window.AmevaUI || {};
+
+/**
+ * Shows scoped loading overlay on target element with rugged spinner.
+ * @param {HTMLElement|string} target - Container element or CSS selector
+ * @param {string} message - Status text shown under spinner
+ */
+window.AmevaUI.showLoading = function(target, message = 'Loading Data...') {
+  const el = typeof target === 'string' ? document.querySelector(target) : target;
+  if (!el) return null;
+
+  el.classList.add('ameva-loading-container');
+
+  let overlay = el.querySelector(':scope > .ameva-loading-overlay');
+  if (overlay) {
+    const textEl = overlay.querySelector('.ameva-loading-text');
+    if (textEl) textEl.textContent = message;
+    overlay.style.opacity = '1';
+    return overlay;
+  }
+
+  overlay = document.createElement('div');
+  overlay.className = 'ameva-loading-overlay';
+  overlay.innerHTML = `
+    <div class="ameva-spinner"></div>
+    <div class="ameva-loading-text">${message}</div>
+  `;
+
+  el.appendChild(overlay);
+  return overlay;
+};
+
+/**
+ * Hides scoped loading overlay with smooth fade-out.
+ * @param {HTMLElement|string} target
+ */
+window.AmevaUI.hideLoading = function(target) {
+  const el = typeof target === 'string' ? document.querySelector(target) : target;
+  if (!el) return;
+
+  const overlay = el.querySelector(':scope > .ameva-loading-overlay');
+  if (overlay) {
+    overlay.style.opacity = '0';
+    setTimeout(() => {
+      overlay.remove();
+      el.classList.remove('ameva-loading-container');
+    }, 200);
+  }
+};
+
+/**
+ * Executes async task while showing scoped loader on target element.
+ * @param {HTMLElement|string} target
+ * @param {Function} asyncFn
+ * @param {string} message
+ */
+window.AmevaUI.withLoading = async function(target, asyncFn, message = 'Loading Data...') {
+  window.AmevaUI.showLoading(target, message);
+  try {
+    return await asyncFn();
+  } finally {
+    window.AmevaUI.hideLoading(target);
+  }
+};
+
+/**
+ * 1-Line Fetch helper with automatic scoped loading overlay and JSON parsing.
+ */
+window.AmevaUI.fetchWithLoading = async function(target, url, options = {}, message = 'Fetching Telemetry...') {
+  return await window.AmevaUI.withLoading(target, async () => {
+    const res = await fetch(url, options);
+    if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+    return await res.json();
+  }, message);
+};
+
+/**
+ * Smooth Count-Up Easing Animation (Cubic Ease-Out).
+ * @param {HTMLElement|string} element
+ * @param {number} targetValue
+ * @param {number} duration - milliseconds (default: 750)
+ * @param {string} suffix - e.g. "+", " TPS", " ms"
+ * @param {string} prefix - e.g. "$", "#"
+ */
+window.AmevaUI.animateCount = function(element, targetValue, duration = 750, suffix = '', prefix = '') {
+  const el = typeof element === 'string' ? document.querySelector(element) : element;
+  if (!el) return;
+
+  const startValue = parseInt(el.getAttribute('data-current-val') || '0', 10);
+  const diff = targetValue - startValue;
+  if (diff === 0 && el.textContent.trim()) return;
+
+  const startTime = performance.now();
+
+  function update(currentTime) {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const easeOut = 1 - Math.pow(1 - progress, 3);
+    const currentVal = Math.round(startValue + diff * easeOut);
+
+    el.textContent = prefix + currentVal.toLocaleString() + suffix;
+
+    if (progress < 1) {
+      requestAnimationFrame(update);
+    } else {
+      el.setAttribute('data-current-val', targetValue);
+      el.textContent = prefix + targetValue.toLocaleString() + suffix;
+    }
+  }
+
+  requestAnimationFrame(update);
+};
+
+/**
+ * Declarative IntersectionObserver counter for any [data-count-to] elements on scroll.
+ */
+window.AmevaUI.initDeclarativeCounters = function() {
+  const counters = document.querySelectorAll('[data-count-to]:not([data-counted])');
+  if (!counters.length) return;
+
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries, obs) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const el = entry.target;
+          obs.unobserve(el);
+          el.setAttribute('data-counted', 'true');
+          const targetVal = parseFloat(el.getAttribute('data-count-to') || '0');
+          const duration = parseInt(el.getAttribute('data-duration') || '750', 10);
+          const suffix = el.getAttribute('data-suffix') || '';
+          const prefix = el.getAttribute('data-prefix') || '';
+          window.AmevaUI.animateCount(el, targetVal, duration, suffix, prefix);
+        }
+      });
+    }, { threshold: 0.15 });
+
+    counters.forEach(c => observer.observe(c));
+  } else {
+    counters.forEach(el => {
+      const targetVal = parseFloat(el.getAttribute('data-count-to') || '0');
+      const suffix = el.getAttribute('data-suffix') || '';
+      const prefix = el.getAttribute('data-prefix') || '';
+      el.textContent = prefix + targetVal.toLocaleString() + suffix;
+    });
+  }
+};
+
+// Auto-run declarative counters on DOM Ready
+document.addEventListener('DOMContentLoaded', () => {
+  window.AmevaUI.initDeclarativeCounters();
+});

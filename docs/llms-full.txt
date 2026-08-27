@@ -1,4 +1,4 @@
-# Termux-STT Full Technical Specification (v1.0.9)
+# Termux-STT Full Technical Specification (v1.1.0)
 Official Documentation & Deep Architecture Reference for Autonomous AI Agents.
 
 ## 1. System Overview
