@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="termux-stt",
-    version="1.1.2",
+    version="1.1.3",
     description="Android on-device STT framework for Termux — whisper.cpp, vosk, sherpa-onnx unified",
     author="Eunho Kim (@uno-km)",
     packages=find_packages(),

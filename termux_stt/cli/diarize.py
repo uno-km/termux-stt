@@ -1,6 +1,19 @@
-from termux_stt import create_engine
-from termux_stt.export.json_export import save_json, to_json
-from termux_stt.export.rttm import save_rttm, to_rttm
+def resolve_safe_output_path(path: str) -> str:
+    if not path:
+        return path
+    import os
+    from pathlib import Path
+    p = Path(path)
+    if str(p).startswith("/tmp") and not os.access("/tmp", os.W_OK):
+        fallback_dir = os.environ.get("TMPDIR") or os.path.expanduser("~/tmp") or "."
+        os.makedirs(fallback_dir, exist_ok=True)
+        safe_path = os.path.join(fallback_dir, p.name)
+        print(f"[*] Notice: Root '/tmp' is read-only on Android. Safe redirected output to: '{safe_path}'")
+        return safe_path
+    out_dir = os.path.dirname(os.path.abspath(path))
+    if out_dir:
+        os.makedirs(out_dir, exist_ok=True)
+    return path
 
 
 def run_diarize(args):
@@ -17,20 +30,16 @@ def run_diarize(args):
     result = engine.diarize(args.file, num_speakers=args.speakers)
 
     if args.output:
-        import os
-        out_dir = os.path.dirname(os.path.abspath(args.output))
-        if out_dir:
-            os.makedirs(out_dir, exist_ok=True)
-
+        out_path = resolve_safe_output_path(args.output)
         if args.format == "rttm":
-            save_rttm(result, args.output)
+            save_rttm(result, out_path)
         elif args.format == "json":
-            save_json(result, args.output)
+            save_json(result, out_path)
         else:
-            with open(args.output, "w", encoding="utf-8") as f:
+            with open(out_path, "w", encoding="utf-8") as f:
                 for seg in result.segments:
                     f.write(f"[{seg.speaker}] {seg.text}\n")
-        print(f"Output saved to {args.output}")
+        print(f"Output saved to {out_path}")
     else:
         if args.format == "rttm":
             print(to_rttm(result))

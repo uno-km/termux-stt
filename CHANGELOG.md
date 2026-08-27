@@ -2,6 +2,12 @@
 
 All notable changes to the `termux-stt` framework are documented in this file.
 
+## [v1.1.3] - 2026-08-27
+### Added & Polished
+- **Polished CLI Error Handling**: Replaced uncaught Python tracebacks with clean, actionable error messages for file not found, model errors, and permissions.
+- **Android Root `/tmp` Auto-Redirection**: Automatically detects read-only `/tmp` and routes outputs to safe writable locations (`$TMPDIR` or local directory).
+- **Turn-Taking Diarization Fallback**: Auto-assigns `Speaker_0` / `Speaker_1` turns based on speech pause boundaries when acoustic models are uninitialized.
+
 ## [v1.1.2] - 2026-08-27
 ### Fixed & Hardened
 - **100% Static Standalone Linking**: Configured `-DBUILD_SHARED_LIBS=OFF` in CMake pipeline to embed `libwhisper.a` and `libggml.a` directly into `whisper-cli`, eliminating `libwhisper.so.1 not found` runtime failures.

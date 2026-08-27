@@ -4,6 +4,24 @@ from termux_stt.export.json_export import save_json, to_json
 from termux_stt.export.srt import save_srt, to_srt
 from termux_stt.export.vtt import save_vtt, to_vtt
 
+def resolve_safe_output_path(path: str) -> str:
+    if not path:
+        return path
+    import os
+    from pathlib import Path
+    p = Path(path)
+    if str(p).startswith("/tmp") and not os.access("/tmp", os.W_OK):
+        fallback_dir = os.environ.get("TMPDIR") or os.path.expanduser("~/tmp") or "."
+        os.makedirs(fallback_dir, exist_ok=True)
+        safe_path = os.path.join(fallback_dir, p.name)
+        print(f"[*] Notice: Root '/tmp' is read-only on Android. Safe redirected output to: '{safe_path}'")
+        return safe_path
+    out_dir = os.path.dirname(os.path.abspath(path))
+    if out_dir:
+        os.makedirs(out_dir, exist_ok=True)
+    return path
+
+
 def run_transcribe(args):
     # Collect all extra kwargs
     extra_kwargs = {}
@@ -34,21 +52,17 @@ def run_transcribe(args):
     result = engine.transcribe(args.file, **extra_kwargs)
 
     if args.output:
-        import os
-        out_dir = os.path.dirname(os.path.abspath(args.output))
-        if out_dir:
-            os.makedirs(out_dir, exist_ok=True)
-
+        out_path = resolve_safe_output_path(args.output)
         if args.format == "srt":
-            save_srt(result, args.output)
+            save_srt(result, out_path)
         elif args.format == "vtt":
-            save_vtt(result, args.output)
+            save_vtt(result, out_path)
         elif args.format == "json":
-            save_json(result, args.output)
+            save_json(result, out_path)
         else:
-            with open(args.output, "w", encoding="utf-8") as f:
+            with open(out_path, "w", encoding="utf-8") as f:
                 f.write(result.text)
-        print(f"Output saved to {args.output}")
+        print(f"Output saved to {out_path}")
     else:
         if args.format == "srt":
             print(to_srt(result))

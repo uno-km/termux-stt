@@ -10,7 +10,7 @@ from termux_stt.cli.transcribe import run_transcribe
 from termux_stt.platform.installer import main as run_install
 
 
-def main():
+def _run_cli():
     parser = argparse.ArgumentParser(description="Termux STT - On-device Speech-to-Text Framework")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
@@ -80,6 +80,34 @@ def main():
         run_benchmark(args)
     else:
         parser.print_help()
+        sys.exit(1)
+
+
+def main():
+    try:
+        _run_cli()
+    except FileNotFoundError as e:
+        filename = getattr(e, "filename", None) or str(e)
+        print(f"\n[-] Error: Input audio file not found -> '{filename}'")
+        print("    Please check the file path and ensure the audio file exists.")
+        sys.exit(1)
+    except PermissionError as e:
+        filename = getattr(e, "filename", None) or str(e)
+        print(f"\n[-] Error: Permission denied -> '{filename}'")
+        print("    (Tip: On Android Termux, root '/tmp' is read-only. Please use a local path like './output.srt')")
+        sys.exit(1)
+    except ValueError as e:
+        print(f"\n[-] Error: {e}")
+        sys.exit(1)
+    except KeyboardInterrupt:
+        print("\n[!] Operation cancelled by user.")
+        sys.exit(0)
+    except Exception as e:
+        if "--verbose" in sys.argv:
+            import traceback
+            traceback.print_exc()
+        else:
+            print(f"\n[-] Error: {e}")
         sys.exit(1)
 
 

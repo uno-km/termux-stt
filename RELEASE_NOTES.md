@@ -1,19 +1,24 @@
-# 📦 Termux-STT v1.1.2 Release Notes
+# 📦 Termux-STT v1.1.3 Release Notes
 
 **Release Date:** August 27, 2026  
-**Artifact ID:** `termux-stt-1.1.2`  
-**Compliance Standard:** OpenSSF Best Practices, Zero-Shared-Library Static Linking, Android Non-Root Standard  
+**Artifact ID:** `termux-stt-1.1.3`  
+**Compliance Standard:** OpenSSF Best Practices, Android Non-Root Smart Fallback Standard  
 
 ---
 
 ## 🚀 Key Highlights
-- **100% Static Standalone Binary Linking (`-DBUILD_SHARED_LIBS=OFF`)**: Embedded all GGML and Whisper C++ libraries directly into a single self-contained `whisper-cli` binary, eliminating `libwhisper.so.1 not found` linker errors forever.
-- **Universal Mobile ARM64 Compatibility**: Standardized binary on ARMv8-A + NEON baseline for seamless plug-and-play operation across Galaxy A-series (A35, A53, A55) and S-series (S20~S25).
-- **Auto-Provisioning & Clean Fallback**: `termux-stt install` verified for instantaneous (<1s) zero-compilation pre-built download with static fallback.
+- **Friendly Top-Level CLI Exception Handling**: Replaced raw, aggressive Python stack traces with polished, informative error banners (`[-] Error: Input audio file not found...`).
+- **Smart Android `/tmp` Auto-Redirection**: Automatically detects read-only root `/tmp` access on non-root Android Termux and safely routes output files to `$TMPDIR` / `$HOME/tmp` with a polite notification, eliminating `PermissionError (Errno 13)`.
+- **Pure-Python Speaker Diarization Fallback**: Integrated conversational turn-taking pause heuristics into `SpeakerMapper` to properly assign `Speaker_0` and `Speaker_1` even when external acoustic models are offline.
 
 ---
 
 ## 📋 Changelog
+
+### ✨ Features & UX
+- **`cli/main.py`**: Intercepts `FileNotFoundError`, `PermissionError`, and `ValueError` at the top level for clean terminal output.
+- **`cli/transcribe.py` & `cli/diarize.py`**: Added `resolve_safe_output_path()` to transparently safeguard output paths on Android.
+- **`diarization/mapper.py`**: Auto-assigns turn-taking speaker clusters during offline fallback.
 
 ### ✨ Features
 - **`EngineInstaller._download_prebuilt_whisper`**: Added 1-second direct download pipeline for pre-compiled ARM64 Bionic whisper.cpp binaries from GitHub Releases.
