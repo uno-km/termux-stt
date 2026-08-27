@@ -100,20 +100,30 @@ class ModelHub:
 
         # If URL not provided, look up from registry
         if not url:
+            reg_name = model_name.replace("ggml-", "").replace(".bin", "").strip()
             try:
-                # Strip ggml- prefix or .bin suffix if present for registry lookup
-                reg_name = model_name.replace("ggml-", "").replace(".bin", "")
                 info = get_model_info(engine, reg_name)
                 url = info.get("url", "")
                 sha256 = sha256 or info.get("sha256", "")
-            except Exception:
-                pass
-
-        if not url:
-            # Fallback for whisper standard models
-            if engine == "whisper":
-                base_name = model_name.replace("ggml-", "").replace(".bin", "")
-                url = f"https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-{base_name}.bin"
+            except ValueError:
+                import difflib
+                from .registry import MODEL_REGISTRY
+                known_models = list(MODEL_REGISTRY.get(engine, {}).keys())
+                matches = difflib.get_close_matches(reg_name, known_models, n=3, cutoff=0.4)
+                
+                msg_lines = [f"[ERROR] Model '{model_name}' is not recognized for engine '{engine}'."]
+                if matches:
+                    msg_lines.append(f"\nDid you mean:\n  - " + "\n  - ".join(matches))
+                
+                if known_models:
+                    msg_lines.append(f"\nAvailable models for '{engine}':")
+                    for km in known_models:
+                        km_info = MODEL_REGISTRY[engine][km]
+                        size_str = f" ({km_info.get('size', '')})" if km_info.get('size') else ""
+                        desc_str = f" - {km_info.get('description', '')}" if km_info.get('description') else ""
+                        msg_lines.append(f"  - {km}{size_str}{desc_str}")
+                        
+                raise ValueError("\n".join(msg_lines))
 
         if not url:
             raise ValueError(f"Model '{model_name}' for engine '{engine}' not found and no URL provided.")

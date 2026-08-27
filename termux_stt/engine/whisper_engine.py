@@ -43,10 +43,12 @@ class WhisperEngine(Engine):
     def _get_binary_path(self) -> str:
         """Locate the ``whisper.cpp`` binary (whisper-cli or whisper-cpp)."""
         import shutil
+        searched_paths = []
         for name in ["whisper-cli", "whisper-cpp", "main"]:
             found = shutil.which(name)
-            if found:
+            if found and (os.access(found, os.X_OK) or os.name == "nt"):
                 return found
+            searched_paths.append(f"PATH:{name}")
 
         prefix = os.environ.get("PREFIX", "/data/data/com.termux/files/usr")
         candidates = [
@@ -60,10 +62,21 @@ class WhisperEngine(Engine):
             Path("/usr/local/bin/whisper-cpp"),
         ]
         for p in candidates:
-            if p.exists():
+            searched_paths.append(str(p))
+            if p.exists() and (os.access(str(p), os.X_OK) or os.name == "nt"):
                 return str(p)
-        # Fall back
-        return str(candidates[0])
+
+        # Raise informative error if not found in any candidate path
+        searched_fmt = "\n  - ".join(searched_paths)
+        raise FileNotFoundError(
+            f"Cannot locate 'whisper.cpp' runtime executable (whisper-cli or whisper-cpp).\n"
+            f"Searched candidate locations:\n  - {searched_fmt}\n\n"
+            f"Action Required:\n"
+            f"  1. Run automatic installer: termux-stt install\n"
+            f"  2. Or install manually via Termux: pkg install whisper.cpp\n"
+            f"  3. Or compile whisper.cpp and add to PATH: export PATH=$HOME/.local/bin:$PATH"
+        )
+
 
     # ------------------------------------------------------------------
     # JSON parsing

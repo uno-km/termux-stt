@@ -34,6 +34,11 @@ def run_transcribe(args):
     result = engine.transcribe(args.file, **extra_kwargs)
 
     if args.output:
+        import os
+        out_dir = os.path.dirname(os.path.abspath(args.output))
+        if out_dir:
+            os.makedirs(out_dir, exist_ok=True)
+
         if args.format == "srt":
             save_srt(result, args.output)
         elif args.format == "vtt":

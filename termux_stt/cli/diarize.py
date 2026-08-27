@@ -17,6 +17,11 @@ def run_diarize(args):
     result = engine.diarize(args.file, num_speakers=args.speakers)
 
     if args.output:
+        import os
+        out_dir = os.path.dirname(os.path.abspath(args.output))
+        if out_dir:
+            os.makedirs(out_dir, exist_ok=True)
+
         if args.format == "rttm":
             save_rttm(result, args.output)
         elif args.format == "json":
