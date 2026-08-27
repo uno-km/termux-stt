@@ -120,10 +120,10 @@ class EngineInstaller:
                     check=True,
                 )
 
-            print("[*] Compiling whisper.cpp with -DWHISPER_NEON=ON...")
+            print("[*] Compiling whisper.cpp with -DBUILD_SHARED_LIBS=OFF -DWHISPER_NEON=ON...")
             nproc = os.cpu_count() or 4
             subprocess.run(
-                ["cmake", "-B", "build", "-DWHISPER_NEON=ON", "-DCMAKE_BUILD_TYPE=Release"],
+                ["cmake", "-B", "build", "-DBUILD_SHARED_LIBS=OFF", "-DWHISPER_BUILD_SHARED=OFF", "-DWHISPER_NEON=ON", "-DCMAKE_BUILD_TYPE=Release"],
                 cwd=str(build_dir),
                 check=True,
             )
