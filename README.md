@@ -177,9 +177,9 @@ for seg in result.segments:
 
 *Output Example:*
 ```text
-[Speaker_0] (0.0s - 3.5s): 오늘 경제 브리핑을 시작하겠습니다.
-[Speaker_1] (3.8s - 7.2s): 네, 오늘 코스피 지수가 외국인 순매수로 상승 마감했습니다.
-[Speaker_0] (7.5s - 10.1s): 반도체 섹터 동향은 어떤가요?
+[Speaker_0] (0.0s - 3.5s): Welcome to today's financial intelligence briefing.
+[Speaker_1] (3.8s - 7.2s): Major equity indices closed higher following sustained foreign institutional inflows.
+[Speaker_0] (7.5s - 10.1s): What is the latest outlook on the semiconductor sector?
 ```
 
 ---
@@ -258,7 +258,7 @@ engine = termux_stt.create_engine(
     threads=4,                # CPU threads (defaults to big cores count)
     vad=True,                 # Enable Silero-VAD silence stripping
     quantization="q5_1",      # "f16" | "q8_0" | "q5_1" | "q4_0"
-    prompt="경제 브리핑",     # Initial decoding context / vocabulary
+    prompt="Financial briefing", # Initial decoding context / vocabulary
     beam_size=5,              # Beam search beam size
     temperature=0.0           # Sampling temperature
 )
@@ -317,7 +317,7 @@ termux-stt benchmark           # Run performance benchmark suite
 
 ## 7. 🔍 15-Part Empirical Research Blog Series
 
-This framework is built upon the exhaustive 15-part research series published on [Eunho Kim's Technical Blog (우노킴 티스토리)](https://uno-kim.tistory.com/):
+This framework is built upon the exhaustive 15-part research series published on [Eunho Kim's Technical Engineering Blog](https://uno-kim.tistory.com/):
 
 1. [[Whisper.cpp] #1. Edge Agent AI: Whisper.cpp Speech Processing (Base vs Tiny)](https://uno-kim.tistory.com/467)
 2. [[Audio Extraction] #2. Extracting Specific Audio Segments on Android](https://uno-kim.tistory.com/468)
@@ -337,18 +337,18 @@ This framework is built upon the exhaustive 15-part research series published on
 
 ---
 
-## ⚖️ Disclaimer (면책 조항)
+## ⚖️ Disclaimer
 
 > **Disclaimer:**  
 > *termux-stt is an independent open-source project developed for the Android Termux environment and is not officially affiliated with, endorsed by, or sponsored by the Termux project, OpenAI, or any other third party.*  
 > 
-> *(본 프로젝트는 안드로이드 Termux 환경을 위해 개발된 독립적인 오픈소스 라이브러리이며, Termux 공식 프로젝트, OpenAI 및 기타 제3자와 직접적인 제휴 관계가 아닙니다.)*
+> *This project is an independent open-source library engineered for Android Termux and is not officially affiliated with or endorsed by the Termux project, OpenAI, or Google LLC.*
 
 ---
 
 ## 📄 License
 
-Released under the **MIT License**. Maintained by **AMEVA Foundation & uno-km (쌩초보코딩단) / Eunho Kim**.
+Released under the **MIT License**. Maintained by **AMEVA Foundation & uno-km / Eunho Kim**.
 
 
 ---
