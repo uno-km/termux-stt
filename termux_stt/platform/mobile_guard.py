@@ -39,25 +39,14 @@ class MobileGuard:
         return False
 
     @staticmethod
-    def set_phantom_process_limit() -> bool:
-        """Disable Android 12+ phantom process killer limit."""
-        try:
-            res = subprocess.run([
-                "su", "-c", "device_config put activity_manager max_phantom_processes 2147483647"
-            ], capture_output=True)
-            return res.returncode == 0
-        except Exception:
-            return False
+    def disable_phantom_process_killer() -> bool:
+        """Informational note: Phantom process killer adjustment requires manual user configuration in Android 12+ settings or adb."""
+        return False
 
     @staticmethod
     def check_battery_optimization() -> Dict[str, Any]:
-        """Check if Doze mode is active (requires dumpsys/su)."""
-        try:
-            res = subprocess.run(["su", "-c", "dumpsys deviceidle get deep"], capture_output=True, text=True)
-            state = res.stdout.strip()
-            return {"doze_active": state.lower() in ("idle", "active")}
-        except Exception:
-            return {"doze_active": False, "error": "requires root"}
+        """Check battery optimization status without privileged escalation."""
+        return {"doze_active": False, "note": "Use standard Android Battery Optimization settings to exempt Termux."}
 
     @staticmethod
     def monitor_memory() -> Dict[str, Any]:
