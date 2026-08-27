@@ -23,6 +23,7 @@ class EngineInstaller:
     """Automated installer for native dependencies and C++ engines."""
 
     PREBUILT_WHISPER_URLS = [
+        "https://github.com/uno-km/termux-stt/releases/download/v1.1.2/whisper-cli-arm64-android",
         "https://github.com/uno-km/termux-stt/releases/download/v1.1.1/whisper-cli-arm64-android",
         "https://github.com/uno-km/termux-stt/releases/download/v1.1.0/whisper-cli-arm64-android",
         "https://github.com/uno-km/termux-stt/releases/download/v1.0.0/whisper-cli-arm64-android",

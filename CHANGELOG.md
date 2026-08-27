@@ -2,6 +2,11 @@
 
 All notable changes to the `termux-stt` framework are documented in this file.
 
+## [v1.1.2] - 2026-08-27
+### Fixed & Hardened
+- **100% Static Standalone Linking**: Configured `-DBUILD_SHARED_LIBS=OFF` in CMake pipeline to embed `libwhisper.a` and `libggml.a` directly into `whisper-cli`, eliminating `libwhisper.so.1 not found` runtime failures.
+- **Universal Release Asset**: Uploaded self-contained ARM64 Bionic executable to GitHub Releases `v1.1.2` for zero-compilation 1-second installs across all Android devices.
+
 ## [v1.1.1] - 2026-08-27
 ### Added & Optimized
 - **Zero-Compilation Prebuilt ARM64 Dispatch**: Integrated 1-second direct download for pre-compiled ARM64 Bionic whisper-cli binaries in `EngineInstaller`.

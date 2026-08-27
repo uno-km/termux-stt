@@ -1,16 +1,15 @@
-# 📦 Termux-STT v1.1.1 Release Notes
+# 📦 Termux-STT v1.1.2 Release Notes
 
 **Release Date:** August 27, 2026  
-**Artifact ID:** `termux-stt-1.1.1`  
-**Compliance Standard:** OpenSSF Best Practices, Zero-Compilation ARM64 Direct Dispatch, Android Non-Root Standard  
+**Artifact ID:** `termux-stt-1.1.2`  
+**Compliance Standard:** OpenSSF Best Practices, Zero-Shared-Library Static Linking, Android Non-Root Standard  
 
 ---
 
 ## 🚀 Key Highlights
-- **Pre-Compiled Bionic ARM64 Binary Direct Dispatch**: `termux-stt install` automatically downloads pre-compiled `whisper-cli` from GitHub Releases in <1s, eliminating on-device Clang/CMake build bottlenecks.
-- **Graceful Native Compilation Fallback**: If offline or if download fails, automatically provisions compilation tools and builds with native ARM NEON acceleration.
-- **Manual Binary Installation Documentation**: Added direct GitHub Releases curl commands and PATH configuration manual for both Python (pip) and Node.js (npm) users.
-- **Lightweight System Provisioning**: Reduced system provisioning overhead by removing mandatory clang/cmake dependencies from the primary installation path.
+- **100% Static Standalone Binary Linking (`-DBUILD_SHARED_LIBS=OFF`)**: Embedded all GGML and Whisper C++ libraries directly into a single self-contained `whisper-cli` binary, eliminating `libwhisper.so.1 not found` linker errors forever.
+- **Universal Mobile ARM64 Compatibility**: Standardized binary on ARMv8-A + NEON baseline for seamless plug-and-play operation across Galaxy A-series (A35, A53, A55) and S-series (S20~S25).
+- **Auto-Provisioning & Clean Fallback**: `termux-stt install` verified for instantaneous (<1s) zero-compilation pre-built download with static fallback.
 
 ---
 
