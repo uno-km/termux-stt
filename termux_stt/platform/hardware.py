@@ -26,10 +26,24 @@ class HardwareInfo:
     is_termux: bool
     is_android: bool
 
+# [B방안] Platform SSOT: ameva-vulkan-runtime.platform 에서 공유 구현을 가져옵니다.
+try:
+    from ameva_vulkan_runtime.platform import is_termux as _ameva_is_termux
+    _AMEVA_PLATFORM_AVAILABLE = True
+except ImportError:
+    _AMEVA_PLATFORM_AVAILABLE = False
+
+
 def is_termux() -> bool:
-    """Check if running inside Termux."""
+    """Check if running inside Termux.
+
+    [B방안] ameva-vulkan-runtime.platform.is_termux() 를 SSOT 로 사용하며,
+    미설치 환경에서는 인라인 구현으로 안전하게 폴백합니다.
+    """
+    if _AMEVA_PLATFORM_AVAILABLE:
+        return _ameva_is_termux()
     prefix = os.environ.get("PREFIX", "")
-    return "com.termux" in prefix
+    return "com.termux" in prefix or "TERMUX_VERSION" in os.environ or os.path.exists("/data/data/com.termux")
 
 def get_ram_info() -> Tuple[int, int]:
     """Get total and available RAM in MB using /proc/meminfo."""
