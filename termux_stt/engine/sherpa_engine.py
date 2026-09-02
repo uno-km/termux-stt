@@ -32,15 +32,23 @@ class SherpaEngine(Engine):
     # ------------------------------------------------------------------
 
     def _find_binary(self, name: str = "sherpa-onnx-offline") -> str:
-        """Locate a sherpa-onnx binary."""
+        """Locate a sherpa-onnx binary or raise FileNotFoundError."""
+        import shutil
+        found = shutil.which(name)
+        if found:
+            return found
         candidates = [
             Path.home() / ".local" / "bin" / name,
             Path(f"/data/data/com.termux/files/home/.local/bin/{name}"),
+            Path(f"/data/data/com.termux/files/usr/bin/{name}"),
         ]
         for p in candidates:
             if p.exists():
                 return str(p)
-        return str(candidates[0])
+        raise FileNotFoundError(
+            f"Cannot locate '{name}' executable. Please run 'termux-stt install' "
+            f"or install sherpa-onnx in PATH."
+        )
 
     # ------------------------------------------------------------------
     # Core engine methods
@@ -48,11 +56,14 @@ class SherpaEngine(Engine):
 
     def transcribe(self, audio_path: str, **kwargs: Any) -> TranscriptResult:
         """Transcribe an audio file using sherpa-onnx-offline."""
+        import os
+
         from termux_stt.audio.preprocessor import preprocess
         from termux_stt.models.hub import ModelHub
         from termux_stt.platform.process_pool import run_isolated
 
         wav_path = preprocess(audio_path, target_sr=16000, force_mono=True)
+        is_temp_wav = os.path.abspath(wav_path) != os.path.abspath(audio_path)
         model_dir = ModelHub.ensure_model('sherpa', self.model_name)
         binary = self._find_binary()
 
@@ -65,50 +76,26 @@ class SherpaEngine(Engine):
             wav_path,
         ]
 
-        result = run_isolated(cmd)
-        if result.returncode != 0:
-            raise RuntimeError(
-                f"sherpa-onnx exited with code {result.returncode}: "
-                f"{result.stderr}"
+        try:
+            result = run_isolated(cmd)
+            if result.returncode != 0:
+                raise RuntimeError(
+                    f"sherpa-onnx exited with code {result.returncode}: "
+                    f"{result.stderr}"
+                )
+
+            text = result.stdout.strip()
+            return TranscriptResult(
+                text=text,
+                language=self.config.language,
+                segments=[Segment(start=0.0, end=0.0, text=text)] if text else [],
             )
-
-        text = result.stdout.strip()
-        return TranscriptResult(
-            text=text,
-            language=self.config.language,
-            segments=[Segment(start=0.0, end=0.0, text=text)] if text else [],
-        )
-
-    def diarize(
-        self, audio_path: str, num_speakers: int = 2
-    ) -> DiarizedResult:
-        """Speaker diarization using CAM++ embeddings and clustering."""
-        from termux_stt.audio.preprocessor import preprocess
-
-        wav_path = preprocess(audio_path, target_sr=16000, force_mono=True)
-
-        # Transcribe first
-        stt_result = self.transcribe(wav_path)
-
-        # CAM++ embedding extraction would go through subprocess here
-        # For now, assign all segments to Speaker_0
-        segments = []
-        for seg in stt_result.segments:
-            segments.append(Segment(
-                start=seg.start,
-                end=seg.end,
-                text=seg.text,
-                speaker="Speaker_0",
-                confidence=seg.confidence,
-            ))
-
-        unique_speakers = sorted(set(s.speaker for s in segments if s.speaker))
-        return DiarizedResult(
-            text=stt_result.text,
-            language=stt_result.language,
-            segments=segments,
-            speakers=unique_speakers,
-        )
+        finally:
+            if is_temp_wav and os.path.exists(wav_path):
+                try:
+                    os.remove(wav_path)
+                except OSError:
+                    pass
 
     def stream_mic(
         self, duration: Optional[float] = None
@@ -162,51 +149,92 @@ class SherpaEngine(Engine):
         from termux_stt.audio.preprocessor import preprocess
 
         wav_path = preprocess(audio_path, target_sr=16000, force_mono=True)
-        wf = wave.open(wav_path, "rb")
-        sr = wf.getframerate()
-        chunk_frames = int(chunk_sec * sr)
-        offset = 0.0
+        is_temp_wav = os.path.abspath(wav_path) != os.path.abspath(audio_path)
 
-        while True:
-            data = wf.readframes(chunk_frames)
-            if len(data) == 0:
-                break
+        try:
+            with wave.open(wav_path, "rb") as wf:
+                sr = wf.getframerate()
+                chunk_frames = int(chunk_sec * sr)
+                offset = 0.0
 
-            with tempfile.NamedTemporaryFile(
-                suffix=".wav", delete=False
-            ) as tmp:
-                tmp_path = tmp.name
-                num_channels, sample_width = 1, 2
-                data_size = len(data)
-                tmp.write(b"RIFF")
-                tmp.write(struct.pack("<I", data_size + 36))
-                tmp.write(b"WAVEfmt ")
-                tmp.write(struct.pack("<IHHIIHH", 16, 1, num_channels, sr,
-                                      sr * num_channels * sample_width,
-                                      num_channels * sample_width,
-                                      sample_width * 8))
-                tmp.write(b"data")
-                tmp.write(struct.pack("<I", data_size))
-                tmp.write(data)
+                while True:
+                    data = wf.readframes(chunk_frames)
+                    if len(data) == 0:
+                        break
 
-            try:
-                result = self.transcribe(tmp_path)
-                for seg in result.segments:
-                    yield Segment(
-                        start=offset + seg.start,
-                        end=offset + seg.end,
-                        text=seg.text,
-                    )
-            finally:
+                    with tempfile.NamedTemporaryFile(
+                        suffix=".wav", delete=False
+                    ) as tmp:
+                        tmp_path = tmp.name
+                        num_channels, sample_width = 1, 2
+                        data_size = len(data)
+                        tmp.write(b"RIFF")
+                        tmp.write(struct.pack("<I", data_size + 36))
+                        tmp.write(b"WAVEfmt ")
+                        tmp.write(struct.pack("<IHHIIHH", 16, 1, num_channels, sr,
+                                              sr * num_channels * sample_width,
+                                              num_channels * sample_width,
+                                              sample_width * 8))
+                        tmp.write(b"data")
+                        tmp.write(struct.pack("<I", data_size))
+                        tmp.write(data)
+
+                    try:
+                        result = self.transcribe(tmp_path)
+                        for seg in result.segments:
+                            yield Segment(
+                                start=offset + seg.start,
+                                end=offset + seg.end,
+                                text=seg.text,
+                            )
+                    finally:
+                        try:
+                            os.unlink(tmp_path)
+                        except OSError:
+                            pass
+
+                    actual_frames = len(data) // (wf.getsampwidth() * wf.getnchannels())
+                    offset += actual_frames / sr
+        finally:
+            if is_temp_wav and os.path.exists(wav_path):
                 try:
-                    os.unlink(tmp_path)
+                    os.remove(wav_path)
                 except OSError:
                     pass
 
-            actual_frames = len(data) // (wf.getsampwidth() * wf.getnchannels())
-            offset += actual_frames / sr
+    def diarize(
+        self, audio_path: str, num_speakers: int = 2, **kwargs: Any
+    ) -> DiarizedResult:
+        """Run STT with speaker diarization.
 
-        wf.close()
+        Delegates to HybridEngine (Vosk X-Vector + Whisper STT) when available,
+        or wraps transcript segments into a valid DiarizedResult.
+        """
+        try:
+            from .hybrid_engine import HybridEngine
+            hybrid = HybridEngine(self.config)
+            return hybrid.diarize(audio_path, num_speakers=num_speakers, **kwargs)
+        except Exception as exc:
+            logger.debug("Hybrid diarization delegation unavailable (%s), falling back to standalone diarized result", exc)
+            res = self.transcribe(audio_path, **kwargs)
+            speaker_label = "Speaker_0" if num_speakers <= 1 else "Speaker_Unknown"
+            diarized_segments = [
+                Segment(
+                    start=s.start,
+                    end=s.end,
+                    text=s.text,
+                    speaker=speaker_label,
+                    confidence=s.confidence,
+                )
+                for s in res.segments
+            ]
+            return DiarizedResult(
+                text=res.text,
+                language=res.language,
+                segments=diarized_segments,
+                duration=res.duration,
+                speakers=[speaker_label] if diarized_segments else [],
+            )
 
     def get_info(self) -> Dict[str, Any]:
         """Return engine status information."""

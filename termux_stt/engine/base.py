@@ -19,6 +19,7 @@ class EngineConfig:
     engine: str = 'whisper'
     model: Optional[str] = None
     lang: str = 'ko'
+    device: Any = 'auto'
     threads: Optional[int] = None
     vad: bool = True
     vad_threshold: float = 0.5
@@ -32,6 +33,7 @@ class EngineConfig:
         engine: str = 'whisper',
         model: Optional[str] = None,
         lang: str = 'ko',
+        device: Any = 'auto',
         threads: Optional[int] = None,
         vad: bool = True,
         vad_threshold: float = 0.5,
@@ -44,6 +46,7 @@ class EngineConfig:
         self.engine = engine
         self.model = model or kwargs.get('model_path') or kwargs.get('model_name')
         self.lang = lang if lang != 'ko' or 'language' not in kwargs else kwargs.get('language', 'ko')
+        self.device = device if 'device' not in kwargs else kwargs.get('device', 'auto')
         self.threads = threads if threads is not None else kwargs.get('num_threads')
         self.vad = vad if 'use_vad' not in kwargs else kwargs.get('use_vad', True)
         self.vad_threshold = vad_threshold
@@ -53,7 +56,7 @@ class EngineConfig:
         self.extra = extra or {}
         # Merge remaining kwargs into extra
         for k, v in kwargs.items():
-            if k not in {'model_path', 'model_name', 'language', 'num_threads', 'use_vad'}:
+            if k not in {'model_path', 'model_name', 'language', 'num_threads', 'use_vad', 'device'}:
                 self.extra[k] = v
 
     # Convenience helpers ---------------------------------------------------

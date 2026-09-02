@@ -69,7 +69,7 @@ class HybridEngine(Engine):
         return self._whisper.transcribe(audio_path, **kwargs)
 
     def diarize(
-        self, audio_path: str, num_speakers: int = 2
+        self, audio_path: str, num_speakers: int = 2, allow_fallback: bool = False, **kwargs: Any
     ) -> DiarizedResult:
         """Full hybrid pipeline: STT + speaker diarization.
 
@@ -79,6 +79,8 @@ class HybridEngine(Engine):
             Path to an audio file.
         num_speakers : int
             Expected number of distinct speakers.
+        allow_fallback : bool
+            Whether to allow pause-heuristic fallback when X-Vector extraction fails.
 
         Returns
         -------
@@ -96,11 +98,16 @@ class HybridEngine(Engine):
 
         try:
             # 2. Vosk X-Vector extraction
+            xvectors = []
             try:
                 xvectors = self._vosk.extract_xvectors(wav_path, chunk_sec=2.0)
             except Exception as exc:
-                logger.warning("X-Vector extraction failed: %s — falling back", exc)
-                xvectors = []
+                if not allow_fallback:
+                    raise RuntimeError(
+                        f"X-Vector speaker embedding extraction failed: {exc}. "
+                        f"Ensure vosk-model-spk is installed or pass allow_fallback=True."
+                    )
+                logger.warning("X-Vector extraction failed: %s — speaker diarization falling back to Speaker_Unknown", exc)
 
             # 3. Pure Python K-Means clustering
             speaker_labels = []
@@ -114,18 +121,20 @@ class HybridEngine(Engine):
                     for xv, label in zip(xvectors, kmeans.labels_)
                 ]
             elif xvectors:
-                # Fewer chunks than speakers — assign sequentially
+                # Fewer chunks than speakers — assign adaptive clusters
+                kmeans = KMeans(n_clusters=num_speakers)
+                kmeans.fit([xv[2] for xv in xvectors])
                 speaker_labels = [
-                    (xv[0], xv[1], i % num_speakers)
-                    for i, xv in enumerate(xvectors)
+                    (xv[0], xv[1], label)
+                    for xv, label in zip(xvectors, kmeans.labels_)
                 ]
 
             # 4. Whisper STT transcription
-            stt_result = self._whisper.transcribe(wav_path)
+            stt_result = self._whisper.transcribe(wav_path, **kwargs)
 
             # 5. Align speakers to transcript segments
             mapper = SpeakerMapper()
-            aligned = mapper.align(stt_result.segments, speaker_labels)
+            aligned = mapper.align(stt_result.segments, speaker_labels, num_speakers=num_speakers)
 
             # 6. Build result
             unique_speakers = sorted(

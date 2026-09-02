@@ -17,7 +17,8 @@ def _run_cli():
     # Common parent parser for shared arguments
     common_parser = argparse.ArgumentParser(add_help=False)
     common_parser.add_argument("--engine", type=str, default="whisper", choices=["whisper", "vosk", "hybrid", "sherpa"], help="Engine to use")
-    common_parser.add_argument("--model", type=str, help="Model name or path")
+    common_parser.add_argument("-m", "--model", type=str, help="Model name or path")
+    common_parser.add_argument("--device", type=str, default="auto", choices=["auto", "gpu", "cpu", "vulkan"], help="Acceleration device backend")
     common_parser.add_argument("--lang", type=str, default="ko", help="Language code")
     common_parser.add_argument("--threads", type=int, default=None, help="Number of CPU threads to use")
     common_parser.add_argument("--vad", action="store_true", help="Enable VAD filtering")
@@ -52,6 +53,7 @@ def _run_cli():
     # Models subcommand
     parser_models = subparsers.add_parser("models", help="Manage STT models")
     parser_models.add_argument("action", choices=["list", "download", "remove"], help="Action to perform")
+    parser_models.add_argument("extra_args", nargs="*", help="Optional positional [engine] [model]")
     parser_models.add_argument("--model", type=str, help="Model name")
     parser_models.add_argument("--engine", type=str, default="whisper", help="Target engine")
 

@@ -2,7 +2,7 @@ import logging
 import subprocess
 import time
 from dataclasses import dataclass
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -13,7 +13,7 @@ class SubprocessResult:
     stderr: str
     duration_sec: float
 
-def run_isolated(cmd: list[str], timeout: Optional[float] = None, env: Optional[Dict[str, str]] = None, max_retries: int = 2) -> SubprocessResult:
+def run_isolated(cmd: List[str], timeout: Optional[float] = None, env: Optional[Dict[str, str]] = None, max_retries: int = 2) -> SubprocessResult:
     """Run a subprocess in isolation, handling crashes and retries."""
     for attempt in range(max_retries):
         start_time = time.time()

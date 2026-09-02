@@ -12,6 +12,7 @@ from typing import Any, Dict, Iterator, List, Optional
 
 from termux_stt.engine.base import Engine, EngineConfig
 from termux_stt.export.result import DiarizedResult, Segment, TranscriptResult
+from termux_stt.platform.process_pool import run_isolated
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +30,21 @@ class WhisperEngine(Engine):
         self.config = config
         self.model = config.model_name
         self.lang = config.language
+        self.device = config.device
+
+        # Hardware acceleration context delegation via ameva-vulkan-runtime & SttAdapter
+        try:
+            import ameva_vulkan_runtime as avr
+            from ameva_vulkan_runtime.adapters import SttAdapter
+
+            self.ctx = avr.get_or_create_context(self.device)
+            report = getattr(self.ctx, "doctor", avr.Doctor()).run_self_test(verbose=False)
+            SttAdapter.bind(self, report)
+        except Exception:
+            if str(self.device or "").lower() in ("gpu", "vulkan"):
+                raise
+            self.ctx = None
+
         # Lazy-import to avoid circular deps at module load time
         try:
             from termux_stt.platform.hardware import get_optimal_threads
@@ -76,6 +92,23 @@ class WhisperEngine(Engine):
             f"  2. Or install manually via Termux: pkg install whisper.cpp\n"
             f"  3. Or compile whisper.cpp and add to PATH: export PATH=$HOME/.local/bin:$PATH"
         )
+
+    @classmethod
+    def _supports_ngl(cls, binary_path: str) -> bool:
+        """Inspects whether the target whisper-cli binary supports GPU offload flags (-ngl)."""
+        if not hasattr(cls, "_ngl_cache"):
+            cls._ngl_cache = {}
+        if binary_path in cls._ngl_cache:
+            return cls._ngl_cache[binary_path]
+        try:
+            res = run_isolated([binary_path, "-h"])
+            help_text = (res.stdout or "") + (res.stderr or "")
+            supports = "-ngl" in help_text or "--gpu-layers" in help_text
+            cls._ngl_cache[binary_path] = supports
+            return supports
+        except Exception:
+            cls._ngl_cache[binary_path] = False
+            return False
 
 
     # ------------------------------------------------------------------
@@ -159,6 +192,14 @@ class WhisperEngine(Engine):
             if opts.get("dtw", False):
                 cmd.append("-dtw")
 
+            # GPU offloading via Vulkan if active and supported by binary
+            if (self.ctx and self.ctx.is_gpu) or opts.get("gpu_layers") or opts.get("n_gpu_layers"):
+                ngl = opts.get("gpu_layers", opts.get("n_gpu_layers", 33))
+                if self._supports_ngl(binary):
+                    cmd.extend(["-ngl", str(ngl)])
+                else:
+                    logger.info("whisper-cli at '%s' does not accept -ngl; running in native CPU mode.", binary)
+
             # Passthrough raw extra_args if provided (list or string)
             extra_args = opts.get("extra_args")
             if extra_args:
@@ -216,6 +257,12 @@ class WhisperEngine(Engine):
                 segments=segments,
             )
         finally:
+            json_file = f"{wav_path}.json"
+            if os.path.exists(json_file):
+                try:
+                    os.remove(json_file)
+                except OSError:
+                    pass
             if is_temp_wav and os.path.exists(wav_path):
                 try:
                     os.remove(wav_path)
@@ -267,64 +314,89 @@ class WhisperEngine(Engine):
         from termux_stt.audio.preprocessor import preprocess
 
         wav_path = preprocess(audio_path, target_sr=16000, force_mono=True)
-        wf = wave.open(wav_path, "rb")
-        chunk_frames = int(chunk_sec * wf.getframerate())
+        with wave.open(wav_path, "rb") as wf:
+            chunk_frames = int(chunk_sec * wf.getframerate())
+            offset = 0.0
+            while True:
+                data = wf.readframes(chunk_frames)
+                if len(data) == 0:
+                    break
 
-        offset = 0.0
-        while True:
-            data = wf.readframes(chunk_frames)
-            if len(data) == 0:
-                break
+                with tempfile.NamedTemporaryFile(
+                    suffix=".wav", delete=False
+                ) as tmp:
+                    tmp_path = tmp.name
+                    self._write_wav(tmp, data, sample_rate=wf.getframerate())
 
-            with tempfile.NamedTemporaryFile(
-                suffix=".wav", delete=False
-            ) as tmp:
-                tmp_path = tmp.name
-                self._write_wav(tmp, data, sample_rate=wf.getframerate())
-
-            try:
-                result = self.transcribe(tmp_path)
-                for seg in result.segments:
-                    yield Segment(
-                        start=offset + seg.start,
-                        end=offset + seg.end,
-                        text=seg.text,
-                        speaker=seg.speaker,
-                        confidence=seg.confidence,
-                    )
-            finally:
                 try:
-                    os.unlink(tmp_path)
-                except OSError:
-                    pass
+                    result = self.transcribe(tmp_path)
+                    for seg in result.segments:
+                        yield Segment(
+                            start=offset + seg.start,
+                            end=offset + seg.end,
+                            text=seg.text,
+                            speaker=seg.speaker,
+                            confidence=seg.confidence,
+                        )
+                finally:
+                    try:
+                        os.unlink(tmp_path)
+                    except OSError:
+                        pass
 
-            actual_frames = len(data) // (wf.getsampwidth() * wf.getnchannels())
-            offset += actual_frames / wf.getframerate()
-
-        wf.close()
+                actual_frames = len(data) // (wf.getsampwidth() * wf.getnchannels())
+                offset += actual_frames / wf.getframerate()
 
     def diarize(
-        self, audio_path: str, num_speakers: int = 2
+        self, audio_path: str, num_speakers: int = 2, **kwargs: Any
     ) -> DiarizedResult:
-        """Whisper-only diarization is not natively supported.
+        """Run STT with speaker diarization.
 
-        Use ``create_engine("hybrid")`` for full diarization.
+        Delegates to HybridEngine (Vosk X-Vector + Whisper STT) when available,
+        or wraps transcript segments into a valid DiarizedResult.
         """
-        raise NotImplementedError(
-            "whisper.cpp does not support speaker diarization. "
-            "Use create_engine('hybrid') instead."
-        )
+        try:
+            from .hybrid_engine import HybridEngine
+            hybrid = HybridEngine(self.config)
+            return hybrid.diarize(audio_path, num_speakers=num_speakers, **kwargs)
+        except Exception as exc:
+            logger.debug("Hybrid diarization delegation unavailable (%s), falling back to standalone diarized result", exc)
+            res = self.transcribe(audio_path, **kwargs)
+            speaker_label = "Speaker_0" if num_speakers <= 1 else "Speaker_Unknown"
+            diarized_segments = [
+                Segment(
+                    start=s.start,
+                    end=s.end,
+                    text=s.text,
+                    speaker=speaker_label,
+                    confidence=s.confidence,
+                )
+                for s in res.segments
+            ]
+            return DiarizedResult(
+                text=res.text,
+                language=res.language,
+                segments=diarized_segments,
+                duration=res.duration,
+                speakers=[speaker_label] if diarized_segments else [],
+            )
 
     def get_info(self) -> Dict[str, Any]:
         """Return engine status information."""
-        return {
+        info = {
             "name": "whisper.cpp",
             "model": self.model,
             "language": self.lang,
+            "device": str(self.device),
             "threads": self.threads,
             "binary_path": self._get_binary_path(),
             "quantization": self.config.quantization,
         }
+        if self.ctx:
+            info["backend_type"] = self.ctx.backend_type
+            info["is_gpu"] = self.ctx.is_gpu
+            info["device_name"] = self.ctx.device_name
+        return info
 
     # ------------------------------------------------------------------
     # Helpers

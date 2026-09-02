@@ -8,6 +8,9 @@ try:
 except ImportError:
     psutil = None
 
+import atexit
+from contextlib import contextmanager
+
 logger = logging.getLogger(__name__)
 
 class MobileGuard:
@@ -15,32 +18,75 @@ class MobileGuard:
 
     def __init__(self):
         self._wakelock_acquired = False
+        atexit.register(self._cleanup_on_exit)
+
+    def _cleanup_on_exit(self):
+        if self._wakelock_acquired:
+            self.release_wakelock()
 
     def acquire_wakelock(self) -> bool:
         """Acquire CPU wakelock to prevent sleep."""
         try:
-            res = subprocess.run(["termux-wake-lock"], capture_output=True)
+            res = subprocess.run(["termux-wake-lock"], capture_output=True, timeout=5.0)
             if res.returncode == 0:
                 self._wakelock_acquired = True
                 return True
-        except Exception:
-            pass
+            logger.debug("termux-wake-lock failed with returncode %d", res.returncode)
+        except Exception as e:
+            logger.debug("termux-wake-lock exception: %s", e)
         return False
 
     def release_wakelock(self) -> bool:
         """Release CPU wakelock."""
         try:
-            res = subprocess.run(["termux-wake-unlock"], capture_output=True)
+            res = subprocess.run(["termux-wake-unlock"], capture_output=True, timeout=5.0)
             if res.returncode == 0:
                 self._wakelock_acquired = False
                 return True
-        except Exception:
-            pass
+            logger.debug("termux-wake-unlock failed with returncode %d", res.returncode)
+        except Exception as e:
+            logger.debug("termux-wake-unlock exception: %s", e)
         return False
 
     @staticmethod
     def disable_phantom_process_killer() -> bool:
-        """Informational note: Phantom process killer adjustment requires manual user configuration in Android 12+ settings or adb."""
+        """Attempt to disable Android 12+ Phantom Process Killer via root, device_config, or adb.
+
+        Returns True if successfully disabled or not required (Android < 12), False if permission denied.
+        """
+        # 1. Check Android SDK API level
+        try:
+            sdk_res = subprocess.run(["getprop", "ro.build.version.sdk"], capture_output=True, text=True, timeout=2.0)
+            if sdk_res.returncode == 0 and sdk_res.stdout.strip().isdigit():
+                sdk_level = int(sdk_res.stdout.strip())
+                if sdk_level < 31:
+                    logger.info("Phantom process killer is not active on Android < 12 (SDK %d).", sdk_level)
+                    return True
+        except Exception:
+            pass
+
+        # 2. Candidate execution strategies for Android 12+
+        commands = [
+            ["su", "-c", "device_config set_sync_disabled_for_tests persistent && device_config put activity_manager max_phantom_processes 2147483647"],
+            ["device_config", "set_sync_disabled_for_tests", "persistent"],
+            ["adb", "shell", "device_config set_sync_disabled_for_tests persistent && device_config put activity_manager max_phantom_processes 2147483647"],
+        ]
+
+        for cmd in commands:
+            try:
+                res = subprocess.run(cmd, capture_output=True, timeout=3.0)
+                if res.returncode == 0:
+                    logger.info("Phantom process killer disabled successfully using: %s", " ".join(cmd[:2]))
+                    return True
+            except (FileNotFoundError, PermissionError, subprocess.TimeoutExpired):
+                continue
+            except Exception as e:
+                logger.debug("Strategy %s failed: %s", cmd[0], e)
+
+        logger.warning(
+            "Unable to disable Phantom Process Killer automatically (requires root or ADB privileges). "
+            "Please run 'adb shell \"/system/bin/device_config set_sync_disabled_for_tests persistent && /system/bin/device_config put activity_manager max_phantom_processes 2147483647\"' manually."
+        )
         return False
 
     @staticmethod
@@ -72,3 +118,15 @@ class MobileGuard:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.release_wakelock()
+        return False
+
+
+@contextmanager
+def wake_lock():
+    """RAII Context Manager guaranteeing termux-wake-unlock upon exit or error."""
+    guard = MobileGuard()
+    guard.acquire_wakelock()
+    try:
+        yield guard
+    finally:
+        guard.release_wakelock()

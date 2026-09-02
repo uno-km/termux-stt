@@ -3,10 +3,13 @@ from termux_stt.export.result import TranscriptResult
 
 def _format_timestamp(seconds: float) -> str:
     """Format seconds into HH:MM:SS,mmm"""
-    hours = int(seconds // 3600)
-    minutes = int((seconds % 3600) // 60)
-    secs = int(seconds % 60)
-    millis = int(round((seconds - int(seconds)) * 1000))
+    total_millis = max(0, int(round(seconds * 1000)))
+    hours = total_millis // 3600000
+    total_millis %= 3600000
+    minutes = total_millis // 60000
+    total_millis %= 60000
+    secs = total_millis // 1000
+    millis = total_millis % 1000
     return f"{hours:02d}:{minutes:02d}:{secs:02d},{millis:03d}"
 
 def to_srt(result: TranscriptResult) -> str:

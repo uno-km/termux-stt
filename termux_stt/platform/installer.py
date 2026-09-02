@@ -7,9 +7,8 @@ import logging
 import os
 import shutil
 import subprocess
-import sys
 from pathlib import Path
-from typing import Dict
+from typing import Dict, List
 
 logger = logging.getLogger(__name__)
 
@@ -93,6 +92,29 @@ class EngineInstaller:
         return False
 
     @classmethod
+    def _build_cmake_flags(cls) -> List[str]:
+        flags = [
+            "-B", "build",
+            "-DBUILD_SHARED_LIBS=OFF",
+            "-DWHISPER_BUILD_SHARED=OFF",
+            "-DWHISPER_NEON=ON",
+            "-DCMAKE_BUILD_TYPE=Release",
+        ]
+        can_vulkan = False
+        try:
+            from ameva_vulkan_runtime.doctor import Doctor
+            can_vulkan = Doctor().quick_probe()
+        except ImportError:
+            can_vulkan = bool(shutil.which("vulkaninfo") or os.path.exists("/system/lib64/libvulkan.so"))
+
+        if can_vulkan:
+            print("[+] Vulkan Compute GPU acceleration detected: enabling -DGGML_VULKAN=ON")
+            flags.append("-DGGML_VULKAN=ON")
+        else:
+            print("[-] Vulkan unavailable. Building CPU-NEON optimized static binary.")
+        return flags
+
+    @classmethod
     def install_whisper_cpp(cls) -> bool:
         """Install whisper.cpp: Priority 1 = Pre-built download, Priority 2 = Local ARM NEON build."""
         LOCAL_BIN.mkdir(parents=True, exist_ok=True)
@@ -111,7 +133,7 @@ class EngineInstaller:
         if shutil.which("pkg"):
             subprocess.run(["pkg", "install", "-y", "cmake", "make", "clang"], check=False)
 
-        build_dir = Path(HOME) / "tmp" / "whisper.cpp"
+        build_dir = Path(HOME) / ".cache" / "termux-stt" / "build" / "whisper.cpp"
         build_dir.parent.mkdir(parents=True, exist_ok=True)
 
         try:
@@ -122,13 +144,14 @@ class EngineInstaller:
                     check=True,
                 )
 
-            print("[*] Compiling whisper.cpp with -DBUILD_SHARED_LIBS=OFF -DWHISPER_NEON=ON...")
-            nproc = os.cpu_count() or 4
+            cmake_flags = ["cmake"] + cls._build_cmake_flags()
+            print(f"[*] Configuring whisper.cpp with {' '.join(cmake_flags)}...")
             subprocess.run(
-                ["cmake", "-B", "build", "-DBUILD_SHARED_LIBS=OFF", "-DWHISPER_BUILD_SHARED=OFF", "-DWHISPER_NEON=ON", "-DCMAKE_BUILD_TYPE=Release"],
+                cmake_flags,
                 cwd=str(build_dir),
                 check=True,
             )
+            nproc = os.cpu_count() or 4
             subprocess.run(
                 ["cmake", "--build", "build", f"-j{nproc}"],
                 cwd=str(build_dir),
@@ -166,17 +189,27 @@ class EngineInstaller:
 
     @classmethod
     def install_vosk(cls) -> bool:
-        """Ensure Vosk model directories are initialized."""
+        """Install vosk Python package and initialize cache directories."""
         model_dir = Path(HOME) / ".cache" / "termux-stt" / "models" / "vosk"
         model_dir.mkdir(parents=True, exist_ok=True)
-        return True
+        try:
+            import vosk  # noqa: F401
+            return True
+        except ImportError:
+            print("[*] Installing vosk Python binding via pip...")
+            res = subprocess.run(["pip", "install", "vosk"], check=False)
+            return res.returncode == 0
 
     @classmethod
     def install_sherpa_onnx(cls) -> bool:
-        """Ensure Sherpa ONNX model directories are initialized."""
+        """Install sherpa-onnx and initialize cache directories."""
         model_dir = Path(HOME) / ".cache" / "termux-stt" / "models" / "sherpa"
         model_dir.mkdir(parents=True, exist_ok=True)
-        return True
+        if shutil.which("sherpa-onnx-offline") or (LOCAL_BIN / "sherpa-onnx-offline").exists():
+            return True
+        print("[*] Installing sherpa-onnx via pip...")
+        res = subprocess.run(["pip", "install", "sherpa-onnx"], check=False)
+        return res.returncode == 0
 
     @classmethod
     def check_engine_installed(cls, engine: str) -> bool:
@@ -191,7 +224,11 @@ class EngineInstaller:
                 or (LOCAL_BIN / "whisper-cpp").exists()
             )
         elif engine == "vosk":
-            return True
+            try:
+                import vosk  # noqa: F401
+                return True
+            except ImportError:
+                return False
         elif engine == "sherpa":
             return bool(shutil.which("sherpa-onnx-offline") or (LOCAL_BIN / "sherpa-onnx-offline").exists())
         return False

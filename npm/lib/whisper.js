@@ -12,7 +12,15 @@ class WhisperEngine extends Engine {
     super(config);
     this.model = config.model || 'base';
     this.lang = config.lang || 'ko';
+    this.device = config.device || 'auto';
     this.threads = config.threads || 4;
+
+    try {
+      const avr = require('ameva-vulkan-runtime');
+      this.ctx = avr.getOrCreateContext({ device: this.device });
+    } catch (e) {
+      this.ctx = null;
+    }
   }
 
   async transcribe(audioPath, options = {}) {
@@ -24,6 +32,7 @@ class WhisperEngine extends Engine {
         '--engine', 'whisper',
         '--model', this.model,
         '--lang', this.lang,
+        '--device', String(this.device),
         '--format', 'json',
         audioPath
       ];
@@ -54,12 +63,19 @@ class WhisperEngine extends Engine {
   }
 
   getInfo() {
-    return {
+    const info = {
       name: 'whisper.cpp (Node.js)',
       model: this.model,
       language: this.lang,
+      device: this.device,
       threads: this.threads
     };
+    if (this.ctx) {
+      info.backendType = this.ctx.backendType;
+      info.isGpu = this.ctx.isGpu;
+      info.deviceName = this.ctx.deviceName;
+    }
+    return info;
   }
 }
 

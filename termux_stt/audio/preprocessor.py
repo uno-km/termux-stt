@@ -8,16 +8,20 @@ from typing import Optional
 __all__ = ["preprocess", "ensure_wav_format", "validate_audio"]
 
 
+import logging
+
+logger = logging.getLogger(__name__)
+
+
 def validate_audio(path: str) -> bool:
     """
-    Validate audio size and length.
-    Ensure it's not totally empty or impossibly small.
+    Validate audio size and existence.
     """
     if not os.path.exists(path):
-        return False
+        raise FileNotFoundError(f"Audio file not found: '{path}'")
     size = os.path.getsize(path)
-    if size < 44:  # At least smaller than a wav header
-        return False
+    if size < 44:  # At least smaller than a standard WAV header
+        raise ValueError(f"Audio file '{path}' is too small ({size} bytes) for valid audio.")
     return True
 
 
@@ -30,7 +34,11 @@ def _check_pure_wav(path: str, target_sr: int = 16000, target_channels: int = 1)
                 and wf.getsampwidth() == 2  # 16-bit PCM
                 and wf.getframerate() == target_sr
             )
-    except Exception:
+    except (wave.Error, EOFError) as e:
+        logger.debug("File '%s' is not standard PCM WAV: %s", path, e)
+        return False
+    except OSError as e:
+        logger.warning("I/O error reading audio file '%s': %s", path, e)
         return False
 
 
@@ -77,14 +85,14 @@ def preprocess(
                 subprocess.run(["pkg", "install", "-y", "libbluray", "libxml2"], check=False, capture_output=True)
                 subprocess.run(cmd, check=True, capture_output=True)
                 return output_path
-            except Exception:
-                pass
+            except Exception as repair_err:
+                logger.debug("Termux ffmpeg package auto-repair failed: %s", repair_err)
 
         if os.path.exists(output_path):
             try:
                 os.remove(output_path)
-            except Exception:
-                pass
+            except OSError as rm_err:
+                logger.debug("Failed to remove temporary output '%s': %s", output_path, rm_err)
         err_msg = e.stderr.decode("utf-8", errors="replace") if e.stderr else str(e)
         raise RuntimeError(f"FFmpeg conversion failed: {err_msg}")
 
@@ -113,7 +121,7 @@ def ensure_wav_format(path: str) -> str:
                 and str(stream.get("sample_rate")) == "16000"
             ):
                 return path
-    except Exception:
-        pass
+    except Exception as probe_err:
+        logger.debug("ffprobe stream verification skipped: %s", probe_err)
 
     return preprocess(path)

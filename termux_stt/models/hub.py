@@ -45,22 +45,11 @@ class ModelHub:
         print(f"Downloading model from {url} to {dest}...")
 
         import ssl
-        try:
-            ctx = ssl.create_default_context()
-        except Exception:
-            ctx = None
-
-        def _open_url(request):
-            try:
-                return urllib.request.urlopen(request, context=ctx)
-            except Exception:
-                insecure_ctx = ssl._create_unverified_context()
-                return urllib.request.urlopen(request, context=insecure_ctx)
-
-        headers = {"User-Agent": "termux-stt/1.0.0"}
+        ctx = ssl.create_default_context()
+        headers = {"User-Agent": "termux-stt/1.1.3"}
         req = urllib.request.Request(url, headers=headers)
 
-        with _open_url(req) as response, open(dest, 'wb') as out_file:
+        with urllib.request.urlopen(req, context=ctx, timeout=60) as response, open(dest, 'wb') as out_file:
             total_size = int(response.info().get('Content-Length', 0))
             downloaded = 0
             block_size = 65536
@@ -107,14 +96,15 @@ class ModelHub:
                 sha256 = sha256 or info.get("sha256", "")
             except ValueError:
                 import difflib
+
                 from .registry import MODEL_REGISTRY
                 known_models = list(MODEL_REGISTRY.get(engine, {}).keys())
                 matches = difflib.get_close_matches(reg_name, known_models, n=3, cutoff=0.4)
-                
+
                 msg_lines = [f"[ERROR] Model '{model_name}' is not recognized for engine '{engine}'."]
                 if matches:
-                    msg_lines.append(f"\nDid you mean:\n  - " + "\n  - ".join(matches))
-                
+                    msg_lines.append("\nDid you mean:\n  - " + "\n  - ".join(matches))
+
                 if known_models:
                     msg_lines.append(f"\nAvailable models for '{engine}':")
                     for km in known_models:
@@ -122,7 +112,7 @@ class ModelHub:
                         size_str = f" ({km_info.get('size', '')})" if km_info.get('size') else ""
                         desc_str = f" - {km_info.get('description', '')}" if km_info.get('description') else ""
                         msg_lines.append(f"  - {km}{size_str}{desc_str}")
-                        
+
                 raise ValueError("\n".join(msg_lines))
 
         if not url:

@@ -21,7 +21,21 @@ function createEngine(engineName = 'whisper', options = {}) {
   }
 }
 
+class TermuxSTT {
+  constructor(options = {}) {
+    const engineName = options.engine || 'whisper';
+    this.engine = createEngine(engineName, options);
+  }
+  transcribe(filePath, options = {}) {
+    return this.engine.transcribe(filePath, options);
+  }
+  diarize(filePath, options = {}) {
+    return this.engine.diarize(filePath, options);
+  }
+}
+
 module.exports = {
+  TermuxSTT,
   createEngine,
   Engine,
   TranscriptResult,

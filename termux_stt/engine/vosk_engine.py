@@ -88,30 +88,45 @@ class VoskEngine(Engine):
         import vosk
 
         wav_path = preprocess(audio_path, target_sr=16000, force_mono=True)
+        is_temp_wav = os.path.abspath(wav_path) != os.path.abspath(audio_path)
 
-        wf = wave.open(wav_path, "rb")
-        opts = {**self.config.extra, **kwargs}
-        rec = vosk.KaldiRecognizer(self._model, wf.getframerate())
-        rec.SetWords(opts.get("words", True))
-        if "max_alternatives" in opts:
-            rec.SetMaxAlternatives(int(opts["max_alternatives"]))
-        if "grammar" in opts:
-            import json as _json
-            grammar_val = opts["grammar"]
-            if isinstance(grammar_val, (list, dict)):
-                rec.SetGrammar(_json.dumps(grammar_val))
-            elif isinstance(grammar_val, str):
-                rec.SetGrammar(grammar_val)
+        try:
+            with wave.open(wav_path, "rb") as wf:
+                opts = {**self.config.extra, **kwargs}
+                rec = vosk.KaldiRecognizer(self._model, wf.getframerate())
+                rec.SetWords(opts.get("words", True))
+                if "max_alternatives" in opts:
+                    rec.SetMaxAlternatives(int(opts["max_alternatives"]))
+                if "grammar" in opts:
+                    import json as _json
+                    grammar_val = opts["grammar"]
+                    if isinstance(grammar_val, (list, dict)):
+                        rec.SetGrammar(_json.dumps(grammar_val))
+                    elif isinstance(grammar_val, str):
+                        rec.SetGrammar(grammar_val)
 
-        segments: List[Segment] = []
-        texts: List[str] = []
+                segments: List[Segment] = []
+                texts: List[str] = []
 
-        while True:
-            data = wf.readframes(4000)
-            if len(data) == 0:
-                break
-            if rec.AcceptWaveform(data):
-                res = json.loads(rec.Result())
+                while True:
+                    data = wf.readframes(4000)
+                    if len(data) == 0:
+                        break
+                    if rec.AcceptWaveform(data):
+                        res = json.loads(rec.Result())
+                        text = res.get("text", "").strip()
+                        words = res.get("result", [])
+                        if words:
+                            t0 = words[0].get("start", 0.0)
+                            t1 = words[-1].get("end", 0.0)
+                            segments.append(Segment(start=t0, end=t1, text=text))
+                        elif text:
+                            segments.append(Segment(start=0.0, end=0.0, text=text))
+                        if text:
+                            texts.append(text)
+
+                # Capture final partial
+                res = json.loads(rec.FinalResult())
                 text = res.get("text", "").strip()
                 words = res.get("result", [])
                 if words:
@@ -123,26 +138,17 @@ class VoskEngine(Engine):
                 if text:
                     texts.append(text)
 
-        # Capture final partial
-        res = json.loads(rec.FinalResult())
-        text = res.get("text", "").strip()
-        words = res.get("result", [])
-        if words:
-            t0 = words[0].get("start", 0.0)
-            t1 = words[-1].get("end", 0.0)
-            segments.append(Segment(start=t0, end=t1, text=text))
-        elif text:
-            segments.append(Segment(start=0.0, end=0.0, text=text))
-        if text:
-            texts.append(text)
-
-        wf.close()
-
-        return TranscriptResult(
-            text=" ".join(texts),
-            language=self.config.language,
-            segments=segments,
-        )
+            return TranscriptResult(
+                text=" ".join(texts),
+                language=self.config.language,
+                segments=segments,
+            )
+        finally:
+            if is_temp_wav and os.path.exists(wav_path):
+                try:
+                    os.remove(wav_path)
+                except OSError:
+                    pass
 
     def extract_xvectors(
         self,
@@ -172,32 +178,39 @@ class VoskEngine(Engine):
         import vosk
 
         wav_path = preprocess(audio_path, target_sr=16000, force_mono=True)
-        wf = wave.open(wav_path, "rb")
-        sample_rate = wf.getframerate()
-        chunk_frames = int(chunk_sec * sample_rate)
-
+        is_temp_wav = os.path.abspath(wav_path) != os.path.abspath(audio_path)
         results: List[Tuple[float, float, List[float]]] = []
         offset = 0.0
 
-        while True:
-            data = wf.readframes(chunk_frames)
-            if len(data) == 0:
-                break
+        try:
+            with wave.open(wav_path, "rb") as wf:
+                sample_rate = wf.getframerate()
+                chunk_frames = int(chunk_sec * sample_rate)
 
-            actual_frames = len(data) // (wf.getsampwidth() * wf.getnchannels())
-            end_time = offset + actual_frames / sample_rate
+                while True:
+                    data = wf.readframes(chunk_frames)
+                    if len(data) == 0:
+                        break
 
-            rec = vosk.KaldiRecognizer(self._model, sample_rate, self._spk_model)
-            rec.AcceptWaveform(data)
-            res = json.loads(rec.FinalResult())
+                    actual_frames = len(data) // (wf.getsampwidth() * wf.getnchannels())
+                    end_time = offset + actual_frames / sample_rate
 
-            spk_vector = res.get("spk", [0.0] * 128)
-            results.append((offset, end_time, spk_vector))
+                    rec = vosk.KaldiRecognizer(self._model, sample_rate, self._spk_model)
+                    rec.AcceptWaveform(data)
+                    res = json.loads(rec.FinalResult())
 
-            offset = end_time
+                    spk_vector = res.get("spk", [0.0] * 128)
+                    results.append((offset, end_time, spk_vector))
 
-        wf.close()
-        return results
+                    offset = end_time
+
+            return results
+        finally:
+            if is_temp_wav and os.path.exists(wav_path):
+                try:
+                    os.remove(wav_path)
+                except OSError:
+                    pass
 
     def stream_mic(
         self, duration: Optional[float] = None
@@ -234,38 +247,67 @@ class VoskEngine(Engine):
         import vosk
 
         wav_path = preprocess(audio_path, target_sr=16000, force_mono=True)
-        wf = wave.open(wav_path, "rb")
-        rec = vosk.KaldiRecognizer(self._model, wf.getframerate())
-        chunk_frames = int(chunk_sec * wf.getframerate())
+        is_temp_wav = os.path.abspath(wav_path) != os.path.abspath(audio_path)
 
-        while True:
-            data = wf.readframes(chunk_frames)
-            if len(data) == 0:
-                break
-            if rec.AcceptWaveform(data):
-                res = json.loads(rec.Result())
+        try:
+            with wave.open(wav_path, "rb") as wf:
+                rec = vosk.KaldiRecognizer(self._model, wf.getframerate())
+                chunk_frames = int(chunk_sec * wf.getframerate())
+
+                while True:
+                    data = wf.readframes(chunk_frames)
+                    if len(data) == 0:
+                        break
+                    if rec.AcceptWaveform(data):
+                        res = json.loads(rec.Result())
+                        text = res.get("text", "").strip()
+                        if text:
+                            yield Segment(start=0.0, end=0.0, text=text)
+
+                res = json.loads(rec.FinalResult())
                 text = res.get("text", "").strip()
                 if text:
                     yield Segment(start=0.0, end=0.0, text=text)
-
-        res = json.loads(rec.FinalResult())
-        text = res.get("text", "").strip()
-        if text:
-            yield Segment(start=0.0, end=0.0, text=text)
-
-        wf.close()
+        finally:
+            if is_temp_wav and os.path.exists(wav_path):
+                try:
+                    os.remove(wav_path)
+                except OSError:
+                    pass
 
     def diarize(
-        self, audio_path: str, num_speakers: int = 2
+        self, audio_path: str, num_speakers: int = 2, **kwargs: Any
     ) -> DiarizedResult:
-        """Vosk-only diarization is not natively supported.
+        """Run STT with speaker diarization.
 
-        Use ``create_engine("hybrid")`` for full diarization support.
+        Delegates to HybridEngine (Vosk X-Vector + Whisper STT) when available,
+        or wraps transcript segments into a valid DiarizedResult.
         """
-        raise NotImplementedError(
-            "Vosk standalone does not support diarization. "
-            "Use create_engine('hybrid') instead."
-        )
+        try:
+            from .hybrid_engine import HybridEngine
+            hybrid = HybridEngine(self.config)
+            return hybrid.diarize(audio_path, num_speakers=num_speakers, **kwargs)
+        except Exception as exc:
+            logger.debug("Hybrid diarization delegation unavailable (%s), falling back to standalone diarized result", exc)
+            res = self.transcribe(audio_path, **kwargs)
+            speaker_label = "Speaker_0" if num_speakers <= 1 else "Speaker_Unknown"
+            diarized_segments = [
+                Segment(
+                    start=s.start,
+                    end=s.end,
+                    text=s.text,
+                    speaker=speaker_label,
+                    confidence=s.confidence,
+                )
+                for s in res.segments
+            ]
+            return DiarizedResult(
+                text=res.text,
+                language=res.language,
+                segments=diarized_segments,
+                duration=res.duration,
+                speakers=[speaker_label] if diarized_segments else [],
+            )
 
     def get_info(self) -> Dict[str, Any]:
         """Return engine status information."""

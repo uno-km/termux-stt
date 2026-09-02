@@ -12,7 +12,9 @@ license = {text = "MIT"}
 authors = [
   {name = "Eunho Kim (@uno-km)"}
 ]
-dependencies = []
+dependencies = [
+  "ameva-vulkan-runtime>=1.0.0",
+]
 
 [project.optional-dependencies]
 dev = ["pytest", "ruff", "mypy"]

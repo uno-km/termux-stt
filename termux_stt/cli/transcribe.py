@@ -1,8 +1,8 @@
-import sys
 from termux_stt import create_engine
 from termux_stt.export.json_export import save_json, to_json
 from termux_stt.export.srt import save_srt, to_srt
 from termux_stt.export.vtt import save_vtt, to_vtt
+
 
 def resolve_safe_output_path(path: str) -> str:
     if not path:
@@ -39,6 +39,7 @@ def run_transcribe(args):
     engine = create_engine(
         engine=args.engine,
         model=args.model,
+        device=getattr(args, "device", "auto"),
         lang=args.lang or "ko",
         threads=args.threads,
         vad=args.vad,

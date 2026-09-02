@@ -60,6 +60,27 @@ def run_doctor(args):
     else:
         print(f"{_status_tag('warn')} whisper.cpp engine missing or not in PATH")
 
+    # Check Vosk
+    try:
+        import vosk  # noqa: F401
+        print(f"{_status_tag('ok')} vosk Python binding is installed")
+    except ImportError:
+        print(f"{_status_tag('warn')} vosk is missing (Install via: pip install vosk)")
+
+    # Check Sherpa ONNX
+    has_sherpa = shutil.which("sherpa-onnx-offline") is not None
+    if has_sherpa:
+        print(f"{_status_tag('ok')} sherpa-onnx binary found")
+    else:
+        print(f"{_status_tag('warn')} sherpa-onnx-offline missing or not in PATH")
+
+    # Check Microphone capture tools
+    has_mic_tool = shutil.which("termux-microphone-record") is not None or shutil.which("ffmpeg") is not None
+    if has_mic_tool:
+        print(f"{_status_tag('ok')} microphone capture tool available")
+    else:
+        print(f"{_status_tag('warn')} no microphone tool found (termux-api or ffmpeg required)")
+
     # Python Version
     py_version = sys.version_info
     if py_version >= (3, 8):

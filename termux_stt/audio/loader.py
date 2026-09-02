@@ -43,7 +43,8 @@ def get_audio_info(path: str) -> Dict[str, Any]:
                 "format": {"format_name": "wav", "duration": duration},
                 "streams": [{"codec_type": "audio", "codec_name": "pcm_s16le", "sample_rate": sample_rate, "channels": channels, "duration": duration}],
             }
-    except Exception:
+    except (wave.Error, EOFError):
+        # Non-WAV audio format (e.g. mp3, m4a, flac, ogg); proceed to ffprobe metadata parser
         pass
 
     # 2. ffprobe fallback for non-WAV formats
@@ -87,7 +88,15 @@ def load_audio(path: str) -> AudioData:
 
     format_name = info.get("format", {}).get("format_name", "unknown")
 
-    # Read binary data
+    # Read binary data with OOM protection (Max 100MB)
+    max_bytes = 100 * 1024 * 1024
+    file_size = os.path.getsize(path)
+    if file_size > max_bytes:
+        raise ValueError(
+            f"Audio file '{path}' ({file_size / (1024*1024):.1f}MB) exceeds in-memory limit (100MB). "
+            "Use stream_file() or engine.transcribe() to process large audio safely without OOM."
+        )
+
     with open(path, "rb") as f:
         samples = f.read()
 

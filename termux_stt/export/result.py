@@ -58,4 +58,4 @@ class TranscriptResult:
 
 @dataclass
 class DiarizedResult(TranscriptResult):
-    speakers: List[str] = None
+    speakers: Optional[List[str]] = None

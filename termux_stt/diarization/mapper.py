@@ -17,19 +17,14 @@ class SpeakerMapper:
         """
         aligned_segments = []
         if not speaker_labels:
-            # Fallback heuristic: cluster segments based on inter-speech pause gaps > 1.2s
-            current_speaker = 0
-            prev_end = 0.0
+            # When X-Vector acoustic embeddings are unavailable, do not fabricate round-robin speaker switches.
+            # Mark speaker as 'Speaker_Unknown' to honestly indicate lack of acoustic clustering.
             for seg in segments:
-                gap = seg.start - prev_end
-                if gap > 1.2 and len(aligned_segments) > 0 and num_speakers > 1:
-                    current_speaker = (current_speaker + 1) % num_speakers
-                prev_end = seg.end
                 aligned_segments.append(Segment(
                     text=seg.text,
                     start=seg.start,
                     end=seg.end,
-                    speaker=self.format_speaker_label(current_speaker)
+                    speaker="Speaker_Unknown"
                 ))
             return aligned_segments
 

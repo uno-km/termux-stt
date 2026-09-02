@@ -7,7 +7,9 @@ setup(
     author="Eunho Kim (@uno-km)",
     packages=find_packages(),
     python_requires=">=3.8",
-    install_requires=[],
+    install_requires=[
+        "ameva-vulkan-runtime>=1.0.0",
+    ],
     extras_require={
         "dev": ["pytest", "ruff", "mypy"]
     },

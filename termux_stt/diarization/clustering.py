@@ -52,12 +52,17 @@ class KMeans:
         if not vectors:
             raise ValueError("Empty vectors list")
         n_samples = len(vectors)
-        if n_samples < self.n_clusters:
-            raise ValueError(f"Number of samples ({n_samples}) must be >= n_clusters ({self.n_clusters})")
-
         dim = len(vectors[0])
 
-        # Initialize centroids randomly
+        if n_samples < self.n_clusters:
+            # Adaptive clustering for short audio segments
+            self.centroids = [v.copy() for v in vectors]
+            self.labels_ = list(range(n_samples))
+            self.inertia_ = 0.0
+            return self
+
+        # Initialize centroids deterministically with seed
+        random.seed(self.seed)
         indices = random.sample(range(n_samples), self.n_clusters)
         self.centroids = [vectors[i].copy() for i in indices]
 
