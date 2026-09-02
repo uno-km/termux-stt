@@ -64,6 +64,16 @@ def _run_cli():
     parser_benchmark = subparsers.add_parser("benchmark", parents=[common_parser], help="Run performance benchmarks")
     parser_benchmark.add_argument("--audio", type=str, required=True, help="Test audio file path")
 
+    # ── AMEVA Component Protocol v1 ─────────────────────────────────────────
+    _protocol_available = False
+    try:
+        from ameva_component.cli_support import build_protocol_subcommands
+        build_protocol_subcommands(subparsers)
+        _protocol_available = True
+    except ImportError:
+        pass
+    # ────────────────────────────────────────────────────────────────────────
+
     args = parser.parse_args()
 
     if args.command == "install":
@@ -80,6 +90,13 @@ def _run_cli():
         run_doctor(args)
     elif args.command == "benchmark":
         run_benchmark(args)
+    elif args.command in ("component", "model", "instance") and _protocol_available:
+        from ameva_component.cli_support import dispatch_protocol
+        from termux_stt.control import STTControl
+        dispatch_protocol(args, STTControl())
+    elif args.command in ("component", "model", "instance"):
+        print("[ERROR] ameva-component-sdk not installed.", file=sys.stderr)
+        sys.exit(1)
     else:
         parser.print_help()
         sys.exit(1)
@@ -115,3 +132,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
