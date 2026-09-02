@@ -1,5 +1,5 @@
 """
-termux-stt — Android on-device STT framework for Termux.
+termux-stt ??Android on-device STT framework for Termux.
 
 Unified interface for whisper.cpp, vosk, and sherpa-onnx with built-in
 speaker diarization, real-time microphone streaming, and hybrid pipelines.
@@ -12,7 +12,7 @@ Quick Start
 >>> print(result.text)
 """
 
-__version__ = '1.1.3'
+__version__ = '1.1.4'
 __author__ = 'Eunho Kim (@uno-km)'
 
 
@@ -47,7 +47,7 @@ def create_engine(
     vad : bool
         Enable Silero-VAD silence filtering. Default ``True``.
     vad_threshold : float
-        VAD sensitivity (0.0–1.0). Default ``0.5``.
+        VAD sensitivity (0.0??.0). Default ``0.5``.
     quantization : str
         GGML quantization: ``"f16"`` | ``"q8_0"`` | ``"q5_1"`` | ``"q4_0"``.
     custom_model_path : str, optional
