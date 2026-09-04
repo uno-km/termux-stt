@@ -24,8 +24,9 @@ def run_benchmark(args):
         dur_str = info.get("format", {}).get("duration")
         if dur_str is not None:
             audio_duration = float(dur_str)
-    except Exception:
-        pass
+    except (OSError, ValueError, KeyError) as _info_err:
+        import logging
+        logging.getLogger(__name__).debug("ffprobe audio info extraction failed: %s", _info_err)
 
     # Secondary fallback: standard wave header inspection
     if audio_duration is None:
@@ -36,8 +37,9 @@ def run_benchmark(args):
                 rate = wf.getframerate()
                 if rate > 0:
                     audio_duration = float(frames) / float(rate)
-        except Exception:
-            pass
+        except (wave.Error, OSError, ValueError) as _wave_err:
+            import logging
+            logging.getLogger(__name__).debug("wave header inspection error: %s", _wave_err)
 
     engine = create_engine(
         engine=engine_name,
@@ -61,13 +63,15 @@ def run_benchmark(args):
                 for child in main_proc.children(recursive=True):
                     try:
                         current_rss += child.memory_info().rss
-                    except (psutil.NoSuchProcess, psutil.AccessDenied):
-                        pass
+                    except (psutil.NoSuchProcess, psutil.AccessDenied) as _proc_err:
+                        import logging
+                        logging.getLogger(__name__).debug("Child proc inaccessible: %s", _proc_err)
                 rss_mb = current_rss / (1024 * 1024)
                 if rss_mb > max_rss_mb:
                     max_rss_mb = rss_mb
-            except Exception:
-                pass
+            except (psutil.Error, OSError) as _mon_err:
+                import logging
+                logging.getLogger(__name__).debug("Memory monitor tick error: %s", _mon_err)
             time.sleep(0.05)
 
     import threading

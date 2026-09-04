@@ -93,7 +93,9 @@ class STTControl(ComponentControl):
         ts = now_timestamps()
         state_data = self._state_file.read()
         stale = self._state_file.is_stale(threshold_ms=30_000)
-        pid, pid_alive = self._check_pid()
+        pid_info = self._check_pid()
+        pid = pid_info.get("pid")
+        pid_alive = pid_info.get("alive")
 
         instances = self._inst_reg.list_all()
         hot = [i for i in instances if i.state == InstanceState.HOT]
@@ -103,8 +105,18 @@ class STTControl(ComponentControl):
         # 엔진 가용 여부 (import 성공 여부만 — 실제 로드 금지)
         engines_available = self._check_engines_available()
 
-        ready = pid_alive and not stale and bool(engines_available)
-        degraded = pid_alive and (stale or not engines_available)
+        ready = (pid_alive is True) and not stale and bool(engines_available)
+        degraded = stale or (pid_alive is not True) or not engines_available
+
+        proc_dict: dict[str, Any] = {
+            "running": pid_alive,
+            "pid": pid,
+            "verified": pid_info.get("verified", False),
+        }
+        if "inspection_error" in pid_info:
+            proc_dict["inspection_error"] = pid_info["inspection_error"]
+        if "reason" in pid_info:
+            proc_dict["reason"] = pid_info["reason"]
 
         return {
             "protocol":         "ameva-component-status/1",
@@ -114,7 +126,7 @@ class STTControl(ComponentControl):
             "ready":            ready,
             "degraded":         degraded,
             **ts,
-            "process":          {"running": pid_alive, "pid": pid},
+            "process":          proc_dict,
             "capabilities":     list(self.CAPABILITIES),
             "active_models":    active_models,
             "engines_available": engines_available,
@@ -131,23 +143,60 @@ class STTControl(ComponentControl):
             },
         }
 
-    def _check_pid(self) -> tuple[int | None, bool]:
-        """P0-5: PID 파일과 상태 파일 기반 프로세스 활성 여부.
-        'pid 없음'과 '검사 실패'를 구분하여 로그에 기록한다."""
+    def _check_pid(self) -> dict[str, Any]:
+        """BLOCKER 1: PID 파일과 상태 파일 기반 프로세스 활성 여부 확인.
+        PermissionError/OSError 발생 시 alive=None, verified=False, inspection_error 반환."""
         import logging
         _log = logging.getLogger(__name__)
 
         if self.DEFAULT_PID_FILE.exists():
             try:
-                pid = int(self.DEFAULT_PID_FILE.read_text().strip())
+                raw = self.DEFAULT_PID_FILE.read_text().strip()
+                pid = int(raw)
+            except (ValueError, OSError) as parse_err:
+                _log.warning("[stt] PID file parse/read error: %s", parse_err)
+                return {
+                    "pid": None,
+                    "alive": None,
+                    "verified": False,
+                    "inspection_error": {
+                        "code": "PID_PARSE_ERROR",
+                        "message": str(parse_err),
+                    },
+                }
+
+            try:
                 os.kill(pid, 0)
-                return pid, True
+                return {"pid": pid, "alive": True, "verified": True}
             except ProcessLookupError:
-                pass  # 프로세스 없음 — 정상 종료 후 PID 파일 잔여
+                return {
+                    "pid": pid,
+                    "alive": False,
+                    "verified": True,
+                    "reason": "process_lookup_failed",
+                }
             except PermissionError as perm_err:
                 _log.warning("[stt] PID file PID alive check PermissionError: %s", perm_err)
-            except (ValueError, OSError) as parse_err:
-                _log.warning("[stt] PID file parse/check error: %s", parse_err)
+                return {
+                    "pid": pid,
+                    "alive": None,
+                    "verified": False,
+                    "inspection_error": {
+                        "code": "PROCESS_INSPECTION_PERMISSION_DENIED",
+                        "message": str(perm_err),
+                    },
+                }
+            except OSError as os_err:
+                _log.warning("[stt] PID file PID alive check OSError: %s", os_err)
+                return {
+                    "pid": pid,
+                    "alive": None,
+                    "verified": False,
+                    "inspection_error": {
+                        "code": "PROCESS_INSPECTION_OS_ERROR",
+                        "message": str(os_err),
+                    },
+                }
 
         state_data = self._state_file.read()
         if state_data:
@@ -155,16 +204,43 @@ class STTControl(ComponentControl):
             if pid:
                 try:
                     os.kill(pid, 0)
-                    return pid, True
+                    return {"pid": pid, "alive": True, "verified": True}
                 except ProcessLookupError:
-                    return pid, False
+                    return {
+                        "pid": pid,
+                        "alive": False,
+                        "verified": True,
+                        "reason": "process_lookup_failed",
+                    }
                 except PermissionError as perm_err:
                     _log.warning("[stt] State-file PID %d PermissionError: %s", pid, perm_err)
-                    return pid, False
+                    return {
+                        "pid": pid,
+                        "alive": None,
+                        "verified": False,
+                        "inspection_error": {
+                            "code": "PROCESS_INSPECTION_PERMISSION_DENIED",
+                            "message": str(perm_err),
+                        },
+                    }
                 except OSError as os_err:
                     _log.warning("[stt] State-file PID %d OSError: %s", pid, os_err)
-                    return pid, False
-        return None, False
+                    return {
+                        "pid": pid,
+                        "alive": None,
+                        "verified": False,
+                        "inspection_error": {
+                            "code": "PROCESS_INSPECTION_OS_ERROR",
+                            "message": str(os_err),
+                        },
+                    }
+
+        return {
+            "pid": None,
+            "alive": False,
+            "verified": True,
+            "reason": "pid_file_missing",
+        }
 
     def _check_engines_available(self) -> dict:
         """실제 모듈 import 가능 여부만 확인 — 로드/추론 금지."""

@@ -84,18 +84,20 @@ class STTOrchestratorAdapter(BaseOrchestratorAdapter):
                 raise ValueError(
                     f"transcribe() must return dict, got {type(result).__name__}"
                 )
-            if result.get("ok") is False:
-                # ComponentControl이 이미 구조화 오류를 반환한 경우
+            if result.get("ok") is not True:
+                # HIGH 1: ComponentControl 성공 결과는 ok=True 필수
+                err_payload = result.get("error") if isinstance(result.get("error"), dict) else {}
                 yield {
                     "type": "error",
                     "ok": False,
-                    "error": result.get("error", {
-                        "code": "TRANSCRIPTION_FAILED",
-                        "message": "transcribe() returned ok=false",
+                    "error": {
+                        "code": err_payload.get("code", "ADAPTER_RESULT_NOT_SUCCESS"),
+                        "message": err_payload.get("message", "transcribe() did not return ok=True"),
                         "operation": "infer",
                         "component_id": self.COMPONENT_ID,
                         "retryable": False,
-                    }),
+                        "details": {"result_keys": sorted(result.keys())},
+                    },
                 }
                 return
 
@@ -172,19 +174,23 @@ class STTOrchestratorAdapter(BaseOrchestratorAdapter):
             }
 
         except Exception as unexpected_err:
-            # P0-4: 예상치 못한 오류 — retryable=False, cause 연결
-            # 원본 오류 코드가 있으면 보존, 없으면 ADAPTER_INTERNAL_ERROR
+            # HIGH 2: 보안을 위해 내부 경로/민감정보가 담길 수 있는 str(exc) 외부 노출 방지
+            import logging
+            logging.getLogger(__name__).exception("STT adapter unexpected error during infer: %s", unexpected_err)
             code = getattr(unexpected_err, "code", "ADAPTER_INTERNAL_ERROR")
             yield {
                 "type": "error",
                 "ok": False,
                 "error": {
-                    "code": code,
-                    "message": str(unexpected_err),
-                    "cause": type(unexpected_err).__name__,
+                    "code": code if isinstance(code, str) else "ADAPTER_INTERNAL_ERROR",
+                    "message": "Unexpected adapter failure",
                     "operation": "infer",
                     "component_id": self.COMPONENT_ID,
-                    "retryable": self._classify_retryable(code, default=False),
+                    "retryable": False,
+                    "details": {
+                        "cause_type": type(unexpected_err).__name__,
+                        "operation": "infer",
+                    },
                 },
             }
 

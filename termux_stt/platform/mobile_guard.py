@@ -62,8 +62,8 @@ class MobileGuard:
                 if sdk_level < 31:
                     logger.info("Phantom process killer is not active on Android < 12 (SDK %d).", sdk_level)
                     return True
-        except Exception:
-            pass
+        except (FileNotFoundError, PermissionError, subprocess.TimeoutExpired, OSError) as _sdk_err:
+            logger.debug("getprop ro.build.version.sdk check failed (%s), will try candidate commands", _sdk_err)
 
         # 2. Candidate execution strategies for Android 12+
         commands = [

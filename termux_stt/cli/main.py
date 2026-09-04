@@ -70,8 +70,9 @@ def _run_cli():
         from ameva_component.cli_support import build_protocol_subcommands
         build_protocol_subcommands(subparsers)
         _protocol_available = True
-    except ImportError:
-        pass
+    except ImportError as _imp_err:
+        import logging
+        logging.getLogger(__name__).debug("ameva_component CLI support not installed: %s", _imp_err)
     # ────────────────────────────────────────────────────────────────────────
 
     args = parser.parse_args()

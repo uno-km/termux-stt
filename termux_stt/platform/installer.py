@@ -76,8 +76,8 @@ class EngineInstaller:
                             shutil.copy2(target_path, PREFIX_BIN / "whisper-cpp")
                             (PREFIX_BIN / "whisper-cli").chmod(0o755)
                             (PREFIX_BIN / "whisper-cpp").chmod(0o755)
-                    except Exception:
-                        pass
+                    except OSError as _copy_err:
+                        logger.debug("Copying to PREFIX_BIN failed (%s), using LOCAL_BIN only", _copy_err)
 
                     print(f"[+] Pre-compiled whisper.cpp binary successfully installed to {target_path}")
                     return True
@@ -172,8 +172,8 @@ class EngineInstaller:
                         if PREFIX_BIN.exists() and os.access(PREFIX_BIN, os.W_OK):
                             shutil.copy2(bin_source, PREFIX_BIN / target_name)
                             (PREFIX_BIN / target_name).chmod(0o755)
-                    except Exception:
-                        pass
+                    except OSError as _copy_err:
+                        logger.debug("Copying compiled binary to PREFIX_BIN failed (%s), using LOCAL_BIN only", _copy_err)
                     shutil.copy2(bin_source, LOCAL_BIN / target_name)
                     (LOCAL_BIN / target_name).chmod(0o755)
 
