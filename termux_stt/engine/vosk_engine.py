@@ -1,4 +1,4 @@
-"""Vosk STT engine wrapper with X-Vector speaker embedding extraction.
+﻿"""Vosk STT engine wrapper with X-Vector speaker embedding extraction.
 
 Handles the ``sys.platform`` spoofing required for Vosk on Android Termux
 and provides both speech-to-text and 128-dimensional X-Vector extraction.
@@ -83,7 +83,7 @@ class VoskEngine(Engine):
 
         self._ensure_model()
         if self._model is None:
-            raise RuntimeError("Vosk model not initialized — is vosk installed?")
+            raise RuntimeError("Vosk model not initialized ??is vosk installed?")
 
         import vosk
 
@@ -147,8 +147,8 @@ class VoskEngine(Engine):
             if is_temp_wav and os.path.exists(wav_path):
                 try:
                     os.remove(wav_path)
-                except OSError:
-                    pass
+                except OSError as _tmp_del_err:
+                    import logging; logging.getLogger(__name__).debug("temp file cleanup OSError: %s", _tmp_del_err)
 
     def extract_xvectors(
         self,
@@ -209,8 +209,8 @@ class VoskEngine(Engine):
             if is_temp_wav and os.path.exists(wav_path):
                 try:
                     os.remove(wav_path)
-                except OSError:
-                    pass
+                except OSError as _tmp_del_err:
+                    import logging; logging.getLogger(__name__).debug("temp file cleanup OSError: %s", _tmp_del_err)
 
     def stream_mic(
         self, duration: Optional[float] = None
@@ -272,8 +272,8 @@ class VoskEngine(Engine):
             if is_temp_wav and os.path.exists(wav_path):
                 try:
                     os.remove(wav_path)
-                except OSError:
-                    pass
+                except OSError as _tmp_del_err:
+                    import logging; logging.getLogger(__name__).debug("temp file cleanup OSError: %s", _tmp_del_err)
 
     def diarize(
         self, audio_path: str, num_speakers: int = 2, **kwargs: Any

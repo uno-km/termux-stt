@@ -1,4 +1,4 @@
-"""Whisper.cpp engine wrapper — subprocess-isolated STT for Android Termux.
+﻿"""Whisper.cpp engine wrapper ??subprocess-isolated STT for Android Termux.
 
 Runs ``whisper.cpp`` as an external process for crash isolation; a C++
 segfault will never take down the Python host.
@@ -231,8 +231,8 @@ class WhisperEngine(Engine):
                 full_text = " ".join(s.text for s in segments)
                 try:
                     os.remove(json_file)
-                except OSError:
-                    pass
+                except OSError as _tmp_del_err:
+                    import logging; logging.getLogger(__name__).debug("temp file cleanup OSError: %s", _tmp_del_err)
 
             # Fallback: parse stdout directly if JSON was missing or empty
             if not segments and result.stdout:
@@ -263,13 +263,13 @@ class WhisperEngine(Engine):
             if os.path.exists(json_file):
                 try:
                     os.remove(json_file)
-                except OSError:
-                    pass
+                except OSError as _tmp_del_err:
+                    import logging; logging.getLogger(__name__).debug("temp file cleanup OSError: %s", _tmp_del_err)
             if is_temp_wav and os.path.exists(wav_path):
                 try:
                     os.remove(wav_path)
-                except OSError:
-                    pass
+                except OSError as _tmp_del_err:
+                    import logging; logging.getLogger(__name__).debug("temp file cleanup OSError: %s", _tmp_del_err)
 
     def stream_mic(
         self, duration: Optional[float] = None
@@ -303,8 +303,8 @@ class WhisperEngine(Engine):
             finally:
                 try:
                     os.unlink(tmp_path)
-                except OSError:
-                    pass
+                except OSError as _tmp_del_err:
+                    import logging; logging.getLogger(__name__).debug("temp file cleanup OSError: %s", _tmp_del_err)
 
     def stream_file(
         self, audio_path: str, chunk_sec: float = 5.0
@@ -343,8 +343,8 @@ class WhisperEngine(Engine):
                 finally:
                     try:
                         os.unlink(tmp_path)
-                    except OSError:
-                        pass
+                    except OSError as _tmp_del_err:
+                        import logging; logging.getLogger(__name__).debug("temp file cleanup OSError: %s", _tmp_del_err)
 
                 actual_frames = len(data) // (wf.getsampwidth() * wf.getnchannels())
                 offset += actual_frames / wf.getframerate()

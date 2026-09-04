@@ -1,4 +1,4 @@
-"""Hybrid STT engine — Vosk X-Vector speaker diarization + Whisper.cpp STT.
+﻿"""Hybrid STT engine ??Vosk X-Vector speaker diarization + Whisper.cpp STT.
 
 This is the crown jewel of termux-stt: a single ``create_engine("hybrid")``
 call gives you high-accuracy transcription **and** speaker diarization
@@ -6,9 +6,9 @@ using less than 1.5 GB of RAM on a mobile device.
 
 Pipeline
 --------
-1. Preprocess audio → 16 kHz mono WAV
+1. Preprocess audio ??16 kHz mono WAV
 2. Silero-VAD silence filtering
-3. Vosk SpkModel → 128-d X-Vector per chunk
+3. Vosk SpkModel ??128-d X-Vector per chunk
 4. Pure-Python K-Means clustering (no numpy/sklearn)
 5. Whisper.cpp STT with timestamps
 6. SpeakerMapper aligns clusters to transcript segments
@@ -107,7 +107,7 @@ class HybridEngine(Engine):
                         f"X-Vector speaker embedding extraction failed: {exc}. "
                         f"Ensure vosk-model-spk is installed or pass allow_fallback=True."
                     )
-                logger.warning("X-Vector extraction failed: %s — speaker diarization falling back to Speaker_Unknown", exc)
+                logger.warning("X-Vector extraction failed: %s ??speaker diarization falling back to Speaker_Unknown", exc)
 
             # 3. Pure Python K-Means clustering
             speaker_labels = []
@@ -121,7 +121,7 @@ class HybridEngine(Engine):
                     for xv, label in zip(xvectors, kmeans.labels_)
                 ]
             elif xvectors:
-                # Fewer chunks than speakers — assign adaptive clusters
+                # Fewer chunks than speakers ??assign adaptive clusters
                 kmeans = KMeans(n_clusters=num_speakers)
                 kmeans.fit([xv[2] for xv in xvectors])
                 speaker_labels = [
@@ -152,8 +152,8 @@ class HybridEngine(Engine):
             if is_temp_wav and os.path.exists(wav_path):
                 try:
                     os.remove(wav_path)
-                except OSError:
-                    pass
+                except OSError as _tmp_del_err:
+                    import logging; logging.getLogger(__name__).debug("temp file cleanup OSError: %s", _tmp_del_err)
 
     def stream_mic(
         self, duration: Optional[float] = None

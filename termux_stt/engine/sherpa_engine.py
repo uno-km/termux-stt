@@ -1,4 +1,4 @@
-"""Sherpa-ONNX engine wrapper — ONNX Runtime based STT for Termux.
+﻿"""Sherpa-ONNX engine wrapper ??ONNX Runtime based STT for Termux.
 
 Supports Zipformer streaming/offline models, SenseVoice, and CAM++
 speaker embedding extraction.
@@ -94,8 +94,8 @@ class SherpaEngine(Engine):
             if is_temp_wav and os.path.exists(wav_path):
                 try:
                     os.remove(wav_path)
-                except OSError:
-                    pass
+                except OSError as _tmp_del_err:
+                    import logging; logging.getLogger(__name__).debug("temp file cleanup OSError: %s", _tmp_del_err)
 
     def stream_mic(
         self, duration: Optional[float] = None
@@ -134,8 +134,8 @@ class SherpaEngine(Engine):
             finally:
                 try:
                     os.unlink(tmp_path)
-                except OSError:
-                    pass
+                except OSError as _tmp_del_err:
+                    import logging; logging.getLogger(__name__).debug("temp file cleanup OSError: %s", _tmp_del_err)
 
     def stream_file(
         self, audio_path: str, chunk_sec: float = 5.0
@@ -190,8 +190,8 @@ class SherpaEngine(Engine):
                     finally:
                         try:
                             os.unlink(tmp_path)
-                        except OSError:
-                            pass
+                        except OSError as _tmp_del_err:
+                            import logging; logging.getLogger(__name__).debug("temp file cleanup OSError: %s", _tmp_del_err)
 
                     actual_frames = len(data) // (wf.getsampwidth() * wf.getnchannels())
                     offset += actual_frames / sr
@@ -199,8 +199,8 @@ class SherpaEngine(Engine):
             if is_temp_wav and os.path.exists(wav_path):
                 try:
                     os.remove(wav_path)
-                except OSError:
-                    pass
+                except OSError as _tmp_del_err:
+                    import logging; logging.getLogger(__name__).debug("temp file cleanup OSError: %s", _tmp_del_err)
 
     def diarize(
         self, audio_path: str, num_speakers: int = 2, **kwargs: Any
