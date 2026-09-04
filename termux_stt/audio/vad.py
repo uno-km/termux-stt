@@ -191,28 +191,28 @@ def split_by_speech(audio_path: str, vad_result: VADResult) -> List[str]:
             if os.path.exists(out_path):
                 try:
                     os.remove(out_path)
-                except OSError:
-                    pass
+                except OSError as rm_err:
+                    logger.debug("Failed removing out_path %s: %s", out_path, rm_err)
             for f in output_files:
                 if os.path.exists(f):
                     try:
                         os.remove(f)
-                    except OSError:
-                        pass
+                    except OSError as rm_err:
+                        logger.debug("Failed removing segment file %s: %s", f, rm_err)
             raise RuntimeError(f"FFmpeg segmentation failed on segment {idx} [{start:.3f}-{end:.3f}]: {stderr}") from e
         except Exception as e:
             logger.error("Unexpected error splitting segment %d [%.3f - %.3f]: %s", idx, start, end, e)
             if os.path.exists(out_path):
                 try:
                     os.remove(out_path)
-                except OSError:
-                    pass
+                except OSError as rm_err:
+                    logger.debug("Failed removing out_path %s: %s", out_path, rm_err)
             for f in output_files:
                 if os.path.exists(f):
                     try:
                         os.remove(f)
-                    except OSError:
-                        pass
+                    except OSError as rm_err:
+                        logger.debug("Failed removing segment file %s: %s", f, rm_err)
             raise RuntimeError(f"Unexpected error splitting audio: {e}") from e
 
     return output_files

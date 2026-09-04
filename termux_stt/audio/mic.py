@@ -47,9 +47,7 @@ class MicCapture:
         start_time = time.time()
 
         # Method A: FFmpeg or ALSA/Pulse/Direct pipe capture if available
-        if shutil.which("ffmpeg"):
-            # Try recording pipe or short rolling temporary chunks
-            pass
+        # (Chunk-based capture handled below)
 
         # Method B: Robust chunk-based capture for Termux termux-microphone-record
         while True:
@@ -89,5 +87,8 @@ class MicCapture:
                 if os.path.exists(tmp_path):
                     try:
                         os.remove(tmp_path)
-                    except OSError:
-                        pass
+                    except OSError as unlink_err:
+                        import logging
+                        logging.getLogger("termux_stt.audio.mic").debug(
+                            "Failed to remove mic tmp file %s: %s", tmp_path, unlink_err
+                        )
