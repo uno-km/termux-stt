@@ -6,6 +6,10 @@ setup(
     description="Android on-device STT framework for Termux ??whisper.cpp, vosk, sherpa-onnx unified",
     author="Eunho Kim (@uno-km)",
     packages=find_packages(),
+    package_data={
+        "termux_stt": ["bin/*"],
+    },
+    include_package_data=True,
     python_requires=">=3.8",
     install_requires=[
         "ameva-vulkan-runtime>=1.0.0",

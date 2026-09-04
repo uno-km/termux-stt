@@ -67,7 +67,9 @@ class WhisperEngine(Engine):
             searched_paths.append(f"PATH:{name}")
 
         prefix = os.environ.get("PREFIX", "/data/data/com.termux/files/usr")
+        bundled_bin = Path(__file__).resolve().parent.parent / "bin" / "whisper-cli"
         candidates = [
+            bundled_bin,
             Path(prefix) / "bin" / "whisper-cli",
             Path(prefix) / "bin" / "whisper-cpp",
             Path.home() / ".local" / "bin" / "whisper-cli",

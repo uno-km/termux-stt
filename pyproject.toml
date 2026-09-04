@@ -23,6 +23,10 @@ dev = ["pytest", "ruff", "mypy"]
 termux-stt = "termux_stt.cli.main:main"
 termux-stt-install = "termux_stt.platform.installer:main"
 
+[project.entry-points."ameva.components"]
+termux-stt = "termux_stt.adapter:create_adapter"
+
+
 [project.urls]
 Homepage = "https://github.com/uno-km/termux-stt"
 Repository = "https://github.com/uno-km/termux-stt"
