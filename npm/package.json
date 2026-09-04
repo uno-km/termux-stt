@@ -1,7 +1,7 @@
 {
   "name": "termux-stt",
-  "version": "1.1.3",
-  "description": "Production-Grade On-Device Speech-to-Text & Speaker Diarization Framework for Android Termux & Samsung Galaxy",
+  "version": "1.1.5",
+  "description": "On-device Speech-to-Text & speaker diarization framework utilizing device resources for Android Termux",
   "main": "index.js",
   "types": "index.d.ts",
   "bin": {

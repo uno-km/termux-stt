@@ -2,14 +2,14 @@
 name: "Termux-STT"
 package_name_pypi: "termux-stt"
 package_name_npm: "termux-stt"
-version: "v1.1.0"
+version: "v1.1.1"
 release_name: "Production Release"
 license: "Apache-2.0"
 platform: "Android ARM64 / Termux Bionic"
 github_repo_url: "https://github.com/uno-km/termux-stt"
 
-tagline_en: "Unified On-Device Speech-to-Text & Pure Python 128d X-Vector Speaker Diarization"
-tagline_ko: "통합 온디바이스 음성인식(STT) 및 순수 Python 128d X-Vector 화자 분리 프레임워크"
+tagline_en: "Unified On-Device Speech-to-Text Utilizing Device Resources & Pure Python 128d X-Vector Speaker Diarization"
+tagline_ko: "디바이스 리소스를 활용한 통합 온디바이스 음성인식(STT) 및 순수 Python 128d X-Vector 화자 분리 프레임워크"
 
 quick_install_cmd: "pip install --upgrade termux-stt && termux-stt install\n# or Node.js:\nnpm install -g termux-stt && termux-stt install"
 
@@ -477,7 +477,7 @@ advanced_parameters_body: |
   termux-stt transcribe audio.wav --threads 4</code></pre>
 
 changelog:
-  - version: "v1.1.0"
+  - version: "v1.1.1"
     date: "2026-08-27"
     title: "Fuzzy Typo Protection & Output Directory Auto-Creation"
     type: "Production Release (Latest)"
@@ -486,7 +486,7 @@ changelog:
       - "Output Directory Auto-Creation: Recursive parent directory provisioning (os.makedirs(out_dir, exist_ok=True)) for all output files (text, srt, vtt, json, rttm), eliminating FileNotFoundError."
       - "Library Overreach & Privileged Escalation Elimination: Completely stripped unprompted su root privilege escalation attempts in mobile_guard.py for strict unrooted Android compliance."
       - "Zero-Overreach Certification: 100% verified compliance with POSIX process group isolation and Bionic libc sandboxing across all STT inference pipelines."
-  - version: "v1.1.0"
+  - version: "v1.1.1"
     date: "2026-08-26"
     title: "Direct Local Model Paths & Quantized Models"
     type: "Stable Release"
@@ -530,7 +530,7 @@ changelog:
       - "Bionic Dynamic Linker Defense: Packaged libbluray and libxml2 in automated installer."
       - "1-Click Installer CLI: Registered termux-stt install command."
       - "Dual-Engine Monorepo Packaging: Full root package.json support for npm install -g git+...."
-  - version: "v1.0.0"
+  - version: "v1.0.1"
     date: "2026-08-20"
     title: "Initial Public Release"
     type: "Initial Release"
