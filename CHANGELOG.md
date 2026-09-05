@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.6] - 2026-09-05
+
+### Changed
+- Migrated hardware acceleration dependency to unified `ameva-runtime>=2.0.0` and `@ameva/runtime>=2.0.0`.
+- Pinned Whisper.cpp Vulkan backend integration with ARM Mali and Qualcomm Adreno silicon-aware routing.
+
+---
+
 ## [1.1.4] - 2026-09-02
 
 ### Added

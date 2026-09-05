@@ -63,7 +63,7 @@ class STTControl(ComponentControl):
             from termux_stt import __version__
             return __version__
         except Exception:
-            return "1.1.4"
+            return "1.1.6"
 
     # ------------------------------------------------------------------
     # 1. component_info
