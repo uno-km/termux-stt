@@ -43,9 +43,9 @@ def get_audio_info(path: str) -> Dict[str, Any]:
                 "format": {"format_name": "wav", "duration": duration},
                 "streams": [{"codec_type": "audio", "codec_name": "pcm_s16le", "sample_rate": sample_rate, "channels": channels, "duration": duration}],
             }
-    except (wave.Error, EOFError):
+    except (wave.Error, EOFError) as _wave_err:
         # Non-WAV audio format (e.g. mp3, m4a, flac, ogg); proceed to ffprobe metadata parser
-        pass
+        _ = _wave_err
 
     # 2. ffprobe fallback for non-WAV formats
     cmd = [

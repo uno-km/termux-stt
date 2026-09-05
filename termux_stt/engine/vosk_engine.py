@@ -1,4 +1,4 @@
-﻿"""Vosk STT engine wrapper with X-Vector speaker embedding extraction.
+"""Vosk STT engine wrapper with X-Vector speaker embedding extraction.
 
 Handles the ``sys.platform`` spoofing required for Vosk on Android Termux
 and provides both speech-to-text and 128-dimensional X-Vector extraction.

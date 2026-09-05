@@ -12,7 +12,7 @@ setup(
     include_package_data=True,
     python_requires=">=3.8",
     install_requires=[
-        "ameva-vulkan-runtime>=1.0.0",
+        "ameva-runtime>=2.0.0",
     ],
     extras_require={
         "dev": ["pytest", "ruff", "mypy"]

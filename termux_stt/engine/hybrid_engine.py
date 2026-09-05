@@ -1,4 +1,4 @@
-﻿"""Hybrid STT engine ??Vosk X-Vector speaker diarization + Whisper.cpp STT.
+"""Hybrid STT engine ??Vosk X-Vector speaker diarization + Whisper.cpp STT.
 
 This is the crown jewel of termux-stt: a single ``create_engine("hybrid")``
 call gives you high-accuracy transcription **and** speaker diarization

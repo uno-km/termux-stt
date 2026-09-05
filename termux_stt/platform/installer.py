@@ -102,7 +102,7 @@ class EngineInstaller:
         ]
         can_vulkan = False
         try:
-            from ameva_vulkan_runtime.doctor import Doctor
+            from ameva_runtime.vulkan.doctor import Doctor
             can_vulkan = Doctor().quick_probe()
         except ImportError:
             can_vulkan = bool(shutil.which("vulkaninfo") or os.path.exists("/system/lib64/libvulkan.so"))
@@ -110,23 +110,42 @@ class EngineInstaller:
         if can_vulkan:
             print("[+] Vulkan Compute GPU acceleration detected: enabling -DGGML_VULKAN=ON")
             flags.append("-DGGML_VULKAN=ON")
+            if os.path.exists("/system/lib64/libvulkan.so"):
+                flags.append("-DVulkan_LIBRARY=/system/lib64/libvulkan.so")
+            prefix_include = Path(PREFIX) / "include"
+            if (prefix_include / "vulkan").exists():
+                flags.append(f"-DVulkan_INCLUDE_DIR={prefix_include}")
         else:
             print("[-] Vulkan unavailable. Building CPU-NEON optimized static binary.")
         return flags
 
     @classmethod
     def install_whisper_cpp(cls) -> bool:
-        """Install whisper.cpp: Priority 1 = Pre-built download, Priority 2 = Local ARM NEON build."""
+        """Install whisper.cpp: Priority 1 = Pre-built download (CPU), Priority 2 = Local build (Vulkan/NEON)."""
         LOCAL_BIN.mkdir(parents=True, exist_ok=True)
 
-        # Check if already installed and executable
-        if (PREFIX_BIN / "whisper-cli").exists() or (PREFIX_BIN / "whisper-cpp").exists() or (LOCAL_BIN / "whisper-cli").exists() or (LOCAL_BIN / "whisper-cpp").exists():
-            print("[+] whisper.cpp binary is already present.")
-            return True
+        can_vulkan = False
+        try:
+            from ameva_runtime.vulkan.doctor import Doctor
+            can_vulkan = Doctor().quick_probe()
+        except ImportError:
+            can_vulkan = bool(shutil.which("vulkaninfo") or os.path.exists("/system/lib64/libvulkan.so"))
 
-        # Priority 1: Fast Direct Pre-built Download
-        if cls._download_prebuilt_whisper():
-            return True
+        # Check existing binary
+        for candidate in [LOCAL_BIN / "whisper-cli", PREFIX_BIN / "whisper-cli", LOCAL_BIN / "whisper-cpp", PREFIX_BIN / "whisper-cpp"]:
+            if candidate.exists() and os.access(str(candidate), os.X_OK):
+                from ..engine.whisper_engine import WhisperEngine
+                if not can_vulkan or WhisperEngine._supports_ngl(str(candidate)):
+                    print(f"[+] whisper.cpp binary is already present at {candidate}.")
+                    return True
+                else:
+                    print(f"[*] Existing whisper.cpp binary at {candidate} is CPU-only. Rebuilding with Vulkan...")
+                    break
+
+        # Priority 1: Fast Direct Pre-built Download (only if Vulkan not available)
+        if not can_vulkan:
+            if cls._download_prebuilt_whisper():
+                return True
 
         # Priority 2: Fallback to Local CMake & Clang compilation
         print("[*] Setting up whisper.cpp native engine via local compiler with ARM NEON...")

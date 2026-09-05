@@ -28,7 +28,7 @@ class HardwareInfo:
 
 # [B방안] Platform SSOT: ameva-vulkan-runtime.platform 에서 공유 구현을 가져옵니다.
 try:
-    from ameva_vulkan_runtime.platform import is_termux as _ameva_is_termux
+    from ameva_runtime.vulkan.platform import is_termux as _ameva_is_termux
     _AMEVA_PLATFORM_AVAILABLE = True
 except ImportError:
     _AMEVA_PLATFORM_AVAILABLE = False

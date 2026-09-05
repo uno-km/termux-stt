@@ -1,4 +1,4 @@
-﻿"""Whisper.cpp engine wrapper ??subprocess-isolated STT for Android Termux.
+"""Whisper.cpp engine wrapper ??subprocess-isolated STT for Android Termux.
 
 Runs ``whisper.cpp`` as an external process for crash isolation; a C++
 segfault will never take down the Python host.
@@ -33,17 +33,28 @@ class WhisperEngine(Engine):
         self.device = config.device
 
         # Hardware acceleration context delegation via ameva-vulkan-runtime & SttAdapter
-        try:
-            import ameva_vulkan_runtime as avr
-            from ameva_vulkan_runtime.adapters import SttAdapter
+        dev_lower = str(self.device or "auto").strip().lower()
+        self.ctx = None
+        if dev_lower != "cpu":
+            try:
+                from ameva_runtime import vulkan as avr
+                from ameva_runtime.vulkan.adapters import SttAdapter
 
-            self.ctx = avr.get_or_create_context(self.device)
-            report = getattr(self.ctx, "doctor", avr.Doctor()).run_self_test(verbose=False)
-            SttAdapter.bind(self, report)
-        except Exception:
-            if str(self.device or "").lower() in ("gpu", "vulkan"):
-                raise
-            self.ctx = None
+                self.ctx = avr.get_or_create_context(self.device)
+                report = getattr(self.ctx, "doctor", avr.Doctor()).run_self_test(verbose=False)
+                binding_res = SttAdapter.bind(self, report)
+                if dev_lower in ("gpu", "vulkan") and not getattr(binding_res, "is_vulkan", False):
+                    raise RuntimeError(
+                        f"[ZeroSilentFallback] Explicit GPU mode requested ('{self.device}'), "
+                        f"but SttAdapter bound to non-Vulkan backend ('{getattr(binding_res, 'backend', 'unknown')}')."
+                    )
+            except Exception as exc:
+                if dev_lower in ("gpu", "vulkan"):
+                    raise RuntimeError(
+                        f"[ZeroSilentFallback] Failed to initialize Vulkan GPU for WhisperEngine: {exc}"
+                    ) from exc
+                logger.warning("Vulkan initialization failed in auto mode, falling back to CPU: %s", exc)
+                self.ctx = None
 
         # Lazy-import to avoid circular deps at module load time
         try:
@@ -96,21 +107,32 @@ class WhisperEngine(Engine):
         )
 
     @classmethod
-    def _supports_ngl(cls, binary_path: str) -> bool:
-        """Inspects whether the target whisper-cli binary supports GPU offload flags (-ngl)."""
-        if not hasattr(cls, "_ngl_cache"):
-            cls._ngl_cache = {}
-        if binary_path in cls._ngl_cache:
-            return cls._ngl_cache[binary_path]
+    def _supports_gpu(cls, binary_path: str) -> dict:
+        """Inspects whether the target whisper-cli binary supports GPU offload flags (-ngl, -dev, -ng)."""
+        if not hasattr(cls, "_gpu_flags_cache"):
+            cls._gpu_flags_cache = {}
+        if binary_path in cls._gpu_flags_cache:
+            return cls._gpu_flags_cache[binary_path]
         try:
             res = run_isolated([binary_path, "-h"])
             help_text = (res.stdout or "") + (res.stderr or "")
-            supports = "-ngl" in help_text or "--gpu-layers" in help_text
-            cls._ngl_cache[binary_path] = supports
-            return supports
+            flags = {
+                "ngl": "-ngl" in help_text or "--gpu-layers" in help_text,
+                "dev": "-dev" in help_text or "--device" in help_text,
+                "no_gpu": "-ng" in help_text or "--no-gpu" in help_text,
+            }
+            flags["supports_gpu"] = flags["ngl"] or flags["dev"] or flags["no_gpu"]
+            cls._gpu_flags_cache[binary_path] = flags
+            return flags
         except Exception:
-            cls._ngl_cache[binary_path] = False
-            return False
+            flags = {"ngl": False, "dev": False, "no_gpu": False, "supports_gpu": False}
+            cls._gpu_flags_cache[binary_path] = flags
+            return flags
+
+    @classmethod
+    def _supports_ngl(cls, binary_path: str) -> bool:
+        """Inspects whether the target whisper-cli binary supports GPU offload flags (-ngl or -dev)."""
+        return cls._supports_gpu(binary_path)["supports_gpu"]
 
 
     # ------------------------------------------------------------------
@@ -195,12 +217,31 @@ class WhisperEngine(Engine):
                 cmd.append("-dtw")
 
             # GPU offloading via Vulkan if active and supported by binary
-            if (self.ctx and self.ctx.is_gpu) or opts.get("gpu_layers") or opts.get("n_gpu_layers"):
+            dev_lower = str(self.device or "auto").strip().lower()
+            is_gpu_req = (
+                dev_lower in ("gpu", "vulkan")
+                or (self.ctx and getattr(self.ctx, "is_gpu", False))
+                or opts.get("gpu_layers")
+                or opts.get("n_gpu_layers")
+            )
+            if is_gpu_req:
                 ngl = opts.get("gpu_layers", opts.get("n_gpu_layers", 33))
-                if self._supports_ngl(binary):
+                gpu_flags = self._supports_gpu(binary)
+                if gpu_flags["ngl"]:
                     cmd.extend(["-ngl", str(ngl)])
+                elif gpu_flags["dev"]:
+                    dev_id = str(opts.get("gpu_device", 0))
+                    cmd.extend(["-dev", dev_id])
+                elif gpu_flags["supports_gpu"]:
+                    pass
                 else:
-                    logger.info("whisper-cli at '%s' does not accept -ngl; running in native CPU mode.", binary)
+                    if dev_lower in ("gpu", "vulkan"):
+                        raise RuntimeError(
+                            f"[ZeroSilentFallback] Explicit Vulkan GPU mode requested ('{self.device}'), "
+                            f"but whisper-cli binary at '{binary}' does not support GPU offload (-ngl). "
+                            f"CPU fallback is strictly forbidden under Zero-Silent-Fallback protocol."
+                        )
+                    logger.info("whisper-cli at '%s' does not accept GPU flags; running in native CPU mode.", binary)
 
             # Passthrough raw extra_args if provided (list or string)
             extra_args = opts.get("extra_args")
@@ -211,14 +252,34 @@ class WhisperEngine(Engine):
                     import shlex
                     cmd.extend(shlex.split(extra_args))
 
+            # Golden Link Order LD_LIBRARY_PATH resolution for Vulkan
+            vulkan_env = None
+            try:
+                from ameva_runtime.vulkan.adapters.base import get_vulkan_env
+                vulkan_env = get_vulkan_env()
+            except ImportError:
+                if os.path.exists("/system/lib64/libvulkan.so"):
+                    vulkan_env = dict(os.environ)
+                    existing_lp = vulkan_env.get("LD_LIBRARY_PATH", "")
+                    if "/system/lib64" not in existing_lp:
+                        vulkan_env["LD_LIBRARY_PATH"] = f"/system/lib64:{existing_lp}".rstrip(":")
+
             logger.info("Running whisper.cpp: %s", " ".join(cmd))
-            result = run_isolated(cmd)
+            result = run_isolated(cmd, env=vulkan_env)
 
             if result.returncode != 0:
                 raise RuntimeError(
                     f"whisper.cpp exited with code {result.returncode}: "
                     f"{result.stderr}"
                 )
+
+            # Verification of Vulkan backend in GPU mode
+            if dev_lower in ("gpu", "vulkan"):
+                stderr_text = result.stderr or ""
+                if "failed to initialize" in stderr_text.lower() or "vk_error" in stderr_text.lower():
+                    raise RuntimeError(
+                        f"[ZeroSilentFallback] Vulkan backend reported failure during execution:\n{stderr_text}"
+                    )
 
             # 4. Parse JSON result (written to <wav>.json)
             json_file = f"{wav_path}.json"

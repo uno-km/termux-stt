@@ -24,7 +24,7 @@ def run_benchmark(args):
         dur_str = info.get("format", {}).get("duration")
         if dur_str is not None:
             audio_duration = float(dur_str)
-    except (OSError, ValueError, KeyError) as _info_err:
+    except (OSError, ValueError, KeyError, RuntimeError) as _info_err:
         import logging
         logging.getLogger(__name__).debug("ffprobe audio info extraction failed: %s", _info_err)
 

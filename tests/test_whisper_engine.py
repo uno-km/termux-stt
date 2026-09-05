@@ -83,3 +83,33 @@ def test_whisper_engine_diarize_method_success(monkeypatch):
     assert result.segments[0].speaker == "Speaker_0"
     assert result.text == "Whisper diarize test text"
 
+
+def test_whisper_engine_zero_silent_fallback(monkeypatch):
+    import pytest
+    from unittest.mock import MagicMock
+    from termux_stt.engine.whisper_engine import WhisperEngine
+    from termux_stt.engine.base import EngineConfig
+
+    cfg = EngineConfig(engine="whisper", model="base", device="vulkan")
+    engine = WhisperEngine.__new__(WhisperEngine)
+    engine.config = cfg
+    engine.device = "vulkan"
+    engine.model = "base"
+    engine.lang = "ko"
+    engine.threads = 4
+    engine.ctx = MagicMock()
+    engine.ctx.is_gpu = True
+
+    # Mock preprocess, ensure_model, binary path, and simulate missing -ngl support
+    monkeypatch.setattr("termux_stt.audio.preprocessor.preprocess", lambda *a, **k: "test.wav")
+    monkeypatch.setattr("termux_stt.models.hub.ModelHub.ensure_model", lambda *a, **k: "model.bin")
+    monkeypatch.setattr(engine, "_get_binary_path", lambda: "/mock/whisper-cli")
+    monkeypatch.setattr(engine, "_supports_ngl", lambda p: False)
+
+    with pytest.raises(RuntimeError) as exc_info:
+        engine.transcribe("test.wav")
+
+    assert "[ZeroSilentFallback]" in str(exc_info.value)
+    assert "does not support GPU offload (-ngl)" in str(exc_info.value)
+
+

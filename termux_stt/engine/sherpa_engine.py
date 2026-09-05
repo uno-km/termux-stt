@@ -1,4 +1,4 @@
-﻿"""Sherpa-ONNX engine wrapper ??ONNX Runtime based STT for Termux.
+"""Sherpa-ONNX engine wrapper ??ONNX Runtime based STT for Termux.
 
 Supports Zipformer streaming/offline models, SenseVoice, and CAM++
 speaker embedding extraction.
