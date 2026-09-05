@@ -51,7 +51,7 @@
 3. **플랫폼 스푸핑 및 안드로이드 예외 방어**:
    - Vosk 네이티브 라이브러리의 안드로이드 플랫폼 검증 오류를 우회하기 위해 `sys.platform = 'linux'` 스푸핑을 적용합니다.
    - 안드로이드의 루트 `/tmp` 읽기 전용 권한 오류를 방지하기 위해 `$TMPDIR` 또는 `~/tmp`로 출력 경로를 자동 우회합니다.
-4. **하드웨어 가속 통합**: `ameva-vulkan-runtime`과 연동하여 GPU 레이어 오프로드(`-ngl`) 및 ARM NEON/FP16 벡터 연산을 활성화합니다.
+4. **하드웨어 가속 통합**: `ameva-runtime`과 연동하여 GPU 레이어 오프로드(`-ngl`) 및 ARM NEON/FP16 벡터 연산을 활성화합니다.
 
 ---
 
@@ -214,7 +214,7 @@ class EngineInstaller:
 - **SoC 및 코어 탐지**: `/proc/cpuinfo`의 `Hardware` 항목을 읽어 Qualcomm Snapdragon, Samsung Exynos, MediaTek Dimensity, Google Tensor 등을 식별합니다.
 - **big.LITTLE 스레드 최적화**: 모바일 CPU는 고성능 빅코어(Big)와 저전력 리틀코어(Little)로 구성됩니다. 전체 코어를 모두 점유할 경우 스로틀링과 발열이 발생하므로 `get_optimal_threads()`는 전체 코어의 절반(주로 빅코어 개수)을 최적 스레드로 산출합니다.
 - **NEON / FP16 지원 여부**: `neon`, `asimd`, `fphp`, `asimdhp` 플래그를 정규식으로 검증합니다.
-- **Platform SSOT**: `is_termux()`는 `ameva-vulkan-runtime.platform`의 SSOT를 우선 참조하고 미설치 시 환경변수 `PREFIX` 검증으로 폴백합니다.
+- **Platform SSOT**: `is_termux()`는 `ameva-runtime.vulkan.platform`의 SSOT를 우선 참조하고 미설치 시 환경변수 `PREFIX` 검증으로 폴백합니다.
 
 ### 4.2 백그라운드 절전 방지: `mobile_guard.py`
 Termux 환경에서 긴 시간 동안 전사 작업을 수행할 때 단말기가 절전 상태로 들어가지 않도록 `termux-wake-lock`을 획득하고, 작업 완료 또는 예외 발생 시 반드시 `termux-wake-unlock`을 호출하도록 RAII 패턴의 컨텍스트 매니저를 제공합니다:
