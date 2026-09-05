@@ -26,7 +26,7 @@ class HardwareInfo:
     is_termux: bool
     is_android: bool
 
-# [B방안] Platform SSOT: ameva-vulkan-runtime.platform 에서 공유 구현을 가져옵니다.
+# [B방안] Platform SSOT: ameva-runtime.platform 에서 공유 구현을 가져옵니다.
 try:
     from ameva_runtime.vulkan.platform import is_termux as _ameva_is_termux
     _AMEVA_PLATFORM_AVAILABLE = True
@@ -37,7 +37,7 @@ except ImportError:
 def is_termux() -> bool:
     """Check if running inside Termux.
 
-    [B방안] ameva-vulkan-runtime.platform.is_termux() 를 SSOT 로 사용하며,
+    [B방안] ameva-runtime.platform.is_termux() 를 SSOT 로 사용하며,
     미설치 환경에서는 인라인 구현으로 안전하게 폴백합니다.
     """
     if _AMEVA_PLATFORM_AVAILABLE:

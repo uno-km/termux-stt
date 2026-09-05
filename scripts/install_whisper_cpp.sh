@@ -7,9 +7,9 @@ pkg install -y cmake make git clang
 git clone https://github.com/ggml-org/whisper.cpp.git /tmp/whisper.cpp || true
 cd /tmp/whisper.cpp
 
-# 1. Provision ameva-vulkan-runtime
+# 1. Provision ameva-runtime
 if command -v pip >/dev/null 2>&1; then
-    pip install ameva-vulkan-runtime || true
+    pip install ameva-runtime || true
 fi
 
 # 2. Build whisper.cpp

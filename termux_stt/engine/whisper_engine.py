@@ -32,7 +32,7 @@ class WhisperEngine(Engine):
         self.lang = config.language
         self.device = config.device
 
-        # Hardware acceleration context delegation via ameva-vulkan-runtime & SttAdapter
+        # Hardware acceleration context delegation via ameva-runtime & SttAdapter
         dev_lower = str(self.device or "auto").strip().lower()
         self.ctx = None
         if dev_lower != "cpu":

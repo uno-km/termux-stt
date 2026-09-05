@@ -16,7 +16,7 @@ class WhisperEngine extends Engine {
     this.threads = config.threads || 4;
 
     try {
-      const avr = require('ameva-vulkan-runtime');
+      const avr = require('@ameva/runtime');
       this.ctx = avr.getOrCreateContext({ device: this.device });
     } catch (e) {
       this.ctx = null;
