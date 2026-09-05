@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.7] - 2026-09-05
+
+### Changed
+- Resolved Node.js whisper module require bindings to `@ameva/runtime` preventing MODULE_NOT_FOUND.
+- Modernized Whisper.cpp installation toolchain and hardware adapter docstrings.
+
+---
+
 ## [1.1.6] - 2026-09-05
 
 ### Changed
