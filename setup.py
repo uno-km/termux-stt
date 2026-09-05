@@ -2,8 +2,8 @@ from setuptools import find_packages, setup
 
 setup(
     name="termux-stt",
-    version="1.1.7",
-    description="Android on-device STT framework for Termux ??whisper.cpp, vosk, sherpa-onnx unified",
+    version="1.1.8",
+    description="Android on-device STT framework for Termux - whisper.cpp, vosk, sherpa-onnx unified",
     author="Eunho Kim (@uno-km)",
     packages=find_packages(),
     package_data={
@@ -12,7 +12,7 @@ setup(
     include_package_data=True,
     python_requires=">=3.8",
     install_requires=[
-        "ameva-runtime>=2.0.0",
+        "ameva-runtime>=2.1.0",
     ],
     extras_require={
         "dev": ["pytest", "ruff", "mypy"]

@@ -116,23 +116,26 @@ chmod 755 ~/.local/bin/whisper-cli
 
 ---
 
-### 🎙️ Try with the Included Sample Audio! (JFK 1-Minute Speech)
+### Quick Verification: Out-of-the-Box Demo (JFK 1-Minute Speech)
 
-`termux-stt` provides John F. Kennedy's 1961 Inaugural Address (60.00s 16kHz Mono PCM) for instant out-of-the-box testing.
+`termux-stt` provides built-in automated caching for John F. Kennedy's 1961 Inaugural Address (60.00s 16kHz Mono PCM) for instant out-of-the-box verification without requiring manual audio preparation.
 
-#### Option A: CLI One-Liner (Python / npm)
+#### Option A: Zero-Configuration Demo One-Liner (Python / npm)
 ```bash
-# 1. Download official 60s sample speech
-curl -sLO https://raw.githubusercontent.com/uno-km/termux-stt/main/samples/jfk_1min.wav
+# 1. Run instant demo (automatically downloads and caches benchmark audio if missing)
+termux-stt demo
 
-# 2. Transcribe the 60s sample speech with Whisper (auto-generates SRT subtitles)
-termux-stt transcribe jfk_1min.wav --engine whisper --model tiny --format srt
+# 2. Run demo with custom model and subtitle generation
+termux-stt demo --model tiny --format srt
 
-# 3. Transcribe and separate speakers (128d X-Vector Diarization)
-termux-stt diarize jfk_1min.wav --speakers 2 --format text
+# 3. Transcribe demo audio directly via transcribe command
+termux-stt transcribe --demo --model tiny --format text
 
-# 4. Benchmark on-device latency & RTF
-termux-stt benchmark --audio jfk_1min.wav --model tiny
+# 4. Transcribe and separate speakers (128d X-Vector Diarization)
+termux-stt diarize samples/jfk_1min.wav --speakers 2 --format text
+
+# 5. Benchmark on-device latency & RTF
+termux-stt benchmark --audio samples/jfk_1min.wav --model tiny
 ```
 
 #### Option B: Python SDK

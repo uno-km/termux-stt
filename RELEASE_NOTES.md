@@ -1,10 +1,22 @@
-# 📦 Termux-STT v1.1.3 Release Notes
+# Termux-STT Release Notes
 
-**Release Date:** August 27, 2026  
-**Artifact ID:** `termux-stt-1.1.3`  
-**Compliance Standard:** OpenSSF Best Practices, Android Non-Root Smart Fallback Standard  
+## Termux-STT v1.1.8 Release Notes
+
+**Release Date:** September 5, 2026  
+**Artifact ID:** `termux-stt-1.1.8`  
+**Compliance Standard:** OpenSSF Best Practices, CNCF Zero-Emoji Standard  
 
 ---
+
+### Key Highlights
+- **Zero-Configuration On-Demand Demo Pipeline**: Introduced `termux-stt demo` and `termux-stt transcribe --demo`. The CLI automatically resolves and caches the 1-minute JFK benchmark speech audio (`~/.cache/termux-stt/samples/jfk_1min.wav`) with fail-fast HTTP integrity checks.
+- **NPM Package Optimization & Debloating**: Removed redundant duplicate 1.92 MB WAV audio payloads from the NPM distribution bundle. Decreased npm package footprint significantly while maintaining complete developer test fidelity via repository samples.
+- **Ecosystem Runtime Alignment**: Synchronized core dependencies with `ameva-runtime>=2.1.0`.
+- **Packaging Cleanliness**: Untracked legacy archive artifacts and added strict `.tgz` exclusion rules.
+
+---
+
+## Termux-STT v1.1.3 Release Notes
 
 ## 🚀 Key Highlights
 - **Friendly Top-Level CLI Exception Handling**: Replaced raw, aggressive Python stack traces with polished, informative error banners (`[-] Error: Input audio file not found...`).

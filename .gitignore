@@ -30,6 +30,7 @@ venv/
 node_modules/
 .npm/
 *.log
+*.tgz
 
 .env.*
 *.env

@@ -1,6 +1,6 @@
 {
   "name": "termux-stt",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "description": "On-device Speech-to-Text & speaker diarization framework utilizing device resources for Android Termux",
   "main": "index.js",
   "types": "index.d.ts",
@@ -13,7 +13,6 @@
     "index.d.ts",
     "lib",
     "bin",
-    "samples",
     "README.md",
     "LICENSE"
   ],

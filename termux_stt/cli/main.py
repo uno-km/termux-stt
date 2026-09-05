@@ -2,6 +2,7 @@ import argparse
 import sys
 
 from termux_stt.cli.benchmark import run_benchmark
+from termux_stt.cli.demo import run_demo
 from termux_stt.cli.diarize import run_diarize
 from termux_stt.cli.doctor import run_doctor
 from termux_stt.cli.listen import run_listen
@@ -33,9 +34,15 @@ def _run_cli():
     # Install subcommand
     subparsers.add_parser("install", help="1-Click automatic installer for native engines and dependencies")
 
+    # Demo subcommand
+    parser_demo = subparsers.add_parser("demo", parents=[common_parser], help="Run zero-configuration STT demo with standard benchmark audio")
+    parser_demo.add_argument("--format", type=str, choices=["text", "json", "srt", "vtt"], default="text", help="Output format")
+    parser_demo.add_argument("--output", type=str, help="Output file path")
+
     # Transcribe subcommand
     parser_transcribe = subparsers.add_parser("transcribe", parents=[common_parser], help="Transcribe audio file")
-    parser_transcribe.add_argument("file", type=str, help="Path to audio file")
+    parser_transcribe.add_argument("file", type=str, nargs="?", default=None, help="Path to audio file (optional if --demo is specified)")
+    parser_transcribe.add_argument("--demo", action="store_true", help="Use standard JFK benchmark audio for demonstration")
     parser_transcribe.add_argument("--format", type=str, choices=["text", "json", "srt", "vtt"], default="text", help="Output format")
     parser_transcribe.add_argument("--output", type=str, help="Output file path")
 
@@ -76,10 +83,20 @@ def _run_cli():
     # ────────────────────────────────────────────────────────────────────────
 
     args = parser.parse_args()
+    args._explicit_lang = any(arg.startswith("--lang") for arg in sys.argv)
 
     if args.command == "install":
         run_install()
+    elif args.command == "demo":
+        run_demo(args)
     elif args.command == "transcribe":
+        if getattr(args, "demo", False):
+            from termux_stt.cli.demo import ensure_demo_audio
+            args.file = ensure_demo_audio()
+            if getattr(args, "lang", None) == "ko" and not args._explicit_lang:
+                args.lang = "en"
+        elif not args.file:
+            parser_transcribe.error("the following arguments are required: file (or use --demo)")
         run_transcribe(args)
     elif args.command == "listen":
         run_listen(args)

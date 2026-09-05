@@ -31,16 +31,22 @@ ln -sf ~/.local/bin/whisper-cli ~/.local/bin/whisper-cpp
 export PATH=$HOME/.local/bin:$PATH
 ```
 
-### 1.2 CLI Usage & Instant Sample Test
+### 1.2 Zero-Configuration CLI Demo
 
-`termux-stt` includes a 60-second JFK inaugural address speech (`samples/jfk_1min.wav`) for immediate testing:
+`termux-stt` supports instant automated demonstration without requiring manual audio preparation:
 
 ```bash
-# 1. Transcribe sample speech with Whisper Tiny (Generates SRT subtitles)
-termux-stt transcribe samples/jfk_1min.wav --engine whisper --model tiny --format srt
+# 1. Run zero-configuration demo (automatically downloads and caches benchmark audio)
+termux-stt demo
 
-# 2. Transcribe with 128d Pure Python Speaker Diarization
-termux-stt diarize samples/jfk_1min.wav --speakers 2
+# 2. Run demo with custom model and SRT output
+termux-stt demo --model tiny --format srt
+
+# 3. Transcribe custom audio
+termux-stt transcribe <audio_file> --engine whisper --model tiny --format srt
+
+# 4. Transcribe with 128d Pure Python Speaker Diarization
+termux-stt diarize <audio_file> --speakers 2
 ```
 
 ---
