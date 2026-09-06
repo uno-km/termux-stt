@@ -1,9 +1,18 @@
-﻿# Changelog
+# Changelog
 
 All notable changes to 	ermux-stt will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+---
+
+## [1.2.0] - 2026-09-07
+
+### Added
+- Direct integration with `SttAdapter.get_execution_environment()` from `ameva_runtime.adapters` SSOT.
+- Eliminated raw `LD_LIBRARY_PATH` pollution and enforced strict Fail-Fast on explicit Vulkan requests.
+- Full English localization of diagnostic logs and error reporting.
 
 ---
 

@@ -526,7 +526,7 @@ class WhisperEngine(Engine):
             "name": "whisper.cpp",
             "model": self.model,
             "language": self.lang,
-            "device": str(self.device),
+            "device": str(getattr(self.config, "device", None) or self.device),
             "threads": self.threads,
             "binary_path": self._get_binary_path(),
             "quantization": self.config.quantization,
