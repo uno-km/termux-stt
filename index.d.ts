@@ -1,6 +1,7 @@
-﻿export interface EngineOptions {
+export interface EngineOptions {
   model?: string;
   lang?: string;
+  device?: 'auto' | 'vulkan' | 'gpu' | 'cpu';
   threads?: number;
   vad?: boolean;
   vadThreshold?: number;

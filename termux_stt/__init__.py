@@ -86,8 +86,26 @@ def create_engine(
     )
 
 
+from .exceptions import (
+    ErrorCode,
+    ExitCode,
+    TermuxSTTError,
+    PlatformNotSupportedError,
+    ModelNotFoundError,
+    AudioProcessingError,
+    InferenceTimeoutError,
+)
+
 __all__ = [
     'create_engine',
     '__version__',
     '__author__',
+    'ErrorCode',
+    'ExitCode',
+    'TermuxSTTError',
+    'PlatformNotSupportedError',
+    'ModelNotFoundError',
+    'AudioProcessingError',
+    'InferenceTimeoutError',
 ]
+

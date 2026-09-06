@@ -9,10 +9,13 @@ const { spawn, spawnSync } = require('child_process');
 const args = process.argv.slice(2);
 
 function getPythonExecutable() {
-  const candidates = ['python3', 'python'];
+  if (process.env.PYTHON) return process.env.PYTHON;
+  const candidates = process.platform === 'win32'
+    ? ['py', 'python3', 'python']
+    : ['python3', 'python'];
   for (const cmd of candidates) {
     try {
-      const res = spawnSync(cmd, ['--version'], { stdio: 'ignore' });
+      const res = spawnSync(cmd, ['-c', 'import sys; sys.exit(0)'], { stdio: 'ignore' });
       if (res.status === 0) return cmd;
     } catch (_) {}
   }

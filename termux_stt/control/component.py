@@ -459,3 +459,92 @@ class STTControl(ComponentControl):
             "active_models": [i.model_id for i in hot],
             "last_error": last_error,
         })
+
+    # ------------------------------------------------------------------
+    # 13. transcribe (AMEVA Component Protocol v1 Orchestrator Bridge)
+    # ------------------------------------------------------------------
+
+    async def transcribe(self, request: dict[str, Any]) -> dict[str, Any]:
+        """
+        Executes STT transcription conforming to AMEVA Component Protocol v1.
+        Dispatches to WhisperEngine asynchronously with strict contract validation.
+        """
+        import asyncio
+        from termux_stt.engine.base import EngineConfig
+        from termux_stt.engine.whisper_engine import WhisperEngine
+
+        audio_path = request.get("audio_path")
+        if not audio_path:
+            return {
+                "ok": False,
+                "error": {
+                    "code": "AUDIO_EMPTY",
+                    "message": "audio_path is required for transcription",
+                    "operation": "transcribe",
+                    "retryable": False,
+                }
+            }
+
+        audio_file = Path(audio_path)
+        if not audio_file.exists():
+            return {
+                "ok": False,
+                "error": {
+                    "code": "AUDIO_NOT_FOUND",
+                    "message": f"Audio file '{audio_path}' does not exist",
+                    "operation": "transcribe",
+                    "retryable": False,
+                }
+            }
+
+        model_name = request.get("model_id") or request.get("model") or "base"
+        language = request.get("language") or request.get("lang") or "ko"
+        device = request.get("device") or "auto"
+        threads = request.get("threads")
+
+        config = EngineConfig(
+            engine="whisper",
+            model=model_name,
+            lang=language,
+            device=device,
+            threads=threads,
+        )
+
+        def _run_transcribe() -> dict[str, Any]:
+            engine = WhisperEngine(config)
+            res = engine.transcribe(str(audio_file))
+            text = (res.text or "").strip()
+            if not text:
+                return {
+                    "ok": True,
+                    "text": "",
+                    "reason": "silence_detected",
+                    "final": True,
+                    "language": res.language or language,
+                }
+            return {
+                "ok": True,
+                "text": text,
+                "final": True,
+                "language": res.language or language,
+                "segments": [
+                    {"start": s.start, "end": s.end, "text": s.text}
+                    for s in (res.segments or [])
+                ],
+            }
+
+        try:
+            return await asyncio.to_thread(_run_transcribe)
+        except Exception as exc:
+            import logging
+            logging.getLogger(__name__).exception("STTControl.transcribe error: %s", exc)
+            return {
+                "ok": False,
+                "error": {
+                    "code": getattr(exc, "code", "TRANSCRIPTION_FAILED"),
+                    "message": str(exc),
+                    "operation": "transcribe",
+                    "retryable": False,
+                }
+            }
+

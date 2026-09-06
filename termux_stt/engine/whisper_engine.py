@@ -44,14 +44,35 @@ class WhisperEngine(Engine):
                 report = getattr(self.ctx, "doctor", avr.Doctor()).run_self_test(verbose=False)
                 binding_res = SttAdapter.bind(self, report)
                 if dev_lower in ("gpu", "vulkan") and not getattr(binding_res, "is_vulkan", False):
-                    raise RuntimeError(
-                        f"[ZeroSilentFallback] Explicit GPU mode requested ('{self.device}'), "
-                        f"but SttAdapter bound to non-Vulkan backend ('{getattr(binding_res, 'backend', 'unknown')}')."
+                    from termux_stt.exceptions import PlatformNotSupportedError, ErrorCode
+                    raise PlatformNotSupportedError(
+                        f"[ERROR: AMEVA-STT-E002] Vulkan GPU acceleration was explicitly requested ('{self.device}'), "
+                        f"but SttAdapter bound to non-Vulkan backend ('{getattr(binding_res, 'backend', 'unknown')}'). "
+                        f"Execution halted strictly without silent fallback to prevent unexpected CPU execution.",
+                        code=ErrorCode.VULKAN_DEVICE,
                     )
-            except Exception as exc:
+            except ImportError as imp_err:
                 if dev_lower in ("gpu", "vulkan"):
-                    raise RuntimeError(
-                        f"[ZeroSilentFallback] Failed to initialize Vulkan GPU for WhisperEngine: {exc}"
+                    from termux_stt.exceptions import PlatformNotSupportedError, ErrorCode
+                    raise PlatformNotSupportedError(
+                        "[ERROR: AMEVA-STT-E001] GPU acceleration requires 'ameva-runtime'.\n"
+                        "Cause: Hardware abstraction provider 'ameva-runtime' is not installed.\n"
+                        "Action Required: Install the hardware acceleration package via:\n"
+                        "  - Python: pip install ameva-runtime\n"
+                        "  - Node.js: npm install @unokm/ameva-runtime\n"
+                        "Documentation: https://github.com/uno-km/termux-stt",
+                        code=ErrorCode.RUNTIME_NOT_INSTALLED,
+                    ) from imp_err
+                logger.warning("ameva-runtime not installed in auto mode, falling back to CPU: %s", imp_err)
+                self.ctx = None
+            except Exception as exc:
+                from termux_stt.exceptions import TermuxSTTError, PlatformNotSupportedError, ErrorCode
+                if dev_lower in ("gpu", "vulkan"):
+                    if isinstance(exc, TermuxSTTError):
+                        raise
+                    raise PlatformNotSupportedError(
+                        f"[ERROR: AMEVA-STT-E002] Failed to initialize Vulkan GPU for WhisperEngine: {exc}",
+                        code=ErrorCode.VULKAN_DEVICE,
                     ) from exc
                 logger.warning("Vulkan initialization failed in auto mode, falling back to CPU: %s", exc)
                 self.ctx = None
@@ -133,6 +154,68 @@ class WhisperEngine(Engine):
     def _supports_ngl(cls, binary_path: str) -> bool:
         """Inspects whether the target whisper-cli binary supports GPU offload flags (-ngl or -dev)."""
         return cls._supports_gpu(binary_path)["supports_gpu"]
+
+    def _prepare_env(self, device: str = "auto") -> Dict[str, str]:
+        """
+        Configure subprocess environment safely using ameva-runtime and Android Bionic ICD.
+
+        Args:
+            device: 'auto' (Vulkan priority with CPU fallback), 'vulkan' / 'gpu' (strict GPU fail-fast), 'cpu' (pure NEON).
+
+        Returns:
+            Dict[str, str]: Prepared environment dictionary with verified LD_LIBRARY_PATH and vendor quirks.
+        """
+        import sys
+        from termux_stt.exceptions import PlatformNotSupportedError, ErrorCode
+
+        env = os.environ.copy()
+        dev_mode = str(device or "auto").strip().lower()
+
+        if dev_mode == "cpu" or sys.platform == "win32":
+            return env
+
+        try:
+            from ameva_runtime.adapters import SttAdapter
+            adapter = SttAdapter()
+            env = adapter.get_execution_environment(base_env=env)
+
+            # Verify GPU status for explicit mode
+            if dev_mode in ("vulkan", "gpu"):
+                from ameva_runtime import vulkan as avr
+                if hasattr(avr, "create_context"):
+                    ctx = avr.create_context(dev_mode)
+                elif hasattr(avr, "get_or_create_context"):
+                    ctx = avr.get_or_create_context(dev_mode)
+                else:
+                    ctx = avr.VulkanContext(dev_mode)
+
+                if ctx.backend_type != "vulkan" and not getattr(ctx, "is_gpu", False):
+                    raise PlatformNotSupportedError(
+                        f"[ERROR: AMEVA-STT-E002] Explicit Vulkan backend requested ('--device {device}'), but ameva-runtime "
+                        f"initialized with non-GPU backend ('{ctx.backend_type}').",
+                        code=ErrorCode.VULKAN_DEVICE,
+                    )
+        except ImportError as imp_err:
+            if dev_mode in ("vulkan", "gpu"):
+                raise PlatformNotSupportedError(
+                    "[ERROR: AMEVA-STT-E001] GPU acceleration requires 'ameva-runtime'.\n"
+                    "Cause: Hardware abstraction provider 'ameva-runtime' is not installed.\n"
+                    "Action Required: Install the hardware acceleration package via:\n"
+                    "  - Python: pip install ameva-runtime\n"
+                    "  - Node.js: npm install @unokm/ameva-runtime\n"
+                    "Documentation: https://github.com/uno-km/termux-stt",
+                    code=ErrorCode.RUNTIME_NOT_INSTALLED,
+                ) from imp_err
+        except Exception as e:
+            if dev_mode in ("vulkan", "gpu"):
+                if isinstance(e, PlatformNotSupportedError):
+                    raise
+                raise PlatformNotSupportedError(
+                    f"[ERROR: AMEVA-STT-E002] AMEVA Vulkan Runtime initialization failed: {e}",
+                    code=ErrorCode.VULKAN_DEVICE,
+                ) from e
+
+        return env
 
 
     # ------------------------------------------------------------------
@@ -252,20 +335,11 @@ class WhisperEngine(Engine):
                     import shlex
                     cmd.extend(shlex.split(extra_args))
 
-            # Golden Link Order LD_LIBRARY_PATH resolution for Vulkan
-            vulkan_env = None
-            try:
-                from ameva_runtime.vulkan.adapters.base import get_vulkan_env
-                vulkan_env = get_vulkan_env()
-            except ImportError:
-                if os.path.exists("/system/lib64/libvulkan.so"):
-                    vulkan_env = dict(os.environ)
-                    existing_lp = vulkan_env.get("LD_LIBRARY_PATH", "")
-                    if "/system/lib64" not in existing_lp:
-                        vulkan_env["LD_LIBRARY_PATH"] = f"/system/lib64:{existing_lp}".rstrip(":")
+            # Bionic ICD & ameva-runtime environment preparation
+            run_env = self._prepare_env(self.device)
 
             logger.info("Running whisper.cpp: %s", " ".join(cmd))
-            result = run_isolated(cmd, env=vulkan_env)
+            result = run_isolated(cmd, env=run_env)
 
             if result.returncode != 0:
                 raise RuntimeError(
@@ -277,8 +351,10 @@ class WhisperEngine(Engine):
             if dev_lower in ("gpu", "vulkan"):
                 stderr_text = result.stderr or ""
                 if "failed to initialize" in stderr_text.lower() or "vk_error" in stderr_text.lower():
-                    raise RuntimeError(
-                        f"[ZeroSilentFallback] Vulkan backend reported failure during execution:\n{stderr_text}"
+                    from termux_stt.exceptions import PlatformNotSupportedError, ErrorCode
+                    raise PlatformNotSupportedError(
+                        f"[ERROR: AMEVA-STT-E002] Vulkan backend reported execution failure:\n{stderr_text}",
+                        code=ErrorCode.VULKAN_DEVICE,
                     )
 
             # 4. Parse JSON result (written to <wav>.json)

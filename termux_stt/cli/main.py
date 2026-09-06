@@ -19,7 +19,7 @@ def _run_cli():
     common_parser = argparse.ArgumentParser(add_help=False)
     common_parser.add_argument("--engine", type=str, default="whisper", choices=["whisper", "vosk", "hybrid", "sherpa"], help="Engine to use")
     common_parser.add_argument("-m", "--model", type=str, help="Model name or path")
-    common_parser.add_argument("--device", type=str, default="auto", choices=["auto", "gpu", "cpu", "vulkan"], help="Acceleration device backend")
+    common_parser.add_argument("-d", "--device", "--backend", "-b", dest="device", type=str, default="auto", choices=["auto", "gpu", "cpu", "vulkan"], help="Acceleration device backend (auto, gpu, vulkan, cpu)")
     common_parser.add_argument("--lang", type=str, default="ko", help="Language code")
     common_parser.add_argument("--threads", type=int, default=None, help="Number of CPU threads to use")
     common_parser.add_argument("--vad", action="store_true", help="Enable VAD filtering")
@@ -140,6 +140,10 @@ def main():
         print("\n[!] Operation cancelled by user.")
         sys.exit(0)
     except Exception as e:
+        from termux_stt.exceptions import TermuxSTTError
+        if isinstance(e, TermuxSTTError):
+            print(f"\n{e}")
+            sys.exit(getattr(e, "code", 1) if isinstance(getattr(e, "code", None), int) else 1)
         if "--verbose" in sys.argv:
             import traceback
             traceback.print_exc()

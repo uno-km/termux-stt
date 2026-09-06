@@ -9,7 +9,8 @@ from typing import Tuple
 
 __all__ = [
     "HardwareInfo", "detect_hardware", "get_optimal_threads",
-    "check_neon_support", "check_fp16_support", "get_ram_info", "is_termux"
+    "check_neon_support", "check_fp16_support", "get_ram_info", "is_termux",
+    "resolve_device"
 ]
 
 @dataclass
@@ -153,3 +154,83 @@ def detect_hardware() -> HardwareInfo:
         is_termux=termux_env,
         is_android=android_env
     )
+
+
+def resolve_device(requested_device: str = "auto") -> Tuple[str, int]:
+    """
+    Resolves compute device ('vulkan', 'cpu') and optimal GPU offload layers or threads.
+
+    Strict Zero-Silent-Fallback Protocol:
+    1. 'cpu': Pure ARM NEON compute.
+    2. 'auto': Vulkan priority with automatic graceful fallback to CPU if ameva-runtime/GPU unavailable.
+    3. 'vulkan' / 'gpu': Requires ameva-runtime. Emits Fail-Fast error [AMEVA-STT-E001] if absent,
+       or [AMEVA-STT-E002] if Vulkan initialization fails.
+    """
+    from termux_stt.exceptions import PlatformNotSupportedError, ErrorCode
+
+    req = str(requested_device or "auto").strip().lower()
+    optimal_threads = get_optimal_threads()
+
+    if req == "cpu":
+        return "cpu", optimal_threads
+
+    if req in ("vulkan", "gpu"):
+        try:
+            from ameva_runtime import vulkan as avr
+        except ImportError:
+            raise PlatformNotSupportedError(
+                "[ERROR: AMEVA-STT-E001] GPU acceleration requires 'ameva-runtime'.\n"
+                "Cause: Hardware abstraction provider 'ameva-runtime' is not installed.\n"
+                "Action Required: Install the hardware acceleration package via:\n"
+                "  - Python: pip install ameva-runtime\n"
+                "  - Node.js: npm install @unokm/ameva-runtime\n"
+                "Documentation: https://github.com/uno-km/termux-stt",
+                code=ErrorCode.RUNTIME_NOT_INSTALLED,
+            )
+
+        try:
+            if hasattr(avr, "get_or_create_context"):
+                ctx = avr.get_or_create_context("vulkan")
+            elif hasattr(avr, "create_context"):
+                ctx = avr.create_context("vulkan")
+            else:
+                ctx = avr.VulkanContext("vulkan")
+
+            is_vk = ctx.backend_type == "vulkan" or getattr(ctx, "is_gpu", False)
+            if is_vk:
+                return "vulkan", 32
+        except Exception as ctx_err:
+            raise PlatformNotSupportedError(
+                f"[ERROR: AMEVA-STT-E002] Vulkan GPU acceleration was explicitly requested (device='{requested_device}'), "
+                f"but Vulkan initialization failed: {ctx_err}.\n"
+                "Execution halted strictly without silent fallback to prevent unexpected CPU execution.",
+                code=ErrorCode.VULKAN_DEVICE,
+            ) from ctx_err
+
+        raise PlatformNotSupportedError(
+            f"[ERROR: AMEVA-STT-E002] Vulkan GPU acceleration was explicitly requested (device='{requested_device}'), "
+            "but no accessible Vulkan physical device was found on this system.\n"
+            "Execution halted strictly without silent fallback to prevent unexpected CPU execution.",
+            code=ErrorCode.VULKAN_DEVICE,
+        )
+
+    if req == "auto":
+        try:
+            from ameva_runtime import vulkan as avr
+            if hasattr(avr, "get_or_create_context"):
+                ctx = avr.get_or_create_context("auto")
+            elif hasattr(avr, "create_context"):
+                ctx = avr.create_context("auto")
+            else:
+                ctx = avr.VulkanContext("auto")
+            if ctx.backend_type == "vulkan" or getattr(ctx, "is_gpu", False):
+                return "vulkan", 32
+        except Exception as err:
+            import logging
+            logging.getLogger("termux_stt.platform.hardware").debug(
+                "[termux-stt] Auto-detection probe exception: %s", err
+            )
+        return "cpu", optimal_threads
+
+    raise ValueError(f"Unsupported device '{requested_device}'. Must be one of ['auto', 'gpu', 'vulkan', 'cpu'].")
+
