@@ -4,11 +4,63 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "termux-stt"
-version = "1.2.1"
+version = "1.2.2"
 description = "On-device Speech-to-Text framework utilizing device resources for Android Termux (Whisper.cpp, Vosk, Sherpa-ONNX)"
 readme = "README.md"
 requires-python = ">=3.8"
 license = {text = "MIT"}
+keywords = [
+  "termux",
+  "stt",
+  "speech-to-text",
+  "whisper",
+  "whisper-cpp",
+  "vosk",
+  "sherpa-onnx",
+  "diarization",
+  "speaker-diarization",
+  "voice-recognition",
+  "audio-transcription",
+  "on-device-ai",
+  "edge-ai",
+  "mobile-ai",
+  "vulkan",
+  "vulkan-compute",
+  "gpu-acceleration",
+  "real-time-factor",
+  "low-latency",
+  "arm64",
+  "android",
+  "snapdragon",
+  "adreno",
+  "exynos",
+  "arm-mali",
+  "zero-compilation",
+  "vad",
+  "voice-activity-detection",
+  "silero-vad",
+  "x-vector",
+  "k-means",
+  "clustering",
+  "srt-export",
+  "vtt-export",
+  "rttm",
+  "microphone-streaming",
+  "headless-audio",
+  "pulseaudio",
+  "offline-speech",
+  "privacy-first",
+  "termux-aichain",
+  "termux-tts",
+  "termux-llamacpp",
+  "termux-diffusion",
+  "ameva-runtime",
+  "ggml",
+  "quantization",
+  "bionic-libc",
+  "autonomous-agents",
+  "voice-assistant"
+]
 authors = [
   {name = "Eunho Kim (@uno-km)"}
 ]
