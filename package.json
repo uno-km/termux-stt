@@ -1,12 +1,12 @@
 {
   "name": "termux-stt",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "On-device Speech-to-Text & speaker diarization framework utilizing device resources for Android Termux",
   "main": "index.js",
   "types": "index.d.ts",
   "bin": {
-    "termux-stt": "./bin/termux-stt.js",
-    "termux-stt-install": "./bin/termux-stt.js"
+    "termux-stt": "bin/termux-stt.js",
+    "termux-stt-install": "bin/termux-stt.js"
   },
   "files": [
     "index.js",
@@ -52,3 +52,4 @@
     "node": ">=16.0.0"
   }
 }
+
