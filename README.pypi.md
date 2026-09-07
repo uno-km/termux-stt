@@ -59,8 +59,9 @@ The automated engine installer (`EngineInstaller`) executes a 3-stage provisioni
 1. **Native System Dependencies (`install_system_dependencies`)**:
    Automatically invokes Termux `pkg` to install `ffmpeg`, `libbluray`, `libxml2`, `git`, `termux-api`, and `curl`, enabling universal audio decoding and microphone capture via Android APIs.
 2. **Adaptive Engine Binary Provisioning (`install_whisper_cpp`)**:
-   - **Vulkan GPU Silicon Detected**: Inspects `/system/lib64/libvulkan.so` and `Doctor().quick_probe()`. If mobile GPU compute is available, provisions `cmake`, `make`, `clang`, clones `whisper.cpp`, and compiles a device-tailored native binary with `-DGGML_VULKAN=ON` and `-DVulkan_LIBRARY=/system/lib64/libvulkan.so`, installing it to `$PREFIX/bin/whisper-cli` and `$HOME/.local/bin/whisper-cli` with top execution priority.
-   - **CPU-Only Fallback**: If Vulkan is absent, downloads the pre-built optimized ARM64 NEON static binary directly from GitHub Releases to `$HOME/.local/bin/whisper-cli`.
+   - **⚡ Fast-Track Stream Extractor (~3s)**: On Android ARM64 Termux, precompiled Vulkan+NEON Bionic binaries (`whisper-cli-android-arm64.tar.gz`) are automatically extracted from GitHub Releases in ~3 seconds, completely eliminating 20-minute on-device compilation and mobile OOM aborts.
+   - **🛡️ Zero-Hardcoding SSOT Endpoints**: Binary downloads dynamically route through unified SSOT candidate endpoints (`TERMUX_STT_RELEASE_TAG` -> `v{__version__}` -> `releases/latest/download` -> `uno-km/ameva-runtime` releases fallback) with automated fallback to on-device C++ compilation (`cmake` + `clang`) in offline or air-gapped environments.
+   - **📦 Bundled Package Binary Fallback**: Automatically discovers and links bundled `termux_stt/bin/whisper-cli` if present.
 3. **Sub-Engine Ecosystem Provisioning (`install_vosk`, `install_sherpa_onnx`)**:
    Provisions `vosk` for sub-30ms real-time streaming and `sherpa-onnx` for next-generation ONNX Zipformer models, while pre-initializing model cache structures in `~/.cache/termux-stt/models/`.
 
