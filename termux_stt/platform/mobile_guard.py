@@ -50,7 +50,7 @@ class MobileGuard:
 
     @staticmethod
     def disable_phantom_process_killer() -> bool:
-        """Attempt to disable Android 12+ Phantom Process Killer via root, device_config, or adb.
+        """Attempt to disable Android 12+ Phantom Process Killer via device_config or adb (strictly non-root).
 
         Returns True if successfully disabled or not required (Android < 12), False if permission denied.
         """
@@ -65,9 +65,8 @@ class MobileGuard:
         except (FileNotFoundError, PermissionError, subprocess.TimeoutExpired, OSError) as _sdk_err:
             logger.debug("getprop ro.build.version.sdk check failed (%s), will try candidate commands", _sdk_err)
 
-        # 2. Candidate execution strategies for Android 12+
+        # 2. Candidate non-root execution strategies for Android 12+
         commands = [
-            ["su", "-c", "device_config set_sync_disabled_for_tests persistent && device_config put activity_manager max_phantom_processes 2147483647"],
             ["device_config", "set_sync_disabled_for_tests", "persistent"],
             ["adb", "shell", "device_config set_sync_disabled_for_tests persistent && device_config put activity_manager max_phantom_processes 2147483647"],
         ]

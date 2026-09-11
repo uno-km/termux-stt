@@ -52,10 +52,7 @@ class EngineInstaller:
         urls.append("https://github.com/uno-km/termux-stt/releases/latest/download/whisper-cli-android-arm64.tar.gz")
         urls.append("https://github.com/uno-km/termux-stt/releases/latest/download/whisper-cli-android-arm64")
 
-        # AMEVA SSOT ecosystem release fallback
-        urls.append("https://github.com/uno-km/ameva-runtime/releases/latest/download/whisper-cli-android-arm64")
-
-        # Legacy fallback
+        # Legacy fallback (verified HTTP 200)
         urls.append("https://github.com/uno-km/termux-stt/releases/download/v1.1.3/whisper-cli-arm64-android")
 
         return urls

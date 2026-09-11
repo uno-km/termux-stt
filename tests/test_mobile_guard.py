@@ -18,11 +18,11 @@ def test_disable_phantom_process_killer_android_below_12():
         assert MobileGuard.disable_phantom_process_killer() is True
 
 
-def test_disable_phantom_process_killer_android_12_root_success():
+def test_disable_phantom_process_killer_android_12_nonroot_success():
     def mock_run_side_effect(cmd, **kwargs):
         if cmd[0] == "getprop":
             return MagicMock(returncode=0, stdout="33\n")
-        if cmd[0] == "su":
+        if cmd[0] == "device_config":
             return MagicMock(returncode=0, stdout="")
         return MagicMock(returncode=1)
 
