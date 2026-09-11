@@ -1,0 +1,13 @@
+# Termux-STT Full Technical Specification (v1.1.0)
+Official Documentation & Deep Architecture Reference for Autonomous AI Agents.
+
+## 1. System Overview
+Unified On-Device Speech-to-Text & Pure Python 128d X-Vector Speaker Diarization
+Integrates Whisper.cpp, Vosk, and Sherpa-ONNX with a closed-form pure-Python 128-dimensional X-Vector clustering algorithm that operates in under 80MB RAM with zero cloud egress.
+
+## 2. Package & Installation
+- PyPI: termux-stt
+- Command: pip install --upgrade termux-stt && termux-stt install
+# or Node.js:
+npm install -g termux-stt && termux-stt install
+- Repository: https://github.com/uno-km/termux-stt

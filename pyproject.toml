@@ -1,0 +1,109 @@
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "termux-stt"
+version = "1.2.2"
+description = "On-device Speech-to-Text framework utilizing device resources for Android Termux (Whisper.cpp, Vosk, Sherpa-ONNX)"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+keywords = [
+  "termux",
+  "stt",
+  "speech-to-text",
+  "whisper",
+  "whisper-cpp",
+  "vosk",
+  "sherpa-onnx",
+  "diarization",
+  "speaker-diarization",
+  "voice-recognition",
+  "audio-transcription",
+  "on-device-ai",
+  "edge-ai",
+  "mobile-ai",
+  "vulkan",
+  "vulkan-compute",
+  "gpu-acceleration",
+  "real-time-factor",
+  "low-latency",
+  "arm64",
+  "android",
+  "snapdragon",
+  "adreno",
+  "exynos",
+  "arm-mali",
+  "zero-compilation",
+  "vad",
+  "voice-activity-detection",
+  "silero-vad",
+  "x-vector",
+  "k-means",
+  "clustering",
+  "srt-export",
+  "vtt-export",
+  "rttm",
+  "microphone-streaming",
+  "headless-audio",
+  "pulseaudio",
+  "offline-speech",
+  "privacy-first",
+  "termux-aichain",
+  "termux-tts",
+  "termux-llamacpp",
+  "termux-diffusion",
+  "ameva-runtime",
+  "ggml",
+  "quantization",
+  "bionic-libc",
+  "autonomous-agents",
+  "voice-assistant"
+]
+authors = [
+  {name = "Eunho Kim (@uno-km)"}
+]
+dependencies = [
+  "ameva-runtime>=2.1.0",
+    "ameva-component-sdk>=0.1.0,<2.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "ruff", "mypy"]
+
+[project.scripts]
+termux-stt = "termux_stt.cli.main:main"
+termux-stt-install = "termux_stt.platform.installer:main"
+
+[project.entry-points."ameva.components"]
+termux-stt = "termux_stt.adapter:create_adapter"
+
+
+[project.urls]
+Homepage = "https://github.com/uno-km/termux-stt"
+Repository = "https://github.com/uno-km/termux-stt"
+Documentation = "https://github.com/uno-km/termux-stt#readme"
+Issues = "https://github.com/uno-km/termux-stt/issues"
+
+[tool.ruff]
+line-length = 120
+target-version = "py38"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+ignore = ["E501", "E722"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["termux_stt"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["termux_stt*"]
+exclude = ["tests*", "docs*", "examples*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+
+

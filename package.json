@@ -1,0 +1,87 @@
+{
+  "name": "termux-stt",
+  "version": "1.2.2",
+  "description": "On-device Speech-to-Text & speaker diarization framework utilizing device resources for Android Termux",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "bin": {
+    "termux-stt": "bin/termux-stt.js",
+    "termux-stt-install": "bin/termux-stt.js"
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "lib",
+    "bin",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/uno-km/termux-stt.git"
+  },
+  "keywords": [
+    "termux",
+    "stt",
+    "speech-to-text",
+    "whisper",
+    "whisper-cpp",
+    "vosk",
+    "sherpa-onnx",
+    "diarization",
+    "speaker-diarization",
+    "voice-recognition",
+    "audio-transcription",
+    "on-device-ai",
+    "edge-ai",
+    "mobile-ai",
+    "vulkan",
+    "vulkan-compute",
+    "gpu-acceleration",
+    "real-time-factor",
+    "low-latency",
+    "arm64",
+    "android",
+    "snapdragon",
+    "adreno",
+    "exynos",
+    "arm-mali",
+    "zero-compilation",
+    "vad",
+    "voice-activity-detection",
+    "silero-vad",
+    "x-vector",
+    "k-means",
+    "clustering",
+    "srt-export",
+    "vtt-export",
+    "rttm",
+    "microphone-streaming",
+    "headless-audio",
+    "pulseaudio",
+    "offline-speech",
+    "privacy-first",
+    "termux-aichain",
+    "termux-tts",
+    "termux-llamacpp",
+    "termux-diffusion",
+    "ameva-runtime",
+    "ggml",
+    "quantization",
+    "bionic-libc",
+    "autonomous-agents",
+    "voice-assistant"
+  ],
+  "author": "uno-km (AMEVA Foundation) <dev@ameva.org>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/uno-km/termux-stt/issues"
+  },
+  "homepage": "https://uno-km.github.io/termux-stt/",
+  "dependencies": {
+    "@ameva/runtime": ">=2.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

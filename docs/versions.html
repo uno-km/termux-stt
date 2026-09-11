@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Version Archive & Changelog | Termux-STT</title>
+  <meta name="description" content="Integrates Whisper.cpp, Vosk, and Sherpa-ONNX with a closed-form pure-Python 128-dimensional X-Vector clustering algorithm that operates in under 80MB RAM with zero cloud egress.">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="assets/style.css">
+  <script src="assets/i18n.js" defer></script>
+  <script src="assets/i18n-translations.js" defer></script>
+  <script src="assets/common.js" defer></script>
+</head>
+<body>
+  <header>
+    <a href="index.html" class="header-brand">
+      <img src="favicon.svg" alt="Termux-STT Logo">
+      <h1 data-i18n="common.brand">Termux-STT</h1>
+    </a>
+    <div class="header-controls">
+      <span class="release-tag" data-i18n="common.releaseTag">v1.1.0</span>
+      <div class="lang-selector-wrapper"></div>
+      <a href="/foundation/index.html" class="header-btn" style="border-color:#2563eb;color:#2563eb;font-weight:600;" data-i18n="common.foundationBtn">Foundation</a>
+      <a href="https://pypi.org/project/termux-stt/" target="_blank" class="header-btn" title="PyPI: termux-stt | npm: termux-stt" data-i18n="common.pkgBtn">pip / npm</a>
+      <a href="https://github.com/sponsors/uno-km" target="_blank" class="header-btn" style="border-color: #ea4aaa; color: #ea4aaa; font-weight: 700;">Sponsor</a>
+      <a href="https://github.com/uno-km/termux-stt" target="_blank" class="header-btn primary" data-i18n="common.githubBtn">GitHub</a>
+      <a href="/" class="header-btn" style="border-color:#004499;color:#004499;font-weight:600;" data-i18n="common.founderBtn">Founder CV</a>
+    </div>
+  </header>
+
+  <div class="container">
+  <nav class="sidebar">
+    <!-- Tier 1: Primary Document / Foundation Navigation -->
+    <h3 data-i18n="common.nav.docNav">Document Navigation</h3>
+    <ul>
+      <li><a href="index.html">Home / Architecture</a></li>
+      <li><a href="installation.html">Installation Guide</a></li>
+      <li><a href="quickstart.html">Quickstart & Recipes</a></li>
+      <li><a href="api-reference.html">API Reference</a></li>
+      <li><a href="showcase.html">Audio Showcase</a></li>
+      <li><a href="benchmarks.html">Benchmarks & Profiling</a></li>
+      <li><a href="advanced-parameters.html">Advanced Parameters</a></li>
+      <li><a href="versions.html" class="active">Version Archive</a></li>
+    </ul>
+    <!-- Tier 2: Flagship Libraries -->
+    <h3 data-i18n="common.nav.libraries">Flagship Libraries</h3>
+    <ul>
+      <li><a href="/lib/sentinel/">AMEVA-Sentinel (Security SDK)</a></li>
+      <li><a href="/lib/mcp/">AMEVA-MCP-Hub (Polyglot WASM)</a></li>
+      <li><a href="/lib/aichain/">Termux-AIChain (Zero-Dep Agent)</a></li>
+      <li><a href="/lib/bitnet/">Termux-BitNet (1.58-bit LLM)</a></li>
+      <li><a href="/lib/diffusion/">Termux-Diffusion (Image AI)</a></li>
+      <li><a href="/lib/playwright/">Termux-Playwright (Automation)</a></li>
+      <li><a href="/lib/stt/" class="active">Termux-STT (Voice STT)</a></li>
+      <li><a href="/lib/train/">Termux-Train (LoRA Engine)</a></li>
+      <li><a href="/lib/forge/">AMEVA-Forge (WebGPU Autograd)</a></li>
+      <li><a href="https://ameva-workstation-web-core.vercel.app/" target="_blank">AMEVA Workstation (Web App)</a></li>
+    </ul>
+    <!-- Tier 3: AI Protocols & Specifications -->
+    <h3 data-i18n="common.nav.aiSpecs">AI Agent Protocols</h3>
+    <ul>
+      <li><a href="llms.txt" target="_blank">llms.txt (AI Fast Context)</a></li>
+      <li><a href="llms-full.txt" target="_blank">llms-full.txt (Full Spec)</a></li>
+      <li><a href="robots.txt" target="_blank">robots.txt (AI Crawlers)</a></li>
+      <li><a href="sitemap.xml" target="_blank">sitemap.xml (Sitemap)</a></li>
+    </ul>
+  </nav>
+
+    <main class="content">
+      <h2>Version Archive & Changelog</h2>
+      <p class="subtitle">Changelog history and immutable releases</p>
+            <div class="card" style="margin-bottom: 24px; border-left: 4px solid var(--primary-color, #004499);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <h3 style="margin: 0; color: var(--primary-color, #004499);">v1.1.0 - Fuzzy Typo Protection & Output Directory Auto-Creation</h3>
+          <div>
+            <span class="status-badge active" style="margin-right: 6px;">Production Release (Latest)</span>
+            <span style="font-size: 0.85em; color: var(--text-muted, #64748b);">2026-08-27</span>
+          </div>
+        </div>
+        <ul style="margin-left: 20px; line-height: 1.8;">
+          <li>Fuzzy Typo Suggestion & Model Discovery: difflib-powered intelligent typo suggestion (Did you mean: tiny?) and full available model catalog display on unrecognized models, terminating safely with 0ms network latency.</li>
+          <li>Output Directory Auto-Creation: Recursive parent directory provisioning (os.makedirs(out_dir, exist_ok=True)) for all output files (text, srt, vtt, json, rttm), eliminating FileNotFoundError.</li>
+          <li>Library Overreach & Privileged Escalation Elimination: Completely stripped unprompted su root privilege escalation attempts in mobile_guard.py for strict unrooted Android compliance.</li>
+          <li>Zero-Overreach Certification: 100% verified compliance with POSIX process group isolation and Bionic libc sandboxing across all STT inference pipelines.</li>
+        </ul>
+      </div>
+      <div class="card" style="margin-bottom: 24px; border-left: 4px solid var(--primary-color, #004499);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <h3 style="margin: 0; color: var(--primary-color, #004499);">v1.1.0 - Direct Local Model Paths & Quantized Models</h3>
+          <div>
+            <span class="status-badge" style="margin-right: 6px;">Stable Release</span>
+            <span style="font-size: 0.85em; color: var(--text-muted, #64748b);">2026-08-26</span>
+          </div>
+        </div>
+        <ul style="margin-left: 20px; line-height: 1.8;">
+          <li>Direct Local Model Path Integration: Direct connection for custom fine-tuned GGML, BitNet 1.58b, and LLaMA weights with 0-download bypass.</li>
+          <li>Extended Model Registry: Added large-v3-turbo, large-v3, English-optimized .en models, and quantized ARM NEON weights (small-q5_1, medium-q5_0, large-v3-turbo-q5_0).</li>
+          <li>Full C++ Parameter Control: Full CLI and SDK controls for Beam Search (-bs), Best-Of (-bo), Temperature (-tp), Prompt Hints (--prompt), and Raw C++ Passthrough (--extra-args).</li>
+        </ul>
+      </div>
+      <div class="card" style="margin-bottom: 24px; border-left: 4px solid var(--primary-color, #004499);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <h3 style="margin: 0; color: var(--primary-color, #004499);">v1.0.8 - 5-Point Core Reliability & Hardening</h3>
+          <div>
+            <span class="status-badge" style="margin-right: 6px;">Stable Release</span>
+            <span style="font-size: 0.85em; color: var(--text-muted, #64748b);">2026-08-26</span>
+          </div>
+        </div>
+        <ul style="margin-left: 20px; line-height: 1.8;">
+          <li>Temp WAV Garbage Collection: try...finally lifecycle management for automatic converted WAV deletion, eliminating storage leaks.</li>
+          <li>Safe Psutil Import Guard: Defensive lazy-loading in MobileGuard preventing import crashes on minimal Termux environments.</li>
+          <li>Platform Spoofing Isolation: Restricted sys.platform = 'linux' strictly to Android/Termux runtimes.</li>
+          <li>Mobile 1-Pass Greedy Policy: Defaulted to --no-fallback (-nf) on Termux to prevent multi-temperature thermal throttling.</li>
+          <li>Node.js Binary Resolver: Upgraded CLI wrapper with python3 / python dynamic binary detection.</li>
+        </ul>
+      </div>
+      <div class="card" style="margin-bottom: 24px; border-left: 4px solid var(--primary-color, #004499);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <h3 style="margin: 0; color: var(--primary-color, #004499);">v1.0.7 - Download Pipeline Optimization</h3>
+          <div>
+            <span class="status-badge" style="margin-right: 6px;">Patch Release</span>
+            <span style="font-size: 0.85em; color: var(--text-muted, #64748b);">2026-08-26</span>
+          </div>
+        </div>
+        <ul style="margin-left: 20px; line-height: 1.8;">
+          <li>Model Hub Request Sequencing: Resolved NameError: req in download pipeline.</li>
+          <li>Instant Cache Priority: Defaulted CLI models to pre-cached tiny for 0-second execution.</li>
+        </ul>
+      </div>
+      <div class="card" style="margin-bottom: 24px; border-left: 4px solid var(--primary-color, #004499);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <h3 style="margin: 0; color: var(--primary-color, #004499);">v1.0.6 - CLI Standardization & SSL Defense</h3>
+          <div>
+            <span class="status-badge" style="margin-right: 6px;">Patch Release</span>
+            <span style="font-size: 0.85em; color: var(--text-muted, #64748b);">2026-08-26</span>
+          </div>
+        </div>
+        <ul style="margin-left: 20px; line-height: 1.8;">
+          <li>Flexible EngineConfig Aliasing: Seamless backward-compatible argument aliases (model_path, language, num_threads, use_vad).</li>
+          <li>CLI Factory Standardization: Migrated diarize, benchmark, and listen to unified create_engine.</li>
+          <li>Precise Header Duration: Exact WAV RIFF header duration calculation for benchmark RTF.</li>
+          <li>SSL Fallback: Added unverified SSL context fallback for custom certificate environments.</li>
+        </ul>
+      </div>
+      <div class="card" style="margin-bottom: 24px; border-left: 4px solid var(--primary-color, #004499);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <h3 style="margin: 0; color: var(--primary-color, #004499);">v1.0.5 - Official JFK Sample Audio & 1-Click Installer</h3>
+          <div>
+            <span class="status-badge" style="margin-right: 6px;">Feature Release</span>
+            <span style="font-size: 0.85em; color: var(--text-muted, #64748b);">2026-08-26</span>
+          </div>
+        </div>
+        <ul style="margin-left: 20px; line-height: 1.8;">
+          <li>Official JFK 60s Sample Audio: Integrated clean 16kHz Mono PCM sample (samples/jfk_1min.wav).</li>
+          <li>Zero-Subprocess Wave Parsing: Pure Python wave direct parser bypassing FFmpeg subprocessing.</li>
+          <li>Bionic Dynamic Linker Defense: Packaged libbluray and libxml2 in automated installer.</li>
+          <li>1-Click Installer CLI: Registered termux-stt install command.</li>
+          <li>Dual-Engine Monorepo Packaging: Full root package.json support for npm install -g git+....</li>
+        </ul>
+      </div>
+      <div class="card" style="margin-bottom: 24px; border-left: 4px solid var(--primary-color, #004499);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <h3 style="margin: 0; color: var(--primary-color, #004499);">v1.0.0 - Initial Public Release</h3>
+          <div>
+            <span class="status-badge" style="margin-right: 6px;">Initial Release</span>
+            <span style="font-size: 0.85em; color: var(--text-muted, #64748b);">2026-08-20</span>
+          </div>
+        </div>
+        <ul style="margin-left: 20px; line-height: 1.8;">
+          <li>Unified Multi-Engine Architecture: Single create_engine() API for whisper.cpp, vosk, and sherpa-onnx.</li>
+          <li>Pure-Python Speaker Diarization: Custom K-Means and Cosine Distance matrix without numpy/sklearn dependencies.</li>
+          <li>Hybrid Diarization Pipeline: Vosk X-Vector + Whisper STT under 1.5 GB RAM.</li>
+          <li>Audio Pipeline: ffmpeg 16kHz mono converter, Silero-VAD integration, and Termux microphone recorder.</li>
+          <li>Model Hub: Automatic model downloader with SHA-256 verification and cache management.</li>
+          <li>Export Standards: SRT, WebVTT, NIST RTTM, and structured JSON output.</li>
+          <li>CLI Suite: transcribe, listen, diarize, models, doctor, and benchmark.</li>
+        </ul>
+      </div>
+    </main>
+  </div>
+
+  <footer>
+    <span data-i18n="common.footerText">&copy; 2026 AMEVA Open-Source Foundation. Released under the Apache-2.0 License.</span>
+  </footer>
+</body>
+</html>
