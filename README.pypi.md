@@ -21,12 +21,15 @@ pkg update -y
 pkg install -y clang python python-numpy nodejs termux-api ffmpeg pulseaudio
 ```
 
-### 1.2 Python SDK & Global CLI Installation
+### 1.2 Pure Package Installation (Zero-Compilation Bundled Binary)
 Install the core package from PyPI via `pip`:
 ```bash
 pip install --upgrade pip
 pip install termux-stt
 ```
+
+> [!NOTE]
+> **Bundled ARM64 Binary Architecture**: The official Python universal wheel (`termux_stt-*.whl`) directly bundles a pre-compiled Android ARM64 (Bionic libc) `whisper-cli` ELF executable inside `termux_stt/bin/whisper-cli`. When installed via `pip`, this binary is automatically unpacked into Python `site-packages`. Pure 16kHz WAV transcription is functional immediately without requiring any local C/C++ compiler toolchain.
 
 To install with development extras:
 ```bash
@@ -36,18 +39,43 @@ pip install "termux-stt[dev]"
 ### 1.3 Node.js / TypeScript SDK & CLI Installation
 Install globally or locally via `npm`:
 ```bash
-# Global CLI installation
+# Global CLI installation (bridges to underlying Python runtime)
 npm install -g termux-stt
 
 # Project dependency installation
 npm install termux-stt
 ```
 
-### 1.4 Zero-Compilation 1-Click Setup
-Termux-STT bundles precompiled ARM64 native binaries (`whisper-cli`) and automated model provisioners. Provision the environment with a single command:
+### 1.4 Post-Installation Automated Environment Provisioner (`termux-stt install`)
+While pure package installation provides instant offline WAV inference, production deployments involving compressed media (MP3/M4A/FLAC), live microphone streaming, or mobile GPU acceleration require full environment provisioning. Run the automated 1-click provisioner:
+
 ```bash
 termux-stt-install
+# Or equivalently:
+termux-stt install
 ```
+
+The automated engine installer (`EngineInstaller`) executes a 3-stage provisioning pipeline:
+1. **Native System Dependencies (`install_system_dependencies`)**:
+   Automatically invokes Termux `pkg` to install `ffmpeg`, `libbluray`, `libxml2`, `git`, `termux-api`, and `curl`, enabling universal audio decoding and microphone capture via Android APIs.
+2. **Adaptive Engine Binary Provisioning (`install_whisper_cpp`)**:
+   - **Vulkan GPU Silicon Detected**: Inspects `/system/lib64/libvulkan.so` and `Doctor().quick_probe()`. If mobile GPU compute is available, provisions `cmake`, `make`, `clang`, clones `whisper.cpp`, and compiles a device-tailored native binary with `-DGGML_VULKAN=ON` and `-DVulkan_LIBRARY=/system/lib64/libvulkan.so`, installing it to `$PREFIX/bin/whisper-cli` and `$HOME/.local/bin/whisper-cli` with top execution priority.
+   - **CPU-Only Fallback**: If Vulkan is absent, downloads the pre-built optimized ARM64 NEON static binary directly from GitHub Releases to `$HOME/.local/bin/whisper-cli`.
+3. **Sub-Engine Ecosystem Provisioning (`install_vosk`, `install_sherpa_onnx`)**:
+   Provisions `vosk` for sub-30ms real-time streaming and `sherpa-onnx` for next-generation ONNX Zipformer models, while pre-initializing model cache structures in `~/.cache/termux-stt/models/`.
+
+### 1.5 Pure Install vs. Post-Install Comparison Matrix
+
+| Feature / Capability | Pure Install (`pip install termux-stt`) | Post-Install (`termux-stt install`) |
+| :--- | :--- | :--- |
+| **Native Binary State** | Bundled CPU-NEON static binary (`site-packages/termux_stt/bin/`) | Dynamic: Local Vulkan GPU compilation or updated ARM64 release |
+| **GPU Acceleration** | Hardware binding attempted via ameva-runtime | Fully compiled with native SPIR-V Vulkan shaders (`-DGGML_VULKAN=ON`) |
+| **Supported Audio Formats** | Uncompressed WAV (16kHz PCM) | Universal: MP3, M4A, AAC, FLAC, OGG, WAV (via system `ffmpeg`) |
+| **Live Microphone Stream** | Requires manual `termux-api` installation | Automated `termux-api` package provisioning |
+| **Streaming Engine (Vosk)** | Skipped (Whisper-only mode) | Automated `vosk` pip package & model cache configuration |
+| **Zipformer (Sherpa-ONNX)** | Skipped | Automated `sherpa-onnx` pip package & model cache configuration |
+| **Setup Time** | Instantaneous (~3–5 seconds) | ~1–3 minutes (depending on whether local compilation occurs) |
+| **Recommended Use Case** | Quick smoke testing, batch WAV inference | Production services, 24/7 background daemons, mobile GPU offloading |
 
 ---
 
