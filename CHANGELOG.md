@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.2.4] - 2026-09-07
+
+### Added
+- **Fast-Track Prebuilt Stream Extractor (~3s)**: Automated stream downloading and in-memory extraction of `whisper-cli-android-arm64.tar.gz` directly from GitHub Releases, avoiding 20-minute on-device C++ compilation.
+- **Zero-Hardcoding SSOT Dynamic Candidates**: Replaced legacy static release URLs with dynamic candidate resolution (`TERMUX_STT_RELEASE_TAG`, `v{__version__}`, `releases/latest/download`, and `uno-km/ameva-runtime` SSOT fallback).
+- **Vulkan Logic Normalization**: Fixed priority routing to treat precompiled Vulkan+NEON binaries as Priority 1 across all devices, with local CMake/Clang builds reserved strictly as offline fallbacks.
+- **Bundled Package Binary Fallback**: Auto-detects and provisions bundled `termux_stt/bin/whisper-cli` if present.
+
+---
+
 ## [1.2.3] - 2026-09-07
 
 ### Added
