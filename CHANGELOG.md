@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.2.3] - 2026-09-07
+
+### Added
+- Expanded Section 1 installation documentation with in-depth bundled ARM64 binary architecture details.
+- Detailed 3-stage post-installation provisioner (`termux-stt install`) pipeline explanation (native system codecs, adaptive Vulkan GPU clang compilation, sub-engine ecosystem).
+- Comprehensive Pure Install vs. Post-Install comparison matrix covering binary states, audio codec support, and execution speed.
+
+---
+
 ## [1.2.2] - 2026-09-07
 
 ### Added
