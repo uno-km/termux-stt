@@ -21,6 +21,19 @@ class ModelHub:
     def _get_model_path(cls, engine: str, model_name: str) -> str:
         engine_dir = os.path.join(cls.CACHE_DIR, engine)
         os.makedirs(engine_dir, exist_ok=True)
+        # 1. Handle aliases from registry (e.g. turbo -> ggml-large-v3-turbo-q5_0.bin)
+        from .registry import MODEL_REGISTRY
+        reg = MODEL_REGISTRY.get(engine, {})
+        if model_name in reg and "url" in reg[model_name]:
+            canon_name = reg[model_name]["url"].split("/")[-1]
+            canon_path = os.path.join(engine_dir, canon_name)
+            if os.path.exists(canon_path):
+                return canon_path
+        # If "small" requested and only small-q5_1 exists
+        if model_name == "small":
+            q5_path = os.path.join(engine_dir, "ggml-small-q5_1.bin")
+            if os.path.exists(q5_path):
+                return q5_path
         # Handle filenames like ggml-base.bin or just "base"
         filename = model_name
         if engine == "whisper" and not filename.endswith(".bin"):

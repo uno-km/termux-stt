@@ -29,8 +29,7 @@ def run_transcribe(args):
         extra_kwargs["prompt"] = args.prompt
     if getattr(args, "temperature", None) is not None:
         extra_kwargs["temperature"] = args.temperature
-    if getattr(args, "beam_size", None) is not None:
-        extra_kwargs["beam_size"] = args.beam_size
+    extra_kwargs["beam_size"] = getattr(args, "beam_size", None) if getattr(args, "beam_size", None) is not None else 1
     if getattr(args, "translate", False):
         extra_kwargs["translate"] = True
     if getattr(args, "extra_args", None):

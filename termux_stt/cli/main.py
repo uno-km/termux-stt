@@ -26,7 +26,7 @@ def _run_cli():
     common_parser.add_argument("--quantization", type=str, choices=["none", "q4_0", "q5_1", "q8_0", "f16"], default="q5_1", help="Model quantization level")
     common_parser.add_argument("--prompt", type=str, default=None, help="Initial prompt / context for decoding")
     common_parser.add_argument("--temperature", type=float, default=None, help="Sampling temperature")
-    common_parser.add_argument("--beam-size", type=int, default=None, help="Beam search beam size")
+    common_parser.add_argument("--beam-size", "-bs", type=int, default=1, help="Beam search beam size (default: 1 for fast mobile greedy decoding)")
     common_parser.add_argument("--translate", action="store_true", help="Translate source audio to English")
     common_parser.add_argument("--extra-args", type=str, default=None, help="Raw CLI arguments passed directly to the engine")
     common_parser.add_argument("--verbose", action="store_true", help="Enable verbose logging")

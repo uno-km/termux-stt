@@ -21,7 +21,7 @@ def run_isolated(cmd: List[str], timeout: Optional[float] = None, env: Optional[
             result = subprocess.run(
                 cmd,
                 capture_output=True,
-                text=True,
+                text=False,
                 timeout=timeout,
                 env=env,
                 check=False
@@ -33,10 +33,21 @@ def run_isolated(cmd: List[str], timeout: Optional[float] = None, env: Optional[
                 if attempt < max_retries - 1:
                     continue
 
+            stdout_str = (
+                result.stdout.decode("utf-8", errors="replace")
+                if isinstance(result.stdout, bytes)
+                else (result.stdout or "")
+            )
+            stderr_str = (
+                result.stderr.decode("utf-8", errors="replace")
+                if isinstance(result.stderr, bytes)
+                else (result.stderr or "")
+            )
+
             return SubprocessResult(
                 returncode=result.returncode,
-                stdout=result.stdout,
-                stderr=result.stderr,
+                stdout=stdout_str,
+                stderr=stderr_str,
                 duration_sec=duration
             )
         except subprocess.TimeoutExpired as e:

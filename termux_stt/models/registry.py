@@ -20,6 +20,7 @@ MODEL_REGISTRY = {
         "medium-q5_0": {"url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-medium-q5_0.bin", "sha256": "", "size": "539MB", "description": "Whisper Medium Q5_0 (Quantized)"},
         "large-v3-turbo": {"url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-turbo.bin", "sha256": "4b681dbbf0e8549beee9659b664d4b1a432579b4a4fae1fa4662d515a4ec7316", "size": "1.6GB", "description": "Whisper Large-v3-Turbo (Ultra-Accuracy)"},
         "large-v3-turbo-q5_0": {"url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-turbo-q5_0.bin", "sha256": "", "size": "560MB", "description": "Whisper Large-v3-Turbo Q5_0 (Quantized)"},
+        "turbo": {"url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-turbo-q5_0.bin", "sha256": "", "size": "560MB", "description": "Whisper Large-v3-Turbo Q5_0 (Alias)"},
         "large-v3": {"url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3.bin", "sha256": "ad82bf6a904323aa02c2e078345c2253a699c647b0a8801267493fa01f5fec42", "size": "3.1GB", "description": "Whisper Large-v3 (Full Precision)"},
     },
     "vosk": {

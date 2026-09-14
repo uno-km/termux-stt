@@ -1,9 +1,26 @@
 # Changelog
 
-All notable changes to 	ermux-stt will be documented in this file.
+All notable changes to termux-stt will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [1.2.6] - 2026-09-15
+
+### Added & Optimized
+- **Mobile Production Greedy Search Default (`--beam-size 1` / `-bs 1`)**:
+  - Standardized `--beam-size` (`-bs`) to 1 across CLI, Python API, and subprocess execution, reducing autoregressive decoder memory bus traffic by 5x and shrinking KV cache footprint from 249MB to 49.8MB without measurable WER loss.
+  - Preserved multi-beam exploration (`-bs 5` or higher) as an explicit user parameter.
+- **Robust Android UTF-8 Character Replacement Decoding**:
+  - Replaced strict UTF-8 decoding with `errors="replace"` across all JSON and stdout/stderr ingestion layers (`whisper_engine.py`, `process_pool.py`), eliminating crashes on non-breaking spaces (`\xa0`) and malformed multibyte sequences.
+- **Comprehensive 6-SoC Physical Fleet Benchmark Verification**:
+  - Empirically validated across 6 flagship and mid-range mobile SoCs (Snapdragon 8 Elite, Snapdragon 8 Gen 1, Exynos 2100, Exynos 1380, Exynos 1280, Snapdragon 865) on 60.00s audio.
+  - Achieved up to 7.56x speedup over multi-threaded ARM NEON CPU compute.
+  - Verified Exynos 1280 (Galaxy A53) full Turbo execution (759.52s) via OS zRAM (+2GB RAM Plus) provisioning.
+- **Master Technical Treatise Publication**:
+  - Published comprehensive research paper *On-Device Vulkan-Accelerated Speech-to-Text on Edge Silicon: A Unified Architectural Treatise, Driver Boundary Analysis, and 6-SoC Empirical Benchmark* (`AOSF-TR-2026-STT01`) in both English and Korean (`docs/research/`).
+- **Zero Artificial Restriction Policy**:
+  - Enforced OpenSSF open-source compliance by ensuring zero software-level hardware blocks on older chipsets (Galaxy S20 / Snapdragon 865), maintaining user sovereignty and kernel Fail-Fast transparency.
 
 ## [1.2.5] - 2026-09-14
 

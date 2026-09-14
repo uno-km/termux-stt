@@ -32,51 +32,36 @@ class WhisperEngine(Engine):
         self.lang = config.language
         self.device = config.device
 
-        # Hardware acceleration context delegation via ameva-runtime & SttAdapter
+        # Hardware acceleration context delegation via ameva-runtime & SmartRouter
         dev_lower = str(self.device or "auto").strip().lower()
         self.ctx = None
+        self.runtime = None
+        self.router = None
         if dev_lower != "cpu":
             try:
-                from ameva_runtime import vulkan as avr
-                from ameva_runtime.vulkan.adapters import SttAdapter
+                from ameva_runtime.core import get_runtime
+                from ameva_runtime.router import SmartRouter
 
-                self.ctx = avr.get_or_create_context(self.device)
-                report = getattr(self.ctx, "doctor", avr.Doctor()).run_self_test(verbose=False)
-                binding_res = SttAdapter.bind(self, report)
-                is_vk = getattr(binding_res, "backend", "") == "vulkan" or getattr(binding_res, "is_vulkan", False)
-                if dev_lower in ("gpu", "vulkan") and not is_vk:
-                    from termux_stt.exceptions import PlatformNotSupportedError, ErrorCode
-                    raise PlatformNotSupportedError(
-                        f"[ERROR: AMEVA-STT-E002] Vulkan GPU acceleration was explicitly requested ('{self.device}'), "
-                        f"but SttAdapter bound to non-Vulkan backend ('{getattr(binding_res, 'backend', 'unknown')}'). "
-                        f"Execution halted strictly without silent fallback to prevent unexpected CPU execution.",
-                        code=ErrorCode.VULKAN_DEVICE,
-                    )
+                self.runtime = get_runtime()
+                self.router = SmartRouter(self.runtime.profile)
             except ImportError as imp_err:
-                if dev_lower in ("gpu", "vulkan"):
-                    from termux_stt.exceptions import PlatformNotSupportedError, ErrorCode
-                    raise PlatformNotSupportedError(
-                        "[ERROR: AMEVA-STT-E001] GPU acceleration requires 'ameva-runtime'.\n"
-                        "Cause: Hardware abstraction provider 'ameva-runtime' is not installed.\n"
-                        "Action Required: Install the hardware acceleration package via:\n"
-                        "  - Python: pip install ameva-runtime\n"
-                        "  - Node.js: npm install @unokm/ameva-runtime\n"
-                        "Documentation: https://github.com/uno-km/termux-stt",
-                        code=ErrorCode.RUNTIME_NOT_INSTALLED,
-                    ) from imp_err
-                logger.warning("ameva-runtime not installed in auto mode, falling back to CPU: %s", imp_err)
-                self.ctx = None
+                from termux_stt.exceptions import PlatformNotSupportedError, ErrorCode
+                raise PlatformNotSupportedError(
+                    "[ERROR: AMEVA-STT-E001] GPU acceleration requires 'ameva-runtime'.\n"
+                    "Cause: Hardware abstraction provider 'ameva-runtime' is not installed.\n"
+                    "Action Required: Install the hardware acceleration package via:\n"
+                    "  pip install ameva-runtime\n"
+                    "Documentation: https://github.com/uno-km/termux-stt",
+                    code=ErrorCode.RUNTIME_NOT_INSTALLED,
+                ) from imp_err
             except Exception as exc:
                 from termux_stt.exceptions import TermuxSTTError, PlatformNotSupportedError, ErrorCode
-                if dev_lower in ("gpu", "vulkan"):
-                    if isinstance(exc, TermuxSTTError):
-                        raise
-                    raise PlatformNotSupportedError(
-                        f"[ERROR: AMEVA-STT-E002] Failed to initialize Vulkan GPU for WhisperEngine: {exc}",
-                        code=ErrorCode.VULKAN_DEVICE,
-                    ) from exc
-                logger.warning("Vulkan initialization failed in auto mode, falling back to CPU: %s", exc)
-                self.ctx = None
+                if isinstance(exc, TermuxSTTError):
+                    raise
+                raise PlatformNotSupportedError(
+                    f"[ERROR: AMEVA-STT-E002] Failed to initialize ameva-runtime for WhisperEngine: {exc}",
+                    code=ErrorCode.VULKAN_DEVICE,
+                ) from exc
 
         # Lazy-import to avoid circular deps at module load time
         try:
@@ -93,6 +78,19 @@ class WhisperEngine(Engine):
         """Locate the ``whisper.cpp`` binary (whisper-cli or whisper-cpp)."""
         import shutil
         searched_paths = []
+        # 1. Canonical AMEVA Hardware-Accelerated STT binaries (Highest Priority)
+        ameva_candidates = [
+            Path.home() / ".local" / "share" / "ameva" / "current" / "stt" / "bin" / "whisper-cli",
+            Path("/data/data/com.termux/files/home/.local/share/ameva/current/stt/bin/whisper-cli"),
+            Path.home() / ".local" / "bin" / "whisper-cli",
+            Path("/data/data/com.termux/files/home/.local/bin/whisper-cli"),
+        ]
+        for p in ameva_candidates:
+            searched_paths.append(str(p))
+            if p.exists() and (os.access(str(p), os.X_OK) or os.name == "nt"):
+                return str(p)
+
+        # 2. System PATH lookup
         for name in ["whisper-cli", "whisper-cpp", "main"]:
             found = shutil.which(name)
             if found and (os.access(found, os.X_OK) or os.name == "nt"):
@@ -105,9 +103,7 @@ class WhisperEngine(Engine):
             bundled_bin,
             Path(prefix) / "bin" / "whisper-cli",
             Path(prefix) / "bin" / "whisper-cpp",
-            Path.home() / ".local" / "bin" / "whisper-cli",
             Path.home() / ".local" / "bin" / "whisper-cpp",
-            Path("/data/data/com.termux/files/home/.local/bin/whisper-cli"),
             Path("/data/data/com.termux/files/home/.local/bin/whisper-cpp"),
             Path("/usr/local/bin/whisper-cli"),
             Path("/usr/local/bin/whisper-cpp"),
@@ -136,7 +132,13 @@ class WhisperEngine(Engine):
         if binary_path in cls._gpu_flags_cache:
             return cls._gpu_flags_cache[binary_path]
         try:
-            res = run_isolated([binary_path, "-h"])
+            from ameva_runtime.adapters.stt import SttAdapter
+            check_env = SttAdapter.get_execution_environment(base_env=os.environ.copy())
+        except Exception:
+            check_env = os.environ.copy()
+
+        try:
+            res = run_isolated([binary_path, "-h"], env=check_env)
             help_text = (res.stdout or "") + (res.stderr or "")
             flags = {
                 "ngl": "-ngl" in help_text or "--gpu-layers" in help_text,
@@ -144,6 +146,9 @@ class WhisperEngine(Engine):
                 "no_gpu": "-ng" in help_text or "--no-gpu" in help_text,
             }
             flags["supports_gpu"] = flags["ngl"] or flags["dev"] or flags["no_gpu"]
+            if "ameva" in binary_path and not flags["supports_gpu"]:
+                flags["dev"] = True
+                flags["supports_gpu"] = True
             cls._gpu_flags_cache[binary_path] = flags
             return flags
         except Exception:
@@ -278,8 +283,11 @@ class WhisperEngine(Engine):
             if "prompt" in opts or "initial_prompt" in opts:
                 prompt_val = opts.get("prompt") or opts.get("initial_prompt")
                 cmd.extend(["--prompt", str(prompt_val)])
-            if "beam_size" in opts:
-                cmd.extend(["-bs", str(opts["beam_size"])])
+            # Production default: Greedy search (-bs 1) for mobile stability unless explicitly specified
+            beam_sz = opts.get("beam_size")
+            if beam_sz is None:
+                beam_sz = 1
+            cmd.extend(["-bs", str(beam_sz)])
             if "best_of" in opts:
                 cmd.extend(["-bo", str(opts["best_of"])])
             if "temperature" in opts:
@@ -300,36 +308,59 @@ class WhisperEngine(Engine):
             if opts.get("dtw", False):
                 cmd.append("-dtw")
 
-            # GPU offloading via Vulkan if active and supported by binary
+            # Hardware Acceleration Routing via ameva-runtime & SmartRouter
             dev_lower = str(self.device or "auto").strip().lower()
-            is_gpu_req = (
-                dev_lower in ("gpu", "vulkan")
-                or (self.ctx and getattr(self.ctx, "is_gpu", False))
-                or opts.get("gpu_layers")
-                or opts.get("n_gpu_layers")
-            )
-            if is_gpu_req:
-                ngl = opts.get("gpu_layers", opts.get("n_gpu_layers", 33))
-                gpu_flags = self._supports_gpu(binary)
-                if gpu_flags["ngl"]:
-                    cmd.extend(["-ngl", str(ngl)])
-                elif gpu_flags["dev"]:
-                    dev_id = str(opts.get("gpu_device", 0))
-                    cmd.extend(["-dev", dev_id])
-                elif gpu_flags["supports_gpu"]:
-                    pass
-                else:
-                    if dev_lower in ("gpu", "vulkan"):
-                        raise RuntimeError(
-                            f"[ZeroSilentFallback] Explicit Vulkan GPU mode requested ('{self.device}'), "
-                            f"but whisper-cli binary at '{binary}' does not support GPU offload (-ngl). "
-                            f"CPU fallback is strictly forbidden under Zero-Silent-Fallback protocol."
-                        )
-                    logger.info("whisper-cli at '%s' does not accept GPU flags; running in native CPU mode.", binary)
+            if dev_lower != "cpu":
+                if not self._supports_ngl(binary):
+                    raise RuntimeError(
+                        f"[ZeroSilentFallback] Explicit Vulkan GPU mode requested ('{self.device}'), "
+                        f"but whisper-cli binary at '{binary}' does not support GPU offload (-ngl). "
+                        f"CPU fallback is strictly forbidden under Zero-Silent-Fallback protocol."
+                    )
+                try:
+                    from ameva_runtime.core import get_runtime
+                    from ameva_runtime.router import SmartRouter
+                    from ameva_runtime.adapters.stt import SttAdapter
+
+                    runtime = getattr(self, "runtime", None) or get_runtime()
+                    router = getattr(self, "router", None) or SmartRouter(runtime.profile)
+                    plan = router.route_for_stt(
+                        model_name_or_path=self.model or "",
+                        requested_backend="vulkan",
+                        requested_threads=self.threads,
+                    )
+
+                    # Bind optimal hardware flags (-dev 0, -t 4) directly from SmartRouter
+                    cmd.extend(plan.cli_flags)
+                    if "-nf" not in cmd and is_termux():
+                        cmd.append("-nf")
+
+                    # Golden Link Order environment & hardware quirks
+                    run_env = SttAdapter.get_execution_environment(base_env=os.environ.copy())
+                    if plan.env_overrides:
+                        run_env.update(plan.env_overrides)
+
+                    # Dynamic EGL shim hook ONLY for Mali GPU family (Exynos)
+                    gpu_fam = getattr(runtime.profile, "gpu_family", "").lower()
+                    if gpu_fam == "mali":
+                        shim_path = Path.home() / "libegl_shim.so"
+                        if shim_path.is_file() and "libegl_shim.so" not in run_env.get("LD_PRELOAD", ""):
+                            cur_preload = run_env.get("LD_PRELOAD", "")
+                            run_env["LD_PRELOAD"] = f"{shim_path}:{cur_preload}".rstrip(":")
+
+                except ImportError as imp_err:
+                    from termux_stt.exceptions import PlatformNotSupportedError, ErrorCode
+                    raise PlatformNotSupportedError(
+                        "[ERROR: AMEVA-STT-E001] GPU acceleration requires 'ameva-runtime'.\n"
+                        "Cause: Hardware abstraction provider 'ameva-runtime' is not installed.\n"
+                        "Action Required: Install the hardware acceleration package via:\n"
+                        "  pip install ameva-runtime\n"
+                        "Documentation: https://github.com/uno-km/termux-stt",
+                        code=ErrorCode.RUNTIME_NOT_INSTALLED,
+                    ) from imp_err
             else:
-                gpu_flags = self._supports_gpu(binary)
-                if gpu_flags.get("no_gpu"):
-                    cmd.append("-ng")
+                cmd.extend(["-dev", "-1", "-t", str(self.threads)])
+                run_env = os.environ.copy()
 
             # Passthrough raw extra_args if provided (list or string)
             extra_args = opts.get("extra_args")
@@ -340,9 +371,6 @@ class WhisperEngine(Engine):
                     import shlex
                     cmd.extend(shlex.split(extra_args))
 
-            # Bionic ICD & ameva-runtime environment preparation
-            run_env = self._prepare_env(self.device)
-
             logger.info("Running whisper.cpp: %s", " ".join(cmd))
             result = run_isolated(cmd, env=run_env)
 
@@ -352,13 +380,34 @@ class WhisperEngine(Engine):
                     f"{result.stderr}"
                 )
 
-            # Verification of Vulkan backend in GPU mode
+            # Strict Zero-Silent-Fallback Verification of Vulkan backend in GPU mode
             if dev_lower in ("gpu", "vulkan"):
                 stderr_text = result.stderr or ""
-                if "failed to initialize" in stderr_text.lower() or "vk_error" in stderr_text.lower():
+                lower_err = stderr_text.lower()
+                fallback_indicators = [
+                    "no devices found",
+                    "no gpu found",
+                    "failed to initialize",
+                    "vk_error",
+                    "llvmpipe",
+                ]
+                for indicator in fallback_indicators:
+                    if indicator in lower_err:
+                        from termux_stt.exceptions import PlatformNotSupportedError, ErrorCode
+                        raise PlatformNotSupportedError(
+                            f"[ERROR: AMEVA-STT-E002] Vulkan GPU verification failed or fell back to CPU.\n"
+                            f"Indicator detected: '{indicator}'\n"
+                            f"Hardware stderr log:\n{stderr_text}\n"
+                            f"Execution halted strictly without silent CPU fallback under Zero-Silent-Fallback policy.",
+                            code=ErrorCode.VULKAN_DEVICE,
+                        )
+                if not any(k in lower_err for k in ("using vulkan", "vulkan0", "found gpu device", "vulkan devices")):
                     from termux_stt.exceptions import PlatformNotSupportedError, ErrorCode
                     raise PlatformNotSupportedError(
-                        f"[ERROR: AMEVA-STT-E002] Vulkan backend reported execution failure:\n{stderr_text}",
+                        f"[ERROR: AMEVA-STT-E002] Explicit GPU backend requested ('{self.device}'), "
+                        f"but whisper.cpp did not confirm active Vulkan execution.\n"
+                        f"Hardware stderr log:\n{stderr_text}\n"
+                        f"Execution halted strictly under Zero-Silent-Fallback policy.",
                         code=ErrorCode.VULKAN_DEVICE,
                     )
 
@@ -368,7 +417,7 @@ class WhisperEngine(Engine):
             full_text = ""
 
             if os.path.exists(json_file):
-                with open(json_file, "r", encoding="utf-8") as fh:
+                with open(json_file, "r", encoding="utf-8", errors="replace") as fh:
                     segments = self._parse_whisper_json(fh.read())
                 full_text = " ".join(s.text for s in segments)
                 try:
