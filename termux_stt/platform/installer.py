@@ -27,7 +27,7 @@ class EngineInstaller:
         try:
             from .. import __version__
         except Exception:
-            __version__ = "1.2.4"
+            __version__ = "1.2.5"
 
         urls = []
         custom_tag = os.environ.get("TERMUX_STT_RELEASE_TAG", "").strip()
@@ -336,6 +336,11 @@ def main():
     for engine, ok in results.items():
         status = "[OK]" if ok else "[SKIPPED/FAILED]"
         print(f" - {engine:10s} : {status}")
+
+    failed_engines = [engine for engine, ok in results.items() if not ok]
+    if failed_engines:
+        print(f"\n[!] Setup incomplete: failed engines: {', '.join(failed_engines)}")
+        raise SystemExit(1)
 
     print("\n[+] Setup complete. Run 'termux-stt doctor' to verify system health.")
 

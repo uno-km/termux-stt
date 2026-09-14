@@ -31,6 +31,19 @@ def test_install_command():
         mock_inst.assert_called_once()
 
 
+def test_install_command_failure():
+    import pytest
+    from unittest.mock import patch
+
+    from termux_stt.cli.main import main
+
+    with patch("sys.argv", ["termux-stt", "install"]), patch("termux_stt.platform.installer.EngineInstaller.install_all") as mock_inst:
+        mock_inst.return_value = {"whisper": False, "vosk": True, "sherpa": True}
+        with pytest.raises(SystemExit) as exc_info:
+            main()
+        assert exc_info.value.code == 1
+
+
 def test_benchmark_duration_from_wave_header(capsys):
     import os
     import struct

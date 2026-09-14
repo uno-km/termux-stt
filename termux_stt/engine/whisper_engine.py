@@ -43,7 +43,8 @@ class WhisperEngine(Engine):
                 self.ctx = avr.get_or_create_context(self.device)
                 report = getattr(self.ctx, "doctor", avr.Doctor()).run_self_test(verbose=False)
                 binding_res = SttAdapter.bind(self, report)
-                if dev_lower in ("gpu", "vulkan") and not getattr(binding_res, "is_vulkan", False):
+                is_vk = getattr(binding_res, "backend", "") == "vulkan" or getattr(binding_res, "is_vulkan", False)
+                if dev_lower in ("gpu", "vulkan") and not is_vk:
                     from termux_stt.exceptions import PlatformNotSupportedError, ErrorCode
                     raise PlatformNotSupportedError(
                         f"[ERROR: AMEVA-STT-E002] Vulkan GPU acceleration was explicitly requested ('{self.device}'), "
@@ -325,6 +326,10 @@ class WhisperEngine(Engine):
                             f"CPU fallback is strictly forbidden under Zero-Silent-Fallback protocol."
                         )
                     logger.info("whisper-cli at '%s' does not accept GPU flags; running in native CPU mode.", binary)
+            else:
+                gpu_flags = self._supports_gpu(binary)
+                if gpu_flags.get("no_gpu"):
+                    cmd.append("-ng")
 
             # Passthrough raw extra_args if provided (list or string)
             extra_args = opts.get("extra_args")

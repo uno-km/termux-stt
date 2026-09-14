@@ -5,6 +5,19 @@ All notable changes to 	ermux-stt will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.5] - 2026-09-14
+
+### Added & Fixed
+- **Qualcomm Adreno Vulkan Native Acceleration & SoftMax wg64 Alignment**:
+  - Resolved physical device lost and driver deadlock issues on Qualcomm Adreno GPUs (e.g. Snapdragon 8 Gen 1 / Adreno 730) by strictly constraining Vulkan SoftMax workgroups to hardware subgroup size (64).
+  - Implemented automatic hardware-aware routing in Whisper core: automatically bypasses Flash Attention compiler assertion failures in Qualcomm proprietary drivers without requiring manual `--no-flash-attn` (`-nfa`) CLI flags.
+  - **Empirical Ground-Truth Speedup**: Galaxy S22 (Adreno 730) achieves **3.73x speedup in neural encoder time (19.14s CPU -> 5.13s GPU)** with zero silent fallback (`fallbacks = 0 p / 0 h`) and ~14% CPU load.
+- **Mali-G78 Flash Attention Compatibility Preserved**:
+  - Non-Qualcomm GPUs (e.g. ARM Mali-G78 on Galaxy S21) continue to utilize native Vulkan Flash Attention (~17.5s total inference time, zero fallbacks).
+- **Zero-Silent-Fallback & Single Bundle SSOT**:
+  - Native asset installer provisions verified `whisper-cli-vulkan-android-arm64.tar.gz` with full Bionic RPATH bindings (`$ORIGIN/../lib:$ORIGIN`).
+  - Added `-ng` flag support when CPU execution is explicitly requested (`-d cpu`).
+
 ---
 
 ## [1.2.4] - 2026-09-07
