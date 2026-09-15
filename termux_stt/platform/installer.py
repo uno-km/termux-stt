@@ -15,7 +15,9 @@ logger = logging.getLogger(__name__)
 PREFIX = os.environ.get("PREFIX", "/data/data/com.termux/files/usr")
 HOME = os.environ.get("HOME", os.path.expanduser("~"))
 LOCAL_BIN = Path(HOME) / ".local" / "bin"
+LOCAL_LIB = Path(HOME) / ".local" / "lib"
 PREFIX_BIN = Path(PREFIX) / "bin"
+PREFIX_LIB = Path(PREFIX) / "lib"
 
 
 class EngineInstaller:
@@ -27,7 +29,7 @@ class EngineInstaller:
         try:
             from .. import __version__
         except Exception:
-            __version__ = "1.2.5"
+            __version__ = "1.2.7"
 
         urls = []
         custom_tag = os.environ.get("TERMUX_STT_RELEASE_TAG", "").strip()
@@ -35,25 +37,20 @@ class EngineInstaller:
 
         if custom_base:
             base = custom_base.rstrip("/")
-            urls.append(f"{base}/whisper-cli-android-arm64.tar.gz")
-            urls.append(f"{base}/whisper-cli-android-arm64")
-            urls.append(f"{base}/whisper-cli")
+            urls.append(f"{base}/whisper-cli-vulkan-android-arm64.tar.gz")
         if custom_tag:
             tag = custom_tag if custom_tag.startswith("v") else f"v{custom_tag}"
-            urls.append(f"https://github.com/uno-km/termux-stt/releases/download/{tag}/whisper-cli-android-arm64.tar.gz")
-            urls.append(f"https://github.com/uno-km/termux-stt/releases/download/{tag}/whisper-cli-android-arm64")
+            urls.append(f"https://github.com/uno-km/termux-stt/releases/download/{tag}/whisper-cli-vulkan-android-arm64.tar.gz")
 
         # Current version SSOT
         current_tag = f"v{__version__}"
-        urls.append(f"https://github.com/uno-km/termux-stt/releases/download/{current_tag}/whisper-cli-android-arm64.tar.gz")
-        urls.append(f"https://github.com/uno-km/termux-stt/releases/download/{current_tag}/whisper-cli-android-arm64")
+        urls.append(f"https://github.com/uno-km/termux-stt/releases/download/{current_tag}/whisper-cli-vulkan-android-arm64.tar.gz")
 
         # Latest release on termux-stt
-        urls.append("https://github.com/uno-km/termux-stt/releases/latest/download/whisper-cli-android-arm64.tar.gz")
-        urls.append("https://github.com/uno-km/termux-stt/releases/latest/download/whisper-cli-android-arm64")
+        urls.append("https://github.com/uno-km/termux-stt/releases/latest/download/whisper-cli-vulkan-android-arm64.tar.gz")
 
-        # Legacy fallback (verified HTTP 200)
-        urls.append("https://github.com/uno-km/termux-stt/releases/download/v1.1.3/whisper-cli-arm64-android")
+        # Companion AMEVA ecosystem SSOT endpoint
+        urls.append("https://github.com/uno-km/ameva-runtime/releases/latest/download/whisper-cli-vulkan-android-arm64.tar.gz")
 
         return urls
 
@@ -74,6 +71,20 @@ class EngineInstaller:
             return False
 
     @classmethod
+    def _print_remediation_guide(cls):
+        """Print clear, structured remediation guide for updating termux-stt."""
+        print("\n" + "=" * 76)
+        print("[AMEVA-STT-E001] Pre-compiled Vulkan whisper.cpp binary acquisition failed.")
+        print("=" * 76)
+        print("To install or upgrade the official Vulkan GPU-accelerated engine:")
+        print("  - Python / Pip:")
+        print("      pip install -U termux-stt")
+        print("      termux-stt install")
+        print("  - Node.js / NPM:")
+        print("      npm install -g termux-stt@latest")
+        print("============================================================================" + "\n")
+
+    @classmethod
     def _download_prebuilt_whisper(cls) -> bool:
         """Attempt to download and stream-extract precompiled ARM64 Bionic whisper-cli binary (~3s)."""
         import io
@@ -82,12 +93,13 @@ class EngineInstaller:
         try:
             from .. import __version__
         except Exception:
-            __version__ = "1.2.4"
+            __version__ = "1.2.7"
 
         LOCAL_BIN.mkdir(parents=True, exist_ok=True)
+        LOCAL_LIB.mkdir(parents=True, exist_ok=True)
         target_path = LOCAL_BIN / "whisper-cli"
 
-        print("[*] Attempting Fast-Track direct download of pre-compiled whisper.cpp ARM64 binary...")
+        print("[*] Attempting Fast-Track direct download of pre-compiled whisper.cpp ARM64 Vulkan binary...")
         candidate_urls = cls.get_candidate_whisper_urls()
         for url in candidate_urls:
             try:
@@ -105,18 +117,28 @@ class EngineInstaller:
                 is_tar = content[:2] == b'\x1f\x8b' or url.endswith(".tar.gz")
                 if is_tar:
                     with tarfile.open(fileobj=io.BytesIO(content), mode="r:gz") as tar:
-                        found_member = None
                         for m in tar.getmembers():
+                            # Extract executable
                             if m.name.endswith("whisper-cli") or m.name.endswith("whisper-cpp") or m.name.endswith("main"):
-                                found_member = m
-                                break
-                        if found_member:
-                            f = tar.extractfile(found_member)
-                            if f:
-                                with open(target_path, "wb") as out_file:
-                                    out_file.write(f.read())
-                        else:
-                            continue
+                                f = tar.extractfile(m)
+                                if f:
+                                    with open(target_path, "wb") as out_file:
+                                        out_file.write(f.read())
+                            # Extract shared libraries (.so) into LOCAL_LIB & PREFIX_LIB
+                            elif ".so" in m.name:
+                                so_name = Path(m.name).name
+                                f = tar.extractfile(m)
+                                if f:
+                                    local_so = LOCAL_LIB / so_name
+                                    with open(local_so, "wb") as out_so:
+                                        out_so.write(f.read())
+                                    local_so.chmod(0o755)
+                                    try:
+                                        if PREFIX_LIB.exists() and os.access(PREFIX_LIB, os.W_OK):
+                                            shutil.copy2(local_so, PREFIX_LIB / so_name)
+                                            (PREFIX_LIB / so_name).chmod(0o755)
+                                    except OSError:
+                                        pass
                 else:
                     with open(target_path, "wb") as out_file:
                         out_file.write(content)
@@ -137,7 +159,7 @@ class EngineInstaller:
                     except OSError as _copy_err:
                         logger.debug("Copying to PREFIX_BIN failed (%s), using LOCAL_BIN only", _copy_err)
 
-                    print(f"[+] Pre-compiled whisper.cpp binary successfully installed to {target_path} (from {url})")
+                    print(f"[+] Pre-compiled whisper.cpp Vulkan binary successfully installed to {target_path} (from {url})")
                     return True
                 else:
                     if target_path.exists():
@@ -146,7 +168,8 @@ class EngineInstaller:
                 logger.debug(f"Prebuilt download attempt failed for {url}: {e}")
                 continue
 
-        print("[-] Pre-built binary download unavailable or offline. Falling back to local native compilation...")
+        print("[-] Pre-built Vulkan binary download unavailable from candidate mirrors.")
+        cls._print_remediation_guide()
         return False
 
     @classmethod
@@ -263,8 +286,10 @@ class EngineInstaller:
         except Exception as e:
             logger.error(f"Failed to build whisper.cpp: {e}")
             print(f"[-] whisper.cpp build error: {e}")
+            cls._print_remediation_guide()
             return False
 
+        cls._print_remediation_guide()
         return False
 
     @classmethod

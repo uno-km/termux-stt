@@ -59,7 +59,7 @@ The automated engine installer (`EngineInstaller`) executes a 3-stage provisioni
 1. **Native System Dependencies (`install_system_dependencies`)**:
    Automatically invokes Termux `pkg` to install `ffmpeg`, `libbluray`, `libxml2`, `git`, `termux-api`, and `curl`, enabling universal audio decoding and microphone capture via Android APIs.
 2. **Adaptive Engine Binary Provisioning (`install_whisper_cpp`)**:
-   - **Fast-Track Stream Extractor (~3s)**: On Android ARM64 Termux, precompiled Vulkan+NEON Bionic binaries (`whisper-cli-android-arm64.tar.gz`) are automatically extracted from GitHub Releases in ~3 seconds, completely eliminating 20-minute on-device compilation and mobile OOM aborts.
+   - **Fast-Track Stream Extractor (~3s)**: On Android ARM64 Termux, precompiled Vulkan+NEON Bionic binaries (`whisper-cli-vulkan-android-arm64.tar.gz`) are automatically extracted from GitHub Releases in ~3 seconds, completely eliminating 20-minute on-device compilation and mobile OOM aborts.
    - **Zero-Hardcoding SSOT Endpoints**: Binary downloads dynamically route through unified SSOT candidate endpoints (`TERMUX_STT_RELEASE_TAG` -> `v{__version__}` -> `releases/latest/download` -> `uno-km/ameva-runtime` releases fallback) with automated fallback to on-device C++ compilation (`cmake` + `clang`) in offline or air-gapped environments.
    - **Bundled Package Binary Fallback**: Automatically discovers and links bundled `termux_stt/bin/whisper-cli` if present.
 3. **Sub-Engine Ecosystem Provisioning (`install_vosk`, `install_sherpa_onnx`)**:
