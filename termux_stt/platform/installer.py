@@ -25,7 +25,7 @@ class EngineInstaller:
 
     @classmethod
     def get_candidate_whisper_urls(cls) -> List[str]:
-        """Generate dynamic SSOT candidate URLs with multi-tier fallback."""
+        """Generate dynamic SSOT candidate URLs for standard pure-CPU engine."""
         try:
             from .. import __version__
         except Exception:
@@ -37,20 +37,17 @@ class EngineInstaller:
 
         if custom_base:
             base = custom_base.rstrip("/")
-            urls.append(f"{base}/whisper-cli-vulkan-android-arm64.tar.gz")
+            urls.append(f"{base}/whisper-cli-android-arm64.tar.gz")
         if custom_tag:
             tag = custom_tag if custom_tag.startswith("v") else f"v{custom_tag}"
-            urls.append(f"https://github.com/uno-km/termux-stt/releases/download/{tag}/whisper-cli-vulkan-android-arm64.tar.gz")
+            urls.append(f"https://github.com/uno-km/termux-stt/releases/download/{tag}/whisper-cli-android-arm64.tar.gz")
 
-        # Current version SSOT
+        # Current version SSOT (Pure CPU No-Build)
         current_tag = f"v{__version__}"
-        urls.append(f"https://github.com/uno-km/termux-stt/releases/download/{current_tag}/whisper-cli-vulkan-android-arm64.tar.gz")
+        urls.append(f"https://github.com/uno-km/termux-stt/releases/download/{current_tag}/whisper-cli-android-arm64.tar.gz")
 
         # Latest release on termux-stt
-        urls.append("https://github.com/uno-km/termux-stt/releases/latest/download/whisper-cli-vulkan-android-arm64.tar.gz")
-
-        # Companion AMEVA ecosystem SSOT endpoint
-        urls.append("https://github.com/uno-km/ameva-runtime/releases/latest/download/whisper-cli-vulkan-android-arm64.tar.gz")
+        urls.append("https://github.com/uno-km/termux-stt/releases/latest/download/whisper-cli-android-arm64.tar.gz")
 
         return urls
 
@@ -74,14 +71,13 @@ class EngineInstaller:
     def _print_remediation_guide(cls):
         """Print clear, structured remediation guide for updating termux-stt."""
         print("\n" + "=" * 76)
-        print("[AMEVA-STT-E001] Pre-compiled Vulkan whisper.cpp binary acquisition failed.")
+        print("[AMEVA-STT-E001] Native whisper.cpp binary acquisition failed.")
         print("=" * 76)
-        print("To install or upgrade the official Vulkan GPU-accelerated engine:")
-        print("  - Python / Pip:")
-        print("      pip install -U termux-stt")
-        print("      termux-stt install")
-        print("  - Node.js / NPM:")
-        print("      npm install -g termux-stt@latest")
+        print("To install or upgrade the standard engine:")
+        print("  - Python / Pip: pip install -U termux-stt && termux-stt install")
+        print("  - Node.js / NPM: npm install -g termux-stt@latest")
+        print("For 10x Native Vulkan GPU Turbo Acceleration:")
+        print("  - Install AMEVA Runtime: pip install ameva-runtime")
         print("============================================================================" + "\n")
 
     @classmethod
