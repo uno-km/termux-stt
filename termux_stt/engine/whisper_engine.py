@@ -253,13 +253,13 @@ class WhisperEngine(Engine):
 
     def transcribe(self, audio_path: str, **kwargs: Any) -> TranscriptResult:
         """Transcribe an audio file using whisper.cpp."""
-        from termux_stt.audio.preprocessor import preprocess
+        from termux_stt.audio.preprocessor import preprocess, ensure_wav_format
         from termux_stt.models.hub import ModelHub
         from termux_stt.platform.hardware import is_termux
         from termux_stt.platform.process_pool import run_isolated
 
-        # 1. Preprocess to 16 kHz mono WAV
-        wav_path = preprocess(audio_path, target_sr=16000, force_mono=True)
+        # 1. Ensure 16 kHz mono WAV format (avoids ffmpeg if already valid)
+        wav_path = ensure_wav_format(audio_path)
         is_temp_wav = os.path.abspath(wav_path) != os.path.abspath(audio_path)
 
         try:
