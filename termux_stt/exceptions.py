@@ -1,66 +1,79 @@
-"""Exceptions and centralized ErrorCodes for the termux-stt framework.
-
-Strictly aligned with termux-diffusion and termux-llamacpp standards.
 """
-from __future__ import annotations
+AMEVA Unified Exception Hierarchy for Termux AI Engines.
+Component: [STT]
+"""
+from typing import Optional, Any
+
+
+class AmevaTermuxError(Exception):
+    """Root exception for all Termux On-Device AI Engines."""
+    COMPONENT_TAG = "[STT]"
+    DEFAULT_CODE = "E000_UNKNOWN"
+
+    def __init__(self, message: str, code: Optional[Any] = None, details: Optional[Any] = None):
+        self.code = code or self.DEFAULT_CODE
+        self.details = details
+        self.raw_message = message
+        super().__init__(message if message.startswith("[ERROR:") else f"{self.COMPONENT_TAG} [{self.code}] {message}")
+
+
+TermuxSTTError = AmevaTermuxError
 
 
 class ErrorCode:
-    CLI_EXCLUSIVE = "E_CLI_EXCLUSIVE_MUTEX"
-    PLATFORM_UNSUPPORTED = "E_PLATFORM_UNSUPPORTED"
-    AUDIO_NOT_FOUND = "E_AUDIO_NOT_FOUND"
-    AUDIO_FORMAT_UNSUPPORTED = "E_AUDIO_FORMAT_UNSUPPORTED"
-    AUDIO_CORRUPT = "E_AUDIO_CORRUPT"
-    MODEL_NOT_FOUND = "E_MODEL_NOT_FOUND"
-    MODEL_DOWNLOAD = "E_MODEL_DOWNLOAD"
-    VULKAN_LOADER = "E_VULKAN_LOADER"
-    VULKAN_DEVICE = "E_VULKAN_DEVICE"
-    RUNTIME_NOT_INSTALLED = "E_RUNTIME_NOT_INSTALLED"
-    PROCESS_TIMEOUT = "E_PROCESS_TIMEOUT"
-    DIARIZATION_FAILED = "E_DIARIZATION_FAILED"
+    PLATFORM_NOT_SUPPORTED = 1
+    MODEL_NOT_FOUND = 2
+    AUDIO_PROCESSING_ERROR = 3
+    INFERENCE_TIMEOUT = 4
+    INVALID_ARGUMENT = 5
+    RUNTIME_NOT_INSTALLED = 10
+    VULKAN_DEVICE = 11
+    UNKNOWN_ERROR = 99
 
 
 class ExitCode:
     SUCCESS = 0
-    CLI_ERROR = 2
-    PLATFORM_ERROR = 10
-    INTEGRITY_ERROR = 20
-    EXECUTION_ERROR = 30
-    SELFTEST_ERROR = 40
-    BUILD_ERROR = 50
+    FAILURE = 1
+    INVALID_USAGE = 2
+    NOT_FOUND = 3
+    TIMEOUT = 4
 
 
-class TermuxSTTError(Exception):
-    """Base exception for all termux-stt errors."""
-
-    def __init__(self, message: str, code: str = "E_UNKNOWN") -> None:
-        super().__init__(message)
-        self.code = code
+class PlatformNotSupportedError(AmevaTermuxError):
+    DEFAULT_CODE = ErrorCode.PLATFORM_NOT_SUPPORTED
 
 
-class PlatformNotSupportedError(TermuxSTTError):
-    """Raised when running on an unsupported platform or when hardware requirements are unmet."""
-
-    def __init__(self, message: str, code: str = ErrorCode.PLATFORM_UNSUPPORTED) -> None:
-        super().__init__(message, code=code)
+class ModelNotFoundError(AmevaTermuxError):
+    DEFAULT_CODE = ErrorCode.MODEL_NOT_FOUND
 
 
-class ModelNotFoundError(TermuxSTTError):
-    """Raised when the specified STT model cannot be found locally or on Hub."""
-
-    def __init__(self, message: str, code: str = ErrorCode.MODEL_NOT_FOUND) -> None:
-        super().__init__(message, code=code)
+class AudioProcessingError(AmevaTermuxError):
+    DEFAULT_CODE = ErrorCode.AUDIO_PROCESSING_ERROR
 
 
-class AudioProcessingError(TermuxSTTError):
-    """Raised when audio conversion, loading, or preprocessing fails."""
-
-    def __init__(self, message: str, code: str = ErrorCode.AUDIO_CORRUPT) -> None:
-        super().__init__(message, code=code)
+class InferenceTimeoutError(AmevaTermuxError):
+    DEFAULT_CODE = ErrorCode.INFERENCE_TIMEOUT
 
 
-class InferenceTimeoutError(TermuxSTTError):
-    """Raised when STT inference exceeds the maximum execution timeout."""
+class HardwareCompatibilityError(AmevaTermuxError):
+    DEFAULT_CODE = "E003_HARDWARE_INCOMPATIBLE"
 
-    def __init__(self, message: str, code: str = ErrorCode.PROCESS_TIMEOUT) -> None:
-        super().__init__(message, code=code)
+
+class RuntimeNotFoundError(AmevaTermuxError):
+    DEFAULT_CODE = "E004_RUNTIME_NOT_FOUND"
+
+
+class ProvisioningError(AmevaTermuxError):
+    DEFAULT_CODE = "E005_PROVISIONING_FAILED"
+
+
+class InferenceExecutionError(AmevaTermuxError):
+    DEFAULT_CODE = "E007_INFERENCE_FAILED"
+
+
+class ModelCorruptedError(AmevaTermuxError):
+    DEFAULT_CODE = "E008_MODEL_CORRUPTED"
+
+
+class ModelDownloadError(ProvisioningError):
+    DEFAULT_CODE = "E009_MODEL_DOWNLOAD_FAILED"

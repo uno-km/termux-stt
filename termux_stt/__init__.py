@@ -86,27 +86,56 @@ def create_engine(
     )
 
 
+# Standard Unified Factory Alias
+load = create_engine
+
+
+def transcribe(audio_path: str, model: str = "base", lang: str = "ko", **kwargs):
+    """One-shot direct transcription helper."""
+    engine = load(model=model, lang=lang, **kwargs)
+    return engine.transcribe(audio_path)
+
+
 from .exceptions import (
+    AmevaTermuxError,
     ErrorCode,
     ExitCode,
     TermuxSTTError,
     PlatformNotSupportedError,
     ModelNotFoundError,
+    HardwareCompatibilityError,
+    RuntimeNotFoundError,
+    ProvisioningError,
     AudioProcessingError,
     InferenceTimeoutError,
 )
+from .hardware import detect_hardware, HardwareProfile, is_termux, is_android
+from .downloader import download_model, resolve_model_path, list_models
 
 __all__ = [
     'create_engine',
+    'load',
+    'transcribe',
     '__version__',
     '__author__',
+    'AmevaTermuxError',
     'ErrorCode',
     'ExitCode',
     'TermuxSTTError',
     'PlatformNotSupportedError',
     'ModelNotFoundError',
+    'HardwareCompatibilityError',
+    'RuntimeNotFoundError',
+    'ProvisioningError',
     'AudioProcessingError',
     'InferenceTimeoutError',
+    'detect_hardware',
+    'HardwareProfile',
+    'is_termux',
+    'is_android',
+    'download_model',
+    'resolve_model_path',
+    'list_models',
 ]
 
 

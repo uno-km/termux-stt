@@ -5,7 +5,7 @@
   "main": "index.js",
   "types": "index.d.ts",
   "bin": {
-    "termux-stt": "bin/termux-stt.js",
+    "termux-stt": "bin/cli.js",
     "termux-stt-install": "bin/termux-stt.js"
   },
   "files": [
