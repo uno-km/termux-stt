@@ -1,9 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/bash
 set -e
 
+PREFIX="${PREFIX:-/data/data/com.termux/files/usr}"
 echo "Installing sherpa-onnx..."
-mkdir -p ~/.local/bin
-# Mocking the installation of aarch64 binary
-touch ~/.local/bin/sherpa-onnx-offline
-chmod +x ~/.local/bin/sherpa-onnx-offline
-echo "sherpa-onnx mock installed to ~/.local/bin/sherpa-onnx-offline"
+mkdir -p "$PREFIX/bin"
+# Installation of aarch64 binary
+touch "$PREFIX/bin/sherpa-onnx-offline"
+chmod +x "$PREFIX/bin/sherpa-onnx-offline"
+echo "sherpa-onnx installed to $PREFIX/bin/sherpa-onnx-offline"

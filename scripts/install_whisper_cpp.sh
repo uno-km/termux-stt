@@ -4,6 +4,9 @@ set -e
 echo "Installing whisper.cpp dependencies..."
 pkg install -y cmake make git clang
 
+PREFIX="${PREFIX:-/data/data/com.termux/files/usr}"
+mkdir -p "$PREFIX/bin" "$PREFIX/lib"
+
 git clone https://github.com/ggml-org/whisper.cpp.git /tmp/whisper.cpp || true
 cd /tmp/whisper.cpp
 
@@ -17,6 +20,9 @@ cmake -B build -DWHISPER_NEON=ON -DGGML_VULKAN=ON -DCMAKE_BUILD_TYPE=Release 2>/
 cmake -B build -DWHISPER_NEON=ON -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j$(nproc)
 
-mkdir -p ~/.local/bin
-cp build/bin/main ~/.local/bin/whisper-cpp 2>/dev/null || cp build/bin/whisper-cli ~/.local/bin/whisper-cli 2>/dev/null || true
-echo "whisper.cpp installed to ~/.local/bin"
+find build -name "*.so*" -type f -exec cp -f {} "$PREFIX/lib/" \; 2>/dev/null || true
+cp build/bin/main "$PREFIX/bin/whisper-cli" 2>/dev/null || cp build/bin/whisper-cli "$PREFIX/bin/whisper-cli" 2>/dev/null || true
+ln -sf "$PREFIX/bin/whisper-cli" "$PREFIX/bin/whisper-cpp"
+chmod 0755 "$PREFIX/bin/whisper-cli"
+chmod 0755 "$PREFIX/lib/"*.so* 2>/dev/null || true
+echo "whisper.cpp installed to $PREFIX/bin"

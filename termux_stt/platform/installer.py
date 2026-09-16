@@ -14,8 +14,7 @@ logger = logging.getLogger(__name__)
 
 PREFIX = os.environ.get("PREFIX", "/data/data/com.termux/files/usr")
 HOME = os.environ.get("HOME", os.path.expanduser("~"))
-LOCAL_BIN = Path(HOME) / ".local" / "bin"
-LOCAL_LIB = Path(HOME) / ".local" / "lib"
+XDG_CACHE_HOME = Path(os.environ.get("XDG_CACHE_HOME") or (Path(HOME) / ".cache"))
 PREFIX_BIN = Path(PREFIX) / "bin"
 PREFIX_LIB = Path(PREFIX) / "lib"
 
@@ -91,9 +90,11 @@ class EngineInstaller:
         except Exception:
             __version__ = "1.2.7"
 
-        LOCAL_BIN.mkdir(parents=True, exist_ok=True)
-        LOCAL_LIB.mkdir(parents=True, exist_ok=True)
-        target_path = LOCAL_BIN / "whisper-cli"
+        PREFIX_BIN.mkdir(parents=True, exist_ok=True)
+        PREFIX_LIB.mkdir(parents=True, exist_ok=True)
+        staging_dir = XDG_CACHE_HOME / "termux-stt" / ".staging-whisper"
+        staging_dir.mkdir(parents=True, exist_ok=True)
+        target_path = PREFIX_BIN / "whisper-cli"
 
         print("[*] Attempting Fast-Track direct download of pre-compiled whisper.cpp ARM64 Vulkan binary...")
         candidate_urls = cls.get_candidate_whisper_urls()
@@ -113,55 +114,49 @@ class EngineInstaller:
                 is_tar = content[:2] == b'\x1f\x8b' or url.endswith(".tar.gz")
                 if is_tar:
                     with tarfile.open(fileobj=io.BytesIO(content), mode="r:gz") as tar:
-                        for m in tar.getmembers():
-                            # Extract executable
-                            if m.name.endswith("whisper-cli") or m.name.endswith("whisper-cpp") or m.name.endswith("main"):
-                                f = tar.extractfile(m)
-                                if f:
-                                    with open(target_path, "wb") as out_file:
-                                        out_file.write(f.read())
-                            # Extract shared libraries (.so) into LOCAL_LIB & PREFIX_LIB
-                            elif ".so" in m.name:
-                                so_name = Path(m.name).name
-                                f = tar.extractfile(m)
-                                if f:
-                                    local_so = LOCAL_LIB / so_name
-                                    with open(local_so, "wb") as out_so:
-                                        out_so.write(f.read())
-                                    local_so.chmod(0o755)
-                                    try:
-                                        if PREFIX_LIB.exists() and os.access(PREFIX_LIB, os.W_OK):
-                                            shutil.copy2(local_so, PREFIX_LIB / so_name)
-                                            (PREFIX_LIB / so_name).chmod(0o755)
-                                    except OSError:
-                                        pass
+                        tar.extractall(path=staging_dir)
+
+                    # Locate whisper-cli or main in staging
+                    found_bin = None
+                    for p in staging_dir.rglob("*"):
+                        if p.is_file() and p.name in ("whisper-cli", "whisper-cpp", "main"):
+                            found_bin = p
+                            break
+
+                    if found_bin:
+                        shutil.copy2(found_bin, target_path)
+                        target_path.chmod(0o755)
+                        shutil.copy2(target_path, PREFIX_BIN / "whisper-cpp")
+                        (PREFIX_BIN / "whisper-cpp").chmod(0o755)
+
+                    # Extract any shared libraries to PREFIX_LIB
+                    for so_file in staging_dir.rglob("*.so*"):
+                        if so_file.is_file():
+                            target_so = PREFIX_LIB / so_file.name
+                            shutil.copy2(so_file, target_so)
+                            try:
+                                target_so.chmod(0o755)
+                            except OSError:
+                                pass
+
+                    shutil.rmtree(staging_dir, ignore_errors=True)
                 else:
                     with open(target_path, "wb") as out_file:
                         out_file.write(content)
+                    target_path.chmod(0o755)
+                    shutil.copy2(target_path, PREFIX_BIN / "whisper-cpp")
+                    (PREFIX_BIN / "whisper-cpp").chmod(0o755)
 
                 # Check if downloaded file is valid executable (>100KB)
                 if target_path.exists() and target_path.stat().st_size > 100 * 1024:
-                    target_path.chmod(0o755)
-                    shutil.copy2(target_path, LOCAL_BIN / "whisper-cpp")
-                    (LOCAL_BIN / "whisper-cpp").chmod(0o755)
-
-                    # Copy to PREFIX/bin if writable
-                    try:
-                        if PREFIX_BIN.exists() and os.access(PREFIX_BIN, os.W_OK):
-                            shutil.copy2(target_path, PREFIX_BIN / "whisper-cli")
-                            shutil.copy2(target_path, PREFIX_BIN / "whisper-cpp")
-                            (PREFIX_BIN / "whisper-cli").chmod(0o755)
-                            (PREFIX_BIN / "whisper-cpp").chmod(0o755)
-                    except OSError as _copy_err:
-                        logger.debug("Copying to PREFIX_BIN failed (%s), using LOCAL_BIN only", _copy_err)
-
-                    print(f"[+] Pre-compiled whisper.cpp Vulkan binary successfully installed to {target_path} (from {url})")
+                    print(f"[+] Pre-compiled whisper.cpp binary successfully installed to {target_path} (from {url})")
                     return True
                 else:
                     if target_path.exists():
                         target_path.unlink()
             except Exception as e:
                 logger.debug(f"Prebuilt download attempt failed for {url}: {e}")
+                shutil.rmtree(staging_dir, ignore_errors=True)
                 continue
 
         print("[-] Pre-built Vulkan binary download unavailable from candidate mirrors.")
@@ -199,26 +194,24 @@ class EngineInstaller:
     @classmethod
     def install_whisper_cpp(cls) -> bool:
         """Install whisper.cpp: Priority 1 = Pre-built download (~3s), Priority 2 = Local build (cmake/clang)."""
-        LOCAL_BIN.mkdir(parents=True, exist_ok=True)
+        PREFIX_BIN.mkdir(parents=True, exist_ok=True)
+        PREFIX_LIB.mkdir(parents=True, exist_ok=True)
 
         # Check bundled package binary first
         bundled_bin = Path(__file__).resolve().parent.parent / "bin" / "whisper-cli"
         if bundled_bin.exists() and bundled_bin.stat().st_size > 100 * 1024:
             try:
-                shutil.copy2(bundled_bin, LOCAL_BIN / "whisper-cli")
-                (LOCAL_BIN / "whisper-cli").chmod(0o755)
-                shutil.copy2(bundled_bin, LOCAL_BIN / "whisper-cpp")
-                (LOCAL_BIN / "whisper-cpp").chmod(0o755)
-                if PREFIX_BIN.exists() and os.access(PREFIX_BIN, os.W_OK):
-                    shutil.copy2(bundled_bin, PREFIX_BIN / "whisper-cli")
-                    (PREFIX_BIN / "whisper-cli").chmod(0o755)
-                print(f"[+] Deployed bundled whisper.cpp binary from package to {LOCAL_BIN}")
+                shutil.copy2(bundled_bin, PREFIX_BIN / "whisper-cli")
+                (PREFIX_BIN / "whisper-cli").chmod(0o755)
+                shutil.copy2(bundled_bin, PREFIX_BIN / "whisper-cpp")
+                (PREFIX_BIN / "whisper-cpp").chmod(0o755)
+                print(f"[+] Deployed bundled whisper.cpp binary from package to {PREFIX_BIN}")
                 return True
             except OSError as _b_err:
                 logger.debug("Failed copying bundled binary: %s", _b_err)
 
         # Check existing binary
-        for candidate in [LOCAL_BIN / "whisper-cli", PREFIX_BIN / "whisper-cli", LOCAL_BIN / "whisper-cpp", PREFIX_BIN / "whisper-cpp"]:
+        for candidate in [PREFIX_BIN / "whisper-cli", PREFIX_BIN / "whisper-cpp"]:
             if candidate.exists() and os.access(str(candidate), os.X_OK):
                 print(f"[+] whisper.cpp binary is already present at {candidate}.")
                 return True
@@ -232,7 +225,7 @@ class EngineInstaller:
         if shutil.which("pkg"):
             subprocess.run(["pkg", "install", "-y", "cmake", "make", "clang"], check=False)
 
-        build_dir = Path(HOME) / ".cache" / "termux-stt" / "build" / "whisper.cpp"
+        build_dir = XDG_CACHE_HOME / "termux-stt" / "build" / "whisper.cpp"
         build_dir.parent.mkdir(parents=True, exist_ok=True)
 
         try:
@@ -265,18 +258,21 @@ class EngineInstaller:
                 bin_source = build_dir / "build" / "bin" / "main"
 
             if bin_source and bin_source.exists():
-                # Copy to PREFIX/bin if writable, else LOCAL_BIN
                 for target_name in ["whisper-cli", "whisper-cpp"]:
-                    try:
-                        if PREFIX_BIN.exists() and os.access(PREFIX_BIN, os.W_OK):
-                            shutil.copy2(bin_source, PREFIX_BIN / target_name)
-                            (PREFIX_BIN / target_name).chmod(0o755)
-                    except OSError as _copy_err:
-                        logger.debug("Copying compiled binary to PREFIX_BIN failed (%s), using LOCAL_BIN only", _copy_err)
-                    shutil.copy2(bin_source, LOCAL_BIN / target_name)
-                    (LOCAL_BIN / target_name).chmod(0o755)
+                    shutil.copy2(bin_source, PREFIX_BIN / target_name)
+                    (PREFIX_BIN / target_name).chmod(0o755)
 
-                print(f"[+] Successfully compiled and installed whisper.cpp binary to {LOCAL_BIN}")
+                # Copy any built .so to PREFIX_LIB
+                for so_file in (build_dir / "build").rglob("*.so*"):
+                    if so_file.is_file():
+                        target_so = PREFIX_LIB / so_file.name
+                        shutil.copy2(so_file, target_so)
+                        try:
+                            target_so.chmod(0o755)
+                        except OSError:
+                            pass
+
+                print(f"[+] Successfully compiled and installed whisper.cpp binary to {PREFIX_BIN}")
                 return True
 
         except Exception as e:
@@ -291,7 +287,7 @@ class EngineInstaller:
     @classmethod
     def install_vosk(cls) -> bool:
         """Install vosk Python package and initialize cache directories."""
-        model_dir = Path(HOME) / ".cache" / "termux-stt" / "models" / "vosk"
+        model_dir = XDG_CACHE_HOME / "termux-stt" / "models" / "vosk"
         model_dir.mkdir(parents=True, exist_ok=True)
         try:
             import vosk  # noqa: F401
@@ -304,9 +300,9 @@ class EngineInstaller:
     @classmethod
     def install_sherpa_onnx(cls) -> bool:
         """Install sherpa-onnx and initialize cache directories."""
-        model_dir = Path(HOME) / ".cache" / "termux-stt" / "models" / "sherpa"
+        model_dir = XDG_CACHE_HOME / "termux-stt" / "models" / "sherpa"
         model_dir.mkdir(parents=True, exist_ok=True)
-        if shutil.which("sherpa-onnx-offline") or (LOCAL_BIN / "sherpa-onnx-offline").exists():
+        if shutil.which("sherpa-onnx-offline") or (PREFIX_BIN / "sherpa-onnx-offline").exists():
             return True
         print("[*] Installing sherpa-onnx via pip...")
         res = subprocess.run(["pip", "install", "sherpa-onnx"], check=False)
@@ -321,8 +317,6 @@ class EngineInstaller:
                 or shutil.which("whisper-cpp")
                 or (PREFIX_BIN / "whisper-cli").exists()
                 or (PREFIX_BIN / "whisper-cpp").exists()
-                or (LOCAL_BIN / "whisper-cli").exists()
-                or (LOCAL_BIN / "whisper-cpp").exists()
             )
         elif engine == "vosk":
             try:
@@ -331,7 +325,7 @@ class EngineInstaller:
             except ImportError:
                 return False
         elif engine == "sherpa":
-            return bool(shutil.which("sherpa-onnx-offline") or (LOCAL_BIN / "sherpa-onnx-offline").exists())
+            return bool(shutil.which("sherpa-onnx-offline") or (PREFIX_BIN / "sherpa-onnx-offline").exists())
         return False
 
     @classmethod
