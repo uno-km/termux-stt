@@ -109,7 +109,7 @@ from .exceptions import (
     AudioProcessingError,
     InferenceTimeoutError,
 )
-from .hardware import detect_hardware, HardwareProfile, is_termux, is_android
+from .hardware import detect_hardware, HardwareProfile, resolve_device, is_termux, is_android
 from .downloader import download_model, resolve_model_path, list_models
 
 __all__ = [
@@ -131,11 +131,13 @@ __all__ = [
     'InferenceTimeoutError',
     'detect_hardware',
     'HardwareProfile',
+    'resolve_device',
     'is_termux',
     'is_android',
     'download_model',
     'resolve_model_path',
     'list_models',
 ]
+
 
 

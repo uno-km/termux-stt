@@ -53,8 +53,15 @@ class ModelHub:
 
     @classmethod
     def download_model(cls, url: str, dest: str, sha256: Optional[str] = None) -> str:
-        """Download model via HTTP with urllib."""
+        """Download model via HTTP with urllib and atomic .part isolation."""
         os.makedirs(os.path.dirname(dest), exist_ok=True)
+        part_dest = dest + ".part"
+        if os.path.exists(part_dest):
+            try:
+                os.remove(part_dest)
+            except OSError:
+                pass
+
         print(f"Downloading model from {url} to {dest}...")
 
         import ssl
@@ -62,29 +69,40 @@ class ModelHub:
         headers = {"User-Agent": "termux-stt/1.1.3"}
         req = urllib.request.Request(url, headers=headers)
 
-        with urllib.request.urlopen(req, context=ctx, timeout=60) as response, open(dest, 'wb') as out_file:
-            total_size = int(response.info().get('Content-Length', 0))
-            downloaded = 0
-            block_size = 65536
-            while True:
-                buffer = response.read(block_size)
-                if not buffer:
-                    break
-                downloaded += len(buffer)
-                out_file.write(buffer)
-                if total_size > 0:
-                    percent = int(downloaded * 100 / total_size)
-                    if percent % 20 == 0:
-                        print(f"\rDownloading: {percent}% ({downloaded // (1024*1024)}MB / {total_size // (1024*1024)}MB)", end="", flush=True)
+        try:
+            with urllib.request.urlopen(req, context=ctx, timeout=60) as response, open(part_dest, 'wb') as out_file:
+                total_size = int(response.info().get('Content-Length', 0))
+                downloaded = 0
+                block_size = 65536
+                while True:
+                    buffer = response.read(block_size)
+                    if not buffer:
+                        break
+                    downloaded += len(buffer)
+                    out_file.write(buffer)
+                    if total_size > 0:
+                        percent = int(downloaded * 100 / total_size)
+                        if percent % 20 == 0:
+                            print(f"\rDownloading: {percent}% ({downloaded // (1024*1024)}MB / {total_size // (1024*1024)}MB)", end="", flush=True)
 
-        print("\nDownload complete.")
+            print("\nDownload complete.")
 
-        if sha256 and not cls.verify_integrity(dest, sha256):
+            if sha256 and not cls.verify_integrity(part_dest, sha256):
+                if os.path.exists(part_dest):
+                    os.remove(part_dest)
+                raise ValueError(f"Checksum verification failed for {dest}")
+
             if os.path.exists(dest):
                 os.remove(dest)
-            raise ValueError(f"Checksum verification failed for {dest}")
-
-        return dest
+            os.replace(part_dest, dest)
+            return dest
+        except Exception:
+            if os.path.exists(part_dest):
+                try:
+                    os.remove(part_dest)
+                except OSError:
+                    pass
+            raise
 
     @classmethod
     def ensure_model(cls, engine: str, model_name: str, url: str = "", sha256: str = "") -> str:

@@ -42,6 +42,23 @@ class HardwareProfile:
     def threads(self) -> int:
         return self.recommended_threads
 
+    @property
+    def big_cores(self) -> int:
+        return self.recommended_threads
+
+    @property
+    def little_cores(self) -> int:
+        return max(0, self.cpu_count - self.recommended_threads)
+
+    @property
+    def neon_support(self) -> bool:
+        return self.has_neon
+
+    @property
+    def fp16_support(self) -> bool:
+        return self.has_fp16
+
+
 
 # Backward compatible dataclass alias
 @dataclass
@@ -58,6 +75,10 @@ class HardwareInfo:
     is_termux: bool = False
     is_android: bool = False
 
+    @property
+    def threads(self) -> int:
+        return self.big_cores
+
 
 def is_termux() -> bool:
     if os.environ.get("TERMUX_VERSION") or os.environ.get("TERMUX_APP_PID"):
@@ -69,11 +90,9 @@ def is_termux() -> bool:
 
 
 def is_android() -> bool:
-    if is_termux():
-        return True
-    if Path("/system/build.prop").exists() or Path("/system/bin/sh").exists():
-        return True
-    return "android" in sys.platform.lower() or (hasattr(os, "uname") and "android" in os.uname().release.lower())
+    """Check whether running on Android (Termux execution implies Android runtime)."""
+    return is_termux()
+
 
 
 def get_ram_info() -> Tuple[int, int]:
@@ -113,18 +132,17 @@ def get_optimal_threads() -> int:
     return max(1, cores // 2) if cores > 2 else cores
 
 
-def detect_hardware() -> HardwareInfo:
+def detect_hardware() -> HardwareProfile:
     cores = multiprocessing.cpu_count()
     big_cores = get_optimal_threads()
     total_ram, avail_ram = get_ram_info()
-    return HardwareInfo(
-        cpu_cores=cores,
-        big_cores=big_cores,
-        little_cores=cores - big_cores,
-        neon_support=check_neon_support(),
-        fp16_support=check_fp16_support(),
-        ram_total_mb=total_ram,
-        ram_available_mb=avail_ram,
+    return HardwareProfile(
+        cpu_count=cores,
+        recommended_threads=big_cores,
+        ram_total_mb=float(total_ram),
+        ram_available_mb=float(avail_ram),
+        has_neon=check_neon_support(),
+        has_fp16=check_fp16_support(),
         is_termux=is_termux(),
         is_android=is_android(),
     )

@@ -65,7 +65,7 @@ class WhisperEngine(Engine):
 
         # Lazy-import to avoid circular deps at module load time
         try:
-            from termux_stt.platform.hardware import get_optimal_threads
+            from termux_stt.hardware import get_optimal_threads
             self.threads = config.threads or get_optimal_threads()
         except Exception:
             self.threads = config.threads or 4
@@ -255,7 +255,7 @@ class WhisperEngine(Engine):
         """Transcribe an audio file using whisper.cpp."""
         from termux_stt.audio.preprocessor import preprocess, ensure_wav_format
         from termux_stt.models.hub import ModelHub
-        from termux_stt.platform.hardware import is_termux
+        from termux_stt.hardware import is_termux
         from termux_stt.platform.process_pool import run_isolated
 
         # 1. Ensure 16 kHz mono WAV format (avoids ffmpeg if already valid)

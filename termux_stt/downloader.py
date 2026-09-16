@@ -2,7 +2,7 @@
 AMEVA Unified Model Downloader for termux-stt.
 """
 from pathlib import Path
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Union
 from .models.hub import ModelHub
 from .hardware import get_unified_model_search_dirs
 
@@ -32,3 +32,8 @@ def download_model(model_name: str = "base", output_dir: Optional[Path] = None, 
 
 def list_models() -> List[Dict[str, Any]]:
     return [{"id": k, **v} for k, v in AVAILABLE_MODELS.items()]
+
+def verify_file_sha256(file_path: Union[str, Path], expected_sha256: str) -> bool:
+    """Standard Unified SHA-256 Checksum Verifier for termux-stt."""
+    return ModelHub.verify_integrity(str(file_path), expected_sha256)
+

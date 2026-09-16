@@ -66,7 +66,7 @@ class VoskEngine(Engine):
     @staticmethod
     def _spoof_platform() -> None:
         """Spoof ``sys.platform`` to ``'linux'`` only on Android / Termux."""
-        from termux_stt.platform.hardware import is_termux
+        from termux_stt.hardware import is_termux
 
         is_android = hasattr(os, "uname") and "android" in os.uname().release.lower()
         if (is_termux() or is_android) and 'linux' not in sys.platform:
