@@ -66,10 +66,10 @@ authors = [
 ]
 dependencies = [
   "ameva-runtime>=2.1.0",
-    "ameva-component-sdk>=0.1.0,<2.0",
 ]
 
 [project.optional-dependencies]
+component = ["ameva-component-sdk>=0.1.0,<2.0"]
 dev = ["pytest", "ruff", "mypy"]
 
 [project.scripts]
