@@ -400,9 +400,12 @@ class EngineInstaller:
                 except (EOFError, KeyboardInterrupt):
                     print("\n[*] Skipping optional vosk installation.")
                     return True
-            print("[*] Installing vosk Python binding via pip...")
-            res = subprocess.run(["pip", "install", "vosk"], check=False)
-            return res.returncode == 0
+                print("[*] Installing vosk Python binding via pip...")
+                res = subprocess.run(["pip", "install", "vosk"], check=False)
+                return res.returncode == 0
+            else:
+                print("[*] Vosk prebuilt wheels are not distributed for Android ARM64 on PyPI. Skipping.")
+                return True
 
     @classmethod
     def install_sherpa_onnx(cls, auto_yes: bool = False, interactive: bool = True) -> bool:
