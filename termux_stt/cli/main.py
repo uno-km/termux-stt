@@ -34,7 +34,10 @@ def _run_cli():
     common_parser.add_argument("--verbose", action="store_true", help="Enable verbose logging")
 
     # Install subcommand
-    subparsers.add_parser("install", help="1-Click automatic installer for native engines and dependencies")
+    parser_install = subparsers.add_parser("install", help="1-Click automatic installer for native engines and dependencies")
+    parser_install.add_argument("-y", "--yes", action="store_true", help="Automatic yes to optional engine download prompts")
+    parser_install.add_argument("--all", action="store_true", help="Install all optional engines (implies --yes)")
+    parser_install.add_argument("--engine", type=str, choices=["whisper", "sherpa", "vosk"], default=None, help="Install only specific engine")
 
     # Demo subcommand
     parser_demo = subparsers.add_parser("demo", parents=[common_parser], help="Run zero-configuration STT demo with standard benchmark audio")
@@ -88,7 +91,7 @@ def _run_cli():
     args._explicit_lang = any(arg.startswith("--lang") for arg in sys.argv)
 
     if args.command == "install":
-        run_install()
+        run_install(args)
     elif args.command == "demo":
         run_demo(args)
     elif args.command == "transcribe":

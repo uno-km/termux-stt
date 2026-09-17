@@ -7,8 +7,9 @@ import logging
 import os
 import shutil
 import subprocess
+import sys
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -47,6 +48,34 @@ class EngineInstaller:
 
         # Latest release on termux-stt
         urls.append("https://github.com/uno-km/termux-stt/releases/latest/download/whisper-cli-android-arm64.tar.gz")
+
+        return urls
+
+    @classmethod
+    def get_candidate_sherpa_urls(cls) -> List[str]:
+        """Generate dynamic SSOT candidate URLs for prebuilt sherpa-onnx + onnxruntime engine."""
+        try:
+            from .. import __version__
+        except Exception:
+            __version__ = "1.2.7"
+
+        urls = []
+        custom_tag = os.environ.get("TERMUX_STT_RELEASE_TAG", "").strip()
+        custom_base = os.environ.get("TERMUX_STT_RELEASE_BASE", "").strip()
+
+        if custom_base:
+            base = custom_base.rstrip("/")
+            urls.append(f"{base}/sherpa-onnx-android-arm64.tar.gz")
+        if custom_tag:
+            tag = custom_tag if custom_tag.startswith("v") else f"v{custom_tag}"
+            urls.append(f"https://github.com/uno-km/termux-stt/releases/download/{tag}/sherpa-onnx-android-arm64.tar.gz")
+
+        # Current version SSOT
+        current_tag = f"v{__version__}"
+        urls.append(f"https://github.com/uno-km/termux-stt/releases/download/{current_tag}/sherpa-onnx-android-arm64.tar.gz")
+
+        # Latest release on termux-stt
+        urls.append("https://github.com/uno-km/termux-stt/releases/latest/download/sherpa-onnx-android-arm64.tar.gz")
 
         return urls
 
@@ -285,28 +314,117 @@ class EngineInstaller:
         return False
 
     @classmethod
-    def install_vosk(cls) -> bool:
+    def _download_prebuilt_sherpa(cls) -> bool:
+        """Download and stream-extract precompiled sherpa-onnx & onnxruntime binaries (~3s)."""
+        import io
+        import tarfile
+        import urllib.request
+        try:
+            from .. import __version__
+        except Exception:
+            __version__ = "1.2.7"
+
+        PREFIX_BIN.mkdir(parents=True, exist_ok=True)
+        PREFIX_LIB.mkdir(parents=True, exist_ok=True)
+        staging_dir = XDG_CACHE_HOME / "termux-stt" / ".staging-sherpa"
+        staging_dir.mkdir(parents=True, exist_ok=True)
+
+        print("[*] Downloading pre-compiled sherpa-onnx & ONNX Runtime ARM64 engine (~23MB)...")
+        candidate_urls = cls.get_candidate_sherpa_urls()
+        for url in candidate_urls:
+            try:
+                req = urllib.request.Request(
+                    url,
+                    headers={"User-Agent": f"termux-stt-installer/{__version__} (Android; ARM64)"}
+                )
+                with urllib.request.urlopen(req, timeout=30) as response:
+                    content = response.read()
+
+                if not content or len(content) < 100 * 1024:
+                    continue
+
+                is_tar = content[:2] == b'\x1f\x8b' or url.endswith(".tar.gz")
+                if is_tar:
+                    with tarfile.open(fileobj=io.BytesIO(content), mode="r:gz") as tar:
+                        tar.extractall(path=staging_dir)
+
+                    # Deploy binaries to PREFIX_BIN
+                    for p in staging_dir.rglob("sherpa-onnx*"):
+                        if p.is_file():
+                            target = PREFIX_BIN / p.name
+                            shutil.copy2(p, target)
+                            try:
+                                target.chmod(0o755)
+                            except OSError:
+                                pass
+
+                    # Deploy shared libraries (onnxruntime, sherpa-c-api) to PREFIX_LIB
+                    for so_file in staging_dir.rglob("*.so*"):
+                        if so_file.is_file():
+                            target_so = PREFIX_LIB / so_file.name
+                            shutil.copy2(so_file, target_so)
+                            try:
+                                target_so.chmod(0o755)
+                            except OSError:
+                                pass
+
+                    shutil.rmtree(staging_dir, ignore_errors=True)
+
+                    if (PREFIX_BIN / "sherpa-onnx-offline").exists():
+                        print(f"[+] Successfully installed pre-compiled sherpa-onnx & onnxruntime to {PREFIX_BIN} and {PREFIX_LIB}")
+                        return True
+            except Exception as e:
+                logger.debug(f"Sherpa download attempt failed for {url}: {e}")
+                shutil.rmtree(staging_dir, ignore_errors=True)
+                continue
+
+        print("[-] Pre-built sherpa-onnx binary download unavailable from candidate mirrors.")
+        return False
+
+    @classmethod
+    def install_vosk(cls, auto_yes: bool = False, interactive: bool = True) -> bool:
         """Install vosk Python package and initialize cache directories."""
         model_dir = XDG_CACHE_HOME / "termux-stt" / "models" / "vosk"
         model_dir.mkdir(parents=True, exist_ok=True)
         try:
             import vosk  # noqa: F401
+            print("[+] vosk is already installed.")
             return True
         except ImportError:
+            if not auto_yes and interactive and sys.stdin.isatty():
+                try:
+                    ans = input("[?] Install optional engine 'vosk' via pip? [y/N]: ").strip().lower()
+                    if ans not in ("y", "yes"):
+                        print("[*] Skipping optional vosk installation.")
+                        return True
+                except (EOFError, KeyboardInterrupt):
+                    print("\n[*] Skipping optional vosk installation.")
+                    return True
             print("[*] Installing vosk Python binding via pip...")
             res = subprocess.run(["pip", "install", "vosk"], check=False)
             return res.returncode == 0
 
     @classmethod
-    def install_sherpa_onnx(cls) -> bool:
-        """Install sherpa-onnx and initialize cache directories."""
+    def install_sherpa_onnx(cls, auto_yes: bool = False, interactive: bool = True) -> bool:
+        """Install prebuilt sherpa-onnx binaries and initialize cache directories."""
         model_dir = XDG_CACHE_HOME / "termux-stt" / "models" / "sherpa"
         model_dir.mkdir(parents=True, exist_ok=True)
         if shutil.which("sherpa-onnx-offline") or (PREFIX_BIN / "sherpa-onnx-offline").exists():
+            print("[+] sherpa-onnx binary is already present.")
             return True
-        print("[*] Installing sherpa-onnx via pip...")
-        res = subprocess.run(["pip", "install", "sherpa-onnx"], check=False)
-        return res.returncode == 0
+
+        if not auto_yes and interactive and sys.stdin.isatty():
+            try:
+                ans = input("[?] Install additional engine 'sherpa-onnx' (Prebuilt ONNX Runtime + ASR/TTS/VAD, ~23MB)? [y/N]: ").strip().lower()
+                if ans not in ("y", "yes"):
+                    print("[*] Skipping optional sherpa-onnx installation.")
+                    return True
+            except (EOFError, KeyboardInterrupt):
+                print("\n[*] Skipping optional sherpa-onnx installation.")
+                return True
+
+        # Prebuilt binary stream extraction (No mobile source compilation)
+        return cls._download_prebuilt_sherpa()
 
     @classmethod
     def check_engine_installed(cls, engine: str) -> bool:
@@ -329,32 +447,65 @@ class EngineInstaller:
         return False
 
     @classmethod
-    def install_all(cls) -> Dict[str, bool]:
-        """Execute 1-Click complete provisioning pipeline."""
+    def install_all(
+        cls,
+        auto_yes: bool = False,
+        interactive: bool = True,
+        target_engine: Optional[str] = None
+    ) -> Dict[str, bool]:
+        """Execute 1-Click complete provisioning pipeline with interactive prompt support."""
         cls.install_system_dependencies()
-        return {
-            "whisper": cls.install_whisper_cpp(),
-            "vosk": cls.install_vosk(),
-            "sherpa": cls.install_sherpa_onnx(),
-        }
+
+        results = {}
+        if target_engine:
+            eng = target_engine.lower()
+            if eng == "whisper":
+                results["whisper"] = cls.install_whisper_cpp()
+            elif eng == "sherpa":
+                results["sherpa"] = cls.install_sherpa_onnx(auto_yes=True, interactive=False)
+            elif eng == "vosk":
+                results["vosk"] = cls.install_vosk(auto_yes=True, interactive=False)
+            else:
+                print(f"[-] Unknown engine target: {target_engine}")
+                results[eng] = False
+            return results
+
+        # Standard installation: Primary engine (whisper) is mandatory
+        results["whisper"] = cls.install_whisper_cpp()
+
+        # Additional engines are prompted or skipped
+        results["sherpa"] = cls.install_sherpa_onnx(auto_yes=auto_yes, interactive=interactive)
+        results["vosk"] = cls.install_vosk(auto_yes=auto_yes, interactive=interactive)
+
+        return results
 
 
-def main():
+def main(args=None):
     """CLI entrypoint for termux-stt-install & termux-stt install."""
     print("==========================================================")
     print("[AMEVA-Forge] termux-stt 1-Click Environment & Engine Installer")
     print("==========================================================")
     print("Setting up native dependencies and on-device STT engines for Termux...\n")
 
-    results = EngineInstaller.install_all()
+    auto_yes = getattr(args, "yes", False) or getattr(args, "all", False)
+    target_engine = getattr(args, "engine", None)
+
+    results = EngineInstaller.install_all(
+        auto_yes=auto_yes,
+        interactive=not auto_yes,
+        target_engine=target_engine
+    )
     print("\n--- Installation Summary ---")
     for engine, ok in results.items():
         status = "[OK]" if ok else "[SKIPPED/FAILED]"
         print(f" - {engine:10s} : {status}")
 
-    failed_engines = [engine for engine, ok in results.items() if not ok]
-    if failed_engines:
-        print(f"\n[!] Setup incomplete: failed engines: {', '.join(failed_engines)}")
+    # Primary engine failure causes non-zero exit in standard mode
+    if target_engine and not results.get(target_engine, False):
+        print(f"\n[!] Setup incomplete: failed engine: {target_engine}")
+        raise SystemExit(1)
+    elif not target_engine and not results.get("whisper", False):
+        print("\n[!] Setup incomplete: primary engine 'whisper' failed.")
         raise SystemExit(1)
 
     print("\n[+] Setup complete. Run 'termux-stt doctor' to verify system health.")
