@@ -109,14 +109,18 @@ class EngineInstaller:
 
     @classmethod
     def install_system_dependencies(cls) -> bool:
-        """Install required Termux runtime packages (ffmpeg, libbluray, libxml2, git)."""
-        print("[*] Provisioning native system packages (ffmpeg, libbluray, libxml2, git)...")
+        """Ensure required Termux runtime packages (ffmpeg) are available."""
+        if shutil.which("ffmpeg"):
+            print("[+] System package 'ffmpeg' is already present.")
+            return True
+
         if not shutil.which("pkg"):
             logger.warning("'pkg' command not found, skipping system package provisioning.")
             return True
 
         try:
-            cmd = ["pkg", "install", "-y", "ffmpeg", "libbluray", "libxml2", "git", "termux-api", "curl"]
+            print("[*] Installing required system package 'ffmpeg'...")
+            cmd = ["pkg", "install", "-y", "ffmpeg"]
             res = subprocess.run(cmd, check=False)
             return res.returncode == 0
         except Exception as e:
@@ -221,51 +225,10 @@ class EngineInstaller:
         return False
 
     @classmethod
-    def _build_cmake_flags(cls) -> List[str]:
-        flags = [
-            "-B", "build",
-            "-DBUILD_SHARED_LIBS=OFF",
-            "-DWHISPER_BUILD_SHARED=OFF",
-            "-DWHISPER_NEON=ON",
-            "-DCMAKE_BUILD_TYPE=Release",
-        ]
-        can_vulkan = False
-        try:
-            from ameva_runtime.vulkan.doctor import Doctor
-            can_vulkan = Doctor().quick_probe()
-        except ImportError:
-            can_vulkan = bool(shutil.which("vulkaninfo") or os.path.exists("/system/lib64/libvulkan.so"))
-
-        if can_vulkan:
-            print("[+] Vulkan Compute GPU acceleration detected: enabling -DGGML_VULKAN=ON")
-            flags.append("-DGGML_VULKAN=ON")
-            if os.path.exists("/system/lib64/libvulkan.so"):
-                flags.append("-DVulkan_LIBRARY=/system/lib64/libvulkan.so")
-            prefix_include = Path(PREFIX) / "include"
-            if (prefix_include / "vulkan").exists():
-                flags.append(f"-DVulkan_INCLUDE_DIR={prefix_include}")
-        else:
-            print("[-] Vulkan unavailable. Building CPU-NEON optimized static binary.")
-        return flags
-
-    @classmethod
     def install_whisper_cpp(cls) -> bool:
-        """Install whisper.cpp: Priority 1 = Pre-built download (~3s), Priority 2 = Local build (cmake/clang)."""
+        """Install whisper.cpp pre-built ARM64 binary directly from GitHub Releases (~2s)."""
         PREFIX_BIN.mkdir(parents=True, exist_ok=True)
         PREFIX_LIB.mkdir(parents=True, exist_ok=True)
-
-        # Check bundled package binary first
-        bundled_bin = Path(__file__).resolve().parent.parent / "bin" / "whisper-cli"
-        if bundled_bin.exists() and bundled_bin.stat().st_size > 100 * 1024:
-            try:
-                shutil.copy2(bundled_bin, PREFIX_BIN / "whisper-cli")
-                (PREFIX_BIN / "whisper-cli").chmod(0o755)
-                shutil.copy2(bundled_bin, PREFIX_BIN / "whisper-cpp")
-                (PREFIX_BIN / "whisper-cpp").chmod(0o755)
-                print(f"[+] Deployed bundled whisper.cpp binary from package to {PREFIX_BIN}")
-                return True
-            except OSError as _b_err:
-                logger.debug("Failed copying bundled binary: %s", _b_err)
 
         # Check existing binary
         for candidate in [PREFIX_BIN / "whisper-cli", PREFIX_BIN / "whisper-cpp"]:
@@ -273,71 +236,11 @@ class EngineInstaller:
                 print(f"[+] whisper.cpp binary is already present at {candidate}.")
                 return True
 
-        # Priority 1: Fast Direct Pre-built Stream Download (~3s, Vulkan+NEON enabled)
+        # Fast Direct Pre-built Stream Download (~2s)
         if cls._download_prebuilt_whisper():
             return True
 
-        # Priority 2: Fallback to Local CMake & Clang compilation
-        print("[*] Setting up whisper.cpp native engine via local compiler with ARM NEON...")
-        if shutil.which("pkg"):
-            subprocess.run(["pkg", "install", "-y", "cmake", "make", "clang"], check=False)
-
-        build_dir = XDG_CACHE_HOME / "termux-stt" / "build" / "whisper.cpp"
-        build_dir.parent.mkdir(parents=True, exist_ok=True)
-
-        try:
-            if not build_dir.exists():
-                print("[*] Cloning whisper.cpp repository...")
-                subprocess.run(
-                    ["git", "clone", "--depth", "1", "https://github.com/ggerganov/whisper.cpp.git", str(build_dir)],
-                    check=True,
-                )
-
-            cmake_flags = ["cmake"] + cls._build_cmake_flags()
-            print(f"[*] Configuring whisper.cpp with {' '.join(cmake_flags)}...")
-            subprocess.run(
-                cmake_flags,
-                cwd=str(build_dir),
-                check=True,
-            )
-            nproc = os.cpu_count() or 4
-            subprocess.run(
-                ["cmake", "--build", "build", f"-j{nproc}"],
-                cwd=str(build_dir),
-                check=True,
-            )
-
-            # Locate built binary
-            bin_source = None
-            if (build_dir / "build" / "bin" / "whisper-cli").exists():
-                bin_source = build_dir / "build" / "bin" / "whisper-cli"
-            elif (build_dir / "build" / "bin" / "main").exists():
-                bin_source = build_dir / "build" / "bin" / "main"
-
-            if bin_source and bin_source.exists():
-                for target_name in ["whisper-cli", "whisper-cpp"]:
-                    shutil.copy2(bin_source, PREFIX_BIN / target_name)
-                    (PREFIX_BIN / target_name).chmod(0o755)
-
-                # Copy any built .so to PREFIX_LIB
-                for so_file in (build_dir / "build").rglob("*.so*"):
-                    if so_file.is_file():
-                        target_so = PREFIX_LIB / so_file.name
-                        shutil.copy2(so_file, target_so)
-                        try:
-                            target_so.chmod(0o755)
-                        except OSError:
-                            pass
-
-                print(f"[+] Successfully compiled and installed whisper.cpp binary to {PREFIX_BIN}")
-                return True
-
-        except Exception as e:
-            logger.error(f"Failed to build whisper.cpp: {e}")
-            print(f"[-] whisper.cpp build error: {e}")
-            cls._print_remediation_guide()
-            return False
-
+        print("[-] Pre-built whisper binary download failed from release mirrors.")
         cls._print_remediation_guide()
         return False
 
@@ -422,11 +325,6 @@ class EngineInstaller:
             __version__ = "1.2.7"
 
         PREFIX_LIB.mkdir(parents=True, exist_ok=True)
-        # Ensure pure-python dependency 'srt' is present
-        try:
-            import srt  # noqa: F401
-        except ImportError:
-            subprocess.run(["pip", "install", "--no-cache-dir", "srt"], check=False)
 
         # Locate target site-packages directory
         target_site = None
@@ -494,7 +392,7 @@ class EngineInstaller:
         return False
 
     @classmethod
-    def install_vosk(cls, auto_yes: bool = False, interactive: bool = True) -> bool:
+    def install_vosk(cls, **kwargs) -> bool:
         """Install prebuilt vosk engine and initialize cache directories."""
         model_dir = XDG_CACHE_HOME / "termux-stt" / "models" / "vosk"
         model_dir.mkdir(parents=True, exist_ok=True)
@@ -505,37 +403,17 @@ class EngineInstaller:
         except ImportError:
             pass
 
-        if not auto_yes and interactive and sys.stdin.isatty():
-            try:
-                ans = input("[?] Install additional engine 'vosk' (Prebuilt Kaldi Bionic + CFFI, ~6.5MB)? [y/N]: ").strip().lower()
-                if ans not in ("y", "yes"):
-                    print("[*] Skipping optional vosk installation.")
-                    return True
-            except (EOFError, KeyboardInterrupt):
-                print("\n[*] Skipping optional vosk installation.")
-                return True
-
         # Prebuilt binary stream extraction from GitHub releases
         return cls._download_prebuilt_vosk()
 
     @classmethod
-    def install_sherpa_onnx(cls, auto_yes: bool = False, interactive: bool = True) -> bool:
+    def install_sherpa_onnx(cls, **kwargs) -> bool:
         """Install prebuilt sherpa-onnx binaries and initialize cache directories."""
         model_dir = XDG_CACHE_HOME / "termux-stt" / "models" / "sherpa"
         model_dir.mkdir(parents=True, exist_ok=True)
         if shutil.which("sherpa-onnx-offline") or (PREFIX_BIN / "sherpa-onnx-offline").exists():
             print("[+] sherpa-onnx binary is already present.")
             return True
-
-        if not auto_yes and interactive and sys.stdin.isatty():
-            try:
-                ans = input("[?] Install additional engine 'sherpa-onnx' (Prebuilt ONNX Runtime + ASR/TTS/VAD, ~23MB)? [y/N]: ").strip().lower()
-                if ans not in ("y", "yes"):
-                    print("[*] Skipping optional sherpa-onnx installation.")
-                    return True
-            except (EOFError, KeyboardInterrupt):
-                print("\n[*] Skipping optional sherpa-onnx installation.")
-                return True
 
         # Prebuilt binary stream extraction (No mobile source compilation)
         return cls._download_prebuilt_sherpa()
@@ -561,37 +439,33 @@ class EngineInstaller:
         return False
 
     @classmethod
-    def install_all(
-        cls,
-        auto_yes: bool = False,
-        interactive: bool = True,
-        target_engine: Optional[str] = None
-    ) -> Dict[str, bool]:
-        """Execute 1-Click complete provisioning pipeline with interactive prompt support."""
+    def install_default_model(cls) -> bool:
+        """Pre-provision default Whisper tiny model for immediate zero-latency transcription."""
+        try:
+            from ..models.hub import ModelHub
+            print("[*] Pre-provisioning default Whisper 'tiny' model (~75MB)...")
+            ModelHub.ensure_model("whisper", "tiny")
+            print("[+] Whisper 'tiny' model successfully installed and verified.")
+            return True
+        except Exception as err:
+            logger.warning("Default model pre-provisioning warning: %s", err)
+            print(f"[-] Warning: Failed to pre-provision default model: {err}")
+            return False
+
+    @classmethod
+    def install_all(cls, *args, **kwargs) -> Dict[str, bool]:
+        """Execute 1-Click complete provisioning pipeline for all native STT engines and default model."""
         cls.install_system_dependencies()
-
-        results = {}
-        if target_engine:
-            eng = target_engine.lower()
-            if eng == "whisper":
-                results["whisper"] = cls.install_whisper_cpp()
-            elif eng == "sherpa":
-                results["sherpa"] = cls.install_sherpa_onnx(auto_yes=True, interactive=False)
-            elif eng == "vosk":
-                results["vosk"] = cls.install_vosk(auto_yes=True, interactive=False)
-            else:
-                print(f"[-] Unknown engine target: {target_engine}")
-                results[eng] = False
-            return results
-
-        # Standard installation: Primary engine (whisper) is mandatory
-        results["whisper"] = cls.install_whisper_cpp()
-
-        # Additional engines are prompted or skipped
-        results["sherpa"] = cls.install_sherpa_onnx(auto_yes=auto_yes, interactive=interactive)
-        results["vosk"] = cls.install_vosk(auto_yes=auto_yes, interactive=interactive)
-
-        return results
+        whisper_ok = cls.install_whisper_cpp()
+        sherpa_ok = cls.install_sherpa_onnx()
+        vosk_ok = cls.install_vosk()
+        model_ok = cls.install_default_model() if whisper_ok else False
+        return {
+            "whisper": whisper_ok,
+            "sherpa": sherpa_ok,
+            "vosk": vosk_ok,
+            "model(tiny)": model_ok,
+        }
 
 
 def main(args=None):
@@ -599,26 +473,15 @@ def main(args=None):
     print("==========================================================")
     print("[AMEVA-Forge] termux-stt 1-Click Environment & Engine Installer")
     print("==========================================================")
-    print("Setting up native dependencies and on-device STT engines for Termux...\n")
+    print("Setting up native dependencies and all on-device STT engines (Whisper, Sherpa, Vosk)...\n")
 
-    auto_yes = getattr(args, "yes", False) or getattr(args, "all", False)
-    target_engine = getattr(args, "engine", None)
-
-    results = EngineInstaller.install_all(
-        auto_yes=auto_yes,
-        interactive=not auto_yes,
-        target_engine=target_engine
-    )
+    results = EngineInstaller.install_all()
     print("\n--- Installation Summary ---")
     for engine, ok in results.items():
-        status = "[OK]" if ok else "[SKIPPED/FAILED]"
+        status = "[OK]" if ok else "[FAILED]"
         print(f" - {engine:10s} : {status}")
 
-    # Primary engine failure causes non-zero exit in standard mode
-    if target_engine and not results.get(target_engine, False):
-        print(f"\n[!] Setup incomplete: failed engine: {target_engine}")
-        raise SystemExit(1)
-    elif not target_engine and not results.get("whisper", False):
+    if not results.get("whisper", False):
         print("\n[!] Setup incomplete: primary engine 'whisper' failed.")
         raise SystemExit(1)
 

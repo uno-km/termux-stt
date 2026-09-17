@@ -119,11 +119,19 @@ class ModelHub:
             return dest
 
         # If URL not provided, look up from registry
-        if not url:
+        candidate_urls = []
+        if url:
+            candidate_urls.append(url)
+        else:
             reg_name = model_name.replace("ggml-", "").replace(".bin", "").strip()
             try:
                 info = get_model_info(engine, reg_name)
-                url = info.get("url", "")
+                primary_url = info.get("url", "")
+                fallback_url = info.get("fallback_url", "")
+                if primary_url:
+                    candidate_urls.append(primary_url)
+                if fallback_url:
+                    candidate_urls.append(fallback_url)
                 sha256 = sha256 or info.get("sha256", "")
             except ValueError:
                 import difflib
@@ -146,10 +154,19 @@ class ModelHub:
 
                 raise ValueError("\n".join(msg_lines))
 
-        if not url:
+        if not candidate_urls:
             raise ValueError(f"Model '{model_name}' for engine '{engine}' not found and no URL provided.")
 
-        return cls.download_model(url, dest, sha256)
+        last_err = None
+        for cand_url in candidate_urls:
+            try:
+                return cls.download_model(cand_url, dest, sha256)
+            except Exception as exc:
+                last_err = exc
+                print(f"[-] Mirror download failed for {cand_url}: {exc}")
+                continue
+
+        raise ValueError(f"Failed to download model '{model_name}' from any candidate URL: {last_err}")
 
     @classmethod
     def list_cached_models(cls) -> List[Dict[str, str]]:

@@ -98,9 +98,7 @@ class WhisperEngine(Engine):
             searched_paths.append(f"PATH:{name}")
 
         prefix = os.environ.get("PREFIX", "/data/data/com.termux/files/usr")
-        bundled_bin = Path(__file__).resolve().parent.parent / "bin" / "whisper-cli"
         candidates = [
-            bundled_bin,
             Path(prefix) / "bin" / "whisper-cli",
             Path(prefix) / "bin" / "whisper-cpp",
             Path.home() / ".local" / "bin" / "whisper-cpp",
@@ -576,13 +574,18 @@ class WhisperEngine(Engine):
 
     def get_info(self) -> Dict[str, Any]:
         """Return engine status information."""
+        try:
+            binary_path = self._get_binary_path()
+        except FileNotFoundError:
+            binary_path = None
+
         info = {
             "name": "whisper.cpp",
             "model": self.model,
             "language": self.lang,
             "device": str(getattr(self.config, "device", None) or self.device),
             "threads": self.threads,
-            "binary_path": self._get_binary_path(),
+            "binary_path": binary_path,
             "quantization": self.config.quantization,
         }
         if self.ctx:

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "termux-stt"
-version = "1.2.7"
+version = "1.2.8"
 description = "On-device Speech-to-Text framework utilizing device resources for Android Termux (Whisper.cpp, Vosk, Sherpa-ONNX)"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -69,7 +69,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-component = ["ameva-component-sdk>=0.1.0,<2.0"]
+# component = ["ameva-component-sdk>=0.1.0,<2.0"]
 dev = ["pytest", "ruff", "mypy"]
 
 [project.scripts]

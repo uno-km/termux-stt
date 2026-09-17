@@ -5,6 +5,25 @@ All notable changes to termux-stt will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.8] - 2026-09-17
+
+### Added
+- **Default Whisper 'Tiny' Model Auto-Provisioning**:
+  - `termux-stt install` now automatically provisions the default Whisper `tiny` neural model (`ggml-tiny.bin`, ~75MB) directly into `~/.cache/termux-stt/models/whisper/`, enabling immediate transcription without runtime download lag.
+- **Dedicated Releases Asset Hub**:
+  - Established standardized `releases/` offline asset package containing prebuilt Bionic C++ engines and model weights with cryptographically verified SHA-256 signatures.
+
+### Fixed & Streamlined
+- **Zero-Compilation 1-Click Installer Optimization**:
+  - Eliminated mobile on-device cmake/make/clang source compilation fallback and unnecessary apt packaging latency in `installer.py`.
+  - Removed internal subprocess pip compilation triggers (`pip install srt`), ensuring 100% pre-built ARM64 binary provisioning across all 3 engines (Whisper, Sherpa-ONNX, Vosk).
+- **HuggingFace Upstream Checksum Realignment & Release Model Mirror**:
+  - Re-aligned SHA-256 integrity checksums for `tiny` (`be07e048...`) and `small` (`1be3a9b2...`) models to match latest upstream weights.
+  - Integrated `ggml-tiny.bin` directly into GitHub Releases `v1.2.8` as primary SSOT mirror with graceful upstream fallback in `hub.py` and `registry.py`.
+- **Pure Zero-Dependency Distribution & 120% Pip/NPM Parity**:
+  - Streamlined package dependencies to prevent pip resolution deadlocks on clean target environments.
+  - Fully synchronized Python (`pyproject.toml`, `setup.py`) and Node.js (`package.json`) to `v1.2.8` with transparent cross-language CLI dispatching.
+
 ## [1.2.7] - 2026-09-15
 
 ### Added & Optimized

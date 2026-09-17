@@ -30,7 +30,7 @@ function findPython() {
 }
 
 const pythonBin = findPython();
-const args = ['-m', 'termux_stt', ...process.argv.slice(2)];
+const args = ['-m', 'termux_stt.platform.installer', ...process.argv.slice(2)];
 
 const child = spawn(pythonBin, args, {
   stdio: 'inherit',

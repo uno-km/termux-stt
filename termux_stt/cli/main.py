@@ -34,10 +34,8 @@ def _run_cli():
     common_parser.add_argument("--verbose", action="store_true", help="Enable verbose logging")
 
     # Install subcommand
-    parser_install = subparsers.add_parser("install", help="1-Click automatic installer for native engines and dependencies")
-    parser_install.add_argument("-y", "--yes", action="store_true", help="Automatic yes to optional engine download prompts")
-    parser_install.add_argument("--all", action="store_true", help="Install all optional engines (implies --yes)")
-    parser_install.add_argument("--engine", type=str, choices=["whisper", "sherpa", "vosk"], default=None, help="Install only specific engine")
+    parser_install = subparsers.add_parser("install", help="1-Click automatic installer for all native STT engines (Whisper, Sherpa-ONNX, Vosk)")
+    parser_install.add_argument("-y", "--yes", action="store_true", help="Non-interactive mode flag (retained for script compatibility)")
 
     # Demo subcommand
     parser_demo = subparsers.add_parser("demo", parents=[common_parser], help="Run zero-configuration STT demo with standard benchmark audio")

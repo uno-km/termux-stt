@@ -82,6 +82,7 @@ state.json
 *.tmp
 
 
+
 *ssh*.py
 ssh_real_device_test.py
 *.env
@@ -96,3 +97,10 @@ id_rsa*
 .pypirc
 .npmrc
 secrets.json
+
+# Native binaries isolation (pure Python packaging SSOT)
+termux_stt/bin/
+releases/
+*.bin
+*.tar.gz
+*.tar.bz2

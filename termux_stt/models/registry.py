@@ -8,11 +8,11 @@ __all__ = ["MODEL_REGISTRY", "get_model_info", "list_models", "get_default_model
 
 MODEL_REGISTRY = {
     "whisper": {
-        "tiny": {"url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-tiny.bin", "sha256": "bd577a113a864445d4c299885e8aa97a4ec15870aa3722d35473bced96c437a6", "size": "75MB", "description": "Whisper Tiny (ggml)"},
+        "tiny": {"url": "https://github.com/uno-km/termux-stt/releases/download/v1.2.8/ggml-tiny.bin", "fallback_url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-tiny.bin", "sha256": "be07e048e1e599ad46341c8d2a135645097a538221678b7acdd1b1919c6e1b21", "size": "75MB", "description": "Whisper Tiny (ggml)"},
         "tiny.en": {"url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-tiny.en.bin", "sha256": "c78c4921dd286128114549337d34b2bbec4b638205f3e949131682493f96d65a", "size": "75MB", "description": "Whisper Tiny English (ggml)"},
         "base": {"url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.bin", "sha256": "60ed5bc3dd14eea856493d334349b405782ddcaf00eec4ad1043704778400e77", "size": "142MB", "description": "Whisper Base (ggml)"},
         "base.en": {"url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.en.bin", "sha256": "a34b55c23f94f083e94e8b80430a34c302258c8e77b4ffebc63c1c5259fb3568", "size": "142MB", "description": "Whisper Base English (ggml)"},
-        "small": {"url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.bin", "sha256": "55356645c2b361a969dfd0ef2c5a50d530afd4d144ff57896067204592d89e8a", "size": "466MB", "description": "Whisper Small (ggml)"},
+        "small": {"url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.bin", "sha256": "1be3a9b2063867b937e64e2ec7483364a79917e157fa98c5d94b5c1fffea987b", "size": "466MB", "description": "Whisper Small (ggml)"},
         "small.en": {"url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.en.bin", "sha256": "c4aa02e078a876798e29a918a994ef550f2420f1883be792e352ef16b9b66236", "size": "466MB", "description": "Whisper Small English (ggml)"},
         "small-q5_1": {"url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small-q5_1.bin", "sha256": "", "size": "182MB", "description": "Whisper Small Q5_1 (Quantized)"},
         "medium": {"url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-medium.bin", "sha256": "fd9727b6e129260e44f2fb332c63796f2e6bc0484412f080039986deec3a5fe0", "size": "1.5GB", "description": "Whisper Medium (ggml)"},
