@@ -80,6 +80,34 @@ class EngineInstaller:
         return urls
 
     @classmethod
+    def get_candidate_vosk_urls(cls) -> List[str]:
+        """Generate dynamic SSOT candidate URLs for prebuilt vosk-android engine."""
+        try:
+            from .. import __version__
+        except Exception:
+            __version__ = "1.2.7"
+
+        urls = []
+        custom_tag = os.environ.get("TERMUX_STT_RELEASE_TAG", "").strip()
+        custom_base = os.environ.get("TERMUX_STT_RELEASE_BASE", "").strip()
+
+        if custom_base:
+            base = custom_base.rstrip("/")
+            urls.append(f"{base}/vosk-android-arm64.tar.gz")
+        if custom_tag:
+            tag = custom_tag if custom_tag.startswith("v") else f"v{custom_tag}"
+            urls.append(f"https://github.com/uno-km/termux-stt/releases/download/{tag}/vosk-android-arm64.tar.gz")
+
+        # Current version SSOT
+        current_tag = f"v{__version__}"
+        urls.append(f"https://github.com/uno-km/termux-stt/releases/download/{current_tag}/vosk-android-arm64.tar.gz")
+
+        # Latest release on termux-stt
+        urls.append("https://github.com/uno-km/termux-stt/releases/latest/download/vosk-android-arm64.tar.gz")
+
+        return urls
+
+    @classmethod
     def install_system_dependencies(cls) -> bool:
         """Install required Termux runtime packages (ffmpeg, libbluray, libxml2, git)."""
         print("[*] Provisioning native system packages (ffmpeg, libbluray, libxml2, git)...")
@@ -382,8 +410,92 @@ class EngineInstaller:
         return False
 
     @classmethod
+    def _download_prebuilt_vosk(cls) -> bool:
+        """Download and extract precompiled vosk package & libvosk.so (~6.5MB)."""
+        import io
+        import site
+        import tarfile
+        import urllib.request
+        try:
+            from .. import __version__
+        except Exception:
+            __version__ = "1.2.7"
+
+        PREFIX_LIB.mkdir(parents=True, exist_ok=True)
+        # Ensure pure-python dependency 'srt' is present
+        try:
+            import srt  # noqa: F401
+        except ImportError:
+            subprocess.run(["pip", "install", "--no-cache-dir", "srt"], check=False)
+
+        # Locate target site-packages directory
+        target_site = None
+        for p in site.getsitepackages():
+            if "com.termux" in p and "site-packages" in p:
+                target_site = Path(p)
+                break
+        if not target_site:
+            target_site = Path(sys.prefix) / "lib" / f"python{sys.version_info.major}.{sys.version_info.minor}" / "site-packages"
+
+        target_site.mkdir(parents=True, exist_ok=True)
+        staging_dir = XDG_CACHE_HOME / "termux-stt" / ".staging-vosk"
+        staging_dir.mkdir(parents=True, exist_ok=True)
+
+        print("[*] Downloading pre-compiled vosk Bionic ARM64 engine (~6.5MB)...")
+        candidate_urls = cls.get_candidate_vosk_urls()
+        for url in candidate_urls:
+            try:
+                req = urllib.request.Request(
+                    url,
+                    headers={"User-Agent": f"termux-stt-installer/{__version__} (Android; ARM64)"}
+                )
+                with urllib.request.urlopen(req, timeout=30) as response:
+                    content = response.read()
+
+                if not content or len(content) < 100 * 1024:
+                    continue
+
+                is_tar = content[:2] == b'\x1f\x8b' or url.endswith(".tar.gz")
+                if is_tar:
+                    with tarfile.open(fileobj=io.BytesIO(content), mode="r:gz") as tar:
+                        tar.extractall(path=staging_dir)
+
+                    # Deploy vosk python module to site-packages
+                    if (staging_dir / "vosk").exists():
+                        dest_vosk = target_site / "vosk"
+                        if dest_vosk.exists():
+                            shutil.rmtree(dest_vosk, ignore_errors=True)
+                        shutil.copytree(staging_dir / "vosk", dest_vosk)
+
+                    # Deploy libvosk.so to PREFIX_LIB
+                    for so_file in staging_dir.rglob("*.so*"):
+                        if so_file.is_file():
+                            target_so = PREFIX_LIB / so_file.name
+                            shutil.copy2(so_file, target_so)
+                            try:
+                                target_so.chmod(0o755)
+                            except OSError:
+                                pass
+
+                    shutil.rmtree(staging_dir, ignore_errors=True)
+
+                    try:
+                        import vosk  # noqa: F401
+                        print(f"[+] Successfully installed pre-compiled vosk engine to {target_site / 'vosk'}")
+                        return True
+                    except Exception as _v_err:
+                        logger.debug("Vosk import check after install failed: %s", _v_err)
+            except Exception as e:
+                logger.debug(f"Vosk download attempt failed for {url}: {e}")
+                shutil.rmtree(staging_dir, ignore_errors=True)
+                continue
+
+        print("[-] Pre-built vosk binary download unavailable from candidate mirrors.")
+        return False
+
+    @classmethod
     def install_vosk(cls, auto_yes: bool = False, interactive: bool = True) -> bool:
-        """Install vosk Python package and initialize cache directories."""
+        """Install prebuilt vosk engine and initialize cache directories."""
         model_dir = XDG_CACHE_HOME / "termux-stt" / "models" / "vosk"
         model_dir.mkdir(parents=True, exist_ok=True)
         try:
@@ -391,21 +503,20 @@ class EngineInstaller:
             print("[+] vosk is already installed.")
             return True
         except ImportError:
-            if not auto_yes and interactive and sys.stdin.isatty():
-                try:
-                    ans = input("[?] Install optional engine 'vosk' via pip? [y/N]: ").strip().lower()
-                    if ans not in ("y", "yes"):
-                        print("[*] Skipping optional vosk installation.")
-                        return True
-                except (EOFError, KeyboardInterrupt):
-                    print("\n[*] Skipping optional vosk installation.")
+            pass
+
+        if not auto_yes and interactive and sys.stdin.isatty():
+            try:
+                ans = input("[?] Install additional engine 'vosk' (Prebuilt Kaldi Bionic + CFFI, ~6.5MB)? [y/N]: ").strip().lower()
+                if ans not in ("y", "yes"):
+                    print("[*] Skipping optional vosk installation.")
                     return True
-                print("[*] Installing vosk Python binding via pip...")
-                res = subprocess.run(["pip", "install", "vosk"], check=False)
-                return res.returncode == 0
-            else:
-                print("[*] Vosk prebuilt wheels are not distributed for Android ARM64 on PyPI. Skipping.")
+            except (EOFError, KeyboardInterrupt):
+                print("\n[*] Skipping optional vosk installation.")
                 return True
+
+        # Prebuilt binary stream extraction from GitHub releases
+        return cls._download_prebuilt_vosk()
 
     @classmethod
     def install_sherpa_onnx(cls, auto_yes: bool = False, interactive: bool = True) -> bool:
