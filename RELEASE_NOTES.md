@@ -1,6 +1,6 @@
-# Release Notes - termux-stt v1.2.10
+# Release Notes - termux-stt v1.2.11
 
-**Release Tag**: `v1.2.10`  
+**Release Tag**: `v1.2.11`  
 **Distribution Channels**: PyPI (`termux-stt`), NPM (`termux-stt`), GitHub Releases  
 **Target Platform**: Android Termux (ARM64 / aarch64 Bionic)  
 **License**: Apache-2.0  
