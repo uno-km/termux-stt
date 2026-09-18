@@ -5,6 +5,15 @@ All notable changes to termux-stt will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.12] - 2026-09-18
+
+### Changed & Hardened
+- **Zero-Hardcoding Dynamic Latest-First Provisioning Architecture**:
+  - Permanently purged hardcoded fallback version strings (`1.2.7`) from `termux_stt/platform/installer.py`.
+  - Implemented 3-Tier dynamic resolution for all native engines (Whisper.cpp, Sherpa-ONNX, Vosk).
+  - Updated `MODEL_REGISTRY['whisper']['tiny']` to point to invariant GitHub Releases latest download endpoint (`ggml-tiny.bin`).
+  - Swapped static user agent strings for dynamic package introspection.
+
 ## [1.2.11] - 2026-09-18
 
 ### Changed & Synchronized
