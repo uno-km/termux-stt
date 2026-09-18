@@ -5,6 +5,14 @@ All notable changes to termux-stt will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.9] - 2026-09-18
+
+### Changed & Synchronized
+- **Mainline Production Release Synchronization**:
+  - Re-aligned release branch directly from `main` with unified binary packaging SSOT.
+  - Synchronized default model download mirrors to `v1.2.9` release tag.
+  - Upgraded Python wheel, sdist, and NPM package specifications to `1.2.9`.
+
 ## [1.2.8] - 2026-09-17
 
 ### Added
