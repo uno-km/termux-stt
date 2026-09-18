@@ -20,21 +20,32 @@ PREFIX_BIN = Path(PREFIX) / "bin"
 PREFIX_LIB = Path(PREFIX) / "lib"
 
 
+def _resolve_package_version() -> Optional[str]:
+    """Dynamically resolve current installed package version without static fallback."""
+    try:
+        from .. import __version__
+        if __version__:
+            return __version__
+    except Exception:
+        pass
+    try:
+        import importlib.metadata
+        return importlib.metadata.version("termux-stt")
+    except Exception:
+        return None
+
+
 class EngineInstaller:
     """Automated installer for native dependencies and C++ engines."""
 
     @classmethod
     def get_candidate_whisper_urls(cls) -> List[str]:
         """Generate dynamic SSOT candidate URLs for standard pure-CPU engine."""
-        try:
-            from .. import __version__
-        except Exception:
-            __version__ = "1.2.7"
-
         urls = []
         custom_tag = os.environ.get("TERMUX_STT_RELEASE_TAG", "").strip()
         custom_base = os.environ.get("TERMUX_STT_RELEASE_BASE", "").strip()
 
+        # Tier 1: Explicit environment overrides
         if custom_base:
             base = custom_base.rstrip("/")
             urls.append(f"{base}/whisper-cli-android-arm64.tar.gz")
@@ -42,27 +53,24 @@ class EngineInstaller:
             tag = custom_tag if custom_tag.startswith("v") else f"v{custom_tag}"
             urls.append(f"https://github.com/uno-km/termux-stt/releases/download/{tag}/whisper-cli-android-arm64.tar.gz")
 
-        # Current version SSOT (Pure CPU No-Build)
-        current_tag = f"v{__version__}"
-        urls.append(f"https://github.com/uno-km/termux-stt/releases/download/{current_tag}/whisper-cli-android-arm64.tar.gz")
-
-        # Latest release on termux-stt
+        # Tier 2: GitHub Releases latest canonical endpoint (Zero-Hardcoding SSOT)
         urls.append("https://github.com/uno-km/termux-stt/releases/latest/download/whisper-cli-android-arm64.tar.gz")
+
+        # Tier 3: Current installed package dynamic version matching
+        ver = _resolve_package_version()
+        if ver:
+            urls.append(f"https://github.com/uno-km/termux-stt/releases/download/v{ver}/whisper-cli-android-arm64.tar.gz")
 
         return urls
 
     @classmethod
     def get_candidate_sherpa_urls(cls) -> List[str]:
         """Generate dynamic SSOT candidate URLs for prebuilt sherpa-onnx + onnxruntime engine."""
-        try:
-            from .. import __version__
-        except Exception:
-            __version__ = "1.2.7"
-
         urls = []
         custom_tag = os.environ.get("TERMUX_STT_RELEASE_TAG", "").strip()
         custom_base = os.environ.get("TERMUX_STT_RELEASE_BASE", "").strip()
 
+        # Tier 1: Explicit environment overrides
         if custom_base:
             base = custom_base.rstrip("/")
             urls.append(f"{base}/sherpa-onnx-android-arm64.tar.gz")
@@ -70,27 +78,24 @@ class EngineInstaller:
             tag = custom_tag if custom_tag.startswith("v") else f"v{custom_tag}"
             urls.append(f"https://github.com/uno-km/termux-stt/releases/download/{tag}/sherpa-onnx-android-arm64.tar.gz")
 
-        # Current version SSOT
-        current_tag = f"v{__version__}"
-        urls.append(f"https://github.com/uno-km/termux-stt/releases/download/{current_tag}/sherpa-onnx-android-arm64.tar.gz")
-
-        # Latest release on termux-stt
+        # Tier 2: GitHub Releases latest canonical endpoint (Zero-Hardcoding SSOT)
         urls.append("https://github.com/uno-km/termux-stt/releases/latest/download/sherpa-onnx-android-arm64.tar.gz")
+
+        # Tier 3: Current installed package dynamic version matching
+        ver = _resolve_package_version()
+        if ver:
+            urls.append(f"https://github.com/uno-km/termux-stt/releases/download/v{ver}/sherpa-onnx-android-arm64.tar.gz")
 
         return urls
 
     @classmethod
     def get_candidate_vosk_urls(cls) -> List[str]:
         """Generate dynamic SSOT candidate URLs for prebuilt vosk-android engine."""
-        try:
-            from .. import __version__
-        except Exception:
-            __version__ = "1.2.7"
-
         urls = []
         custom_tag = os.environ.get("TERMUX_STT_RELEASE_TAG", "").strip()
         custom_base = os.environ.get("TERMUX_STT_RELEASE_BASE", "").strip()
 
+        # Tier 1: Explicit environment overrides
         if custom_base:
             base = custom_base.rstrip("/")
             urls.append(f"{base}/vosk-android-arm64.tar.gz")
@@ -98,12 +103,13 @@ class EngineInstaller:
             tag = custom_tag if custom_tag.startswith("v") else f"v{custom_tag}"
             urls.append(f"https://github.com/uno-km/termux-stt/releases/download/{tag}/vosk-android-arm64.tar.gz")
 
-        # Current version SSOT
-        current_tag = f"v{__version__}"
-        urls.append(f"https://github.com/uno-km/termux-stt/releases/download/{current_tag}/vosk-android-arm64.tar.gz")
-
-        # Latest release on termux-stt
+        # Tier 2: GitHub Releases latest canonical endpoint (Zero-Hardcoding SSOT)
         urls.append("https://github.com/uno-km/termux-stt/releases/latest/download/vosk-android-arm64.tar.gz")
+
+        # Tier 3: Current installed package dynamic version matching
+        ver = _resolve_package_version()
+        if ver:
+            urls.append(f"https://github.com/uno-km/termux-stt/releases/download/v{ver}/vosk-android-arm64.tar.gz")
 
         return urls
 
@@ -146,10 +152,7 @@ class EngineInstaller:
         import io
         import tarfile
         import urllib.request
-        try:
-            from .. import __version__
-        except Exception:
-            __version__ = "1.2.7"
+        ver = _resolve_package_version() or "latest"
 
         PREFIX_BIN.mkdir(parents=True, exist_ok=True)
         PREFIX_LIB.mkdir(parents=True, exist_ok=True)
@@ -163,7 +166,7 @@ class EngineInstaller:
             try:
                 req = urllib.request.Request(
                     url,
-                    headers={"User-Agent": f"termux-stt-installer/{__version__} (Android; ARM64)"}
+                    headers={"User-Agent": f"termux-stt-installer/{ver} (Android; ARM64)"}
                 )
                 with urllib.request.urlopen(req, timeout=15) as response:
                     content = response.read()
@@ -250,10 +253,7 @@ class EngineInstaller:
         import io
         import tarfile
         import urllib.request
-        try:
-            from .. import __version__
-        except Exception:
-            __version__ = "1.2.7"
+        ver = _resolve_package_version() or "latest"
 
         PREFIX_BIN.mkdir(parents=True, exist_ok=True)
         PREFIX_LIB.mkdir(parents=True, exist_ok=True)
@@ -266,7 +266,7 @@ class EngineInstaller:
             try:
                 req = urllib.request.Request(
                     url,
-                    headers={"User-Agent": f"termux-stt-installer/{__version__} (Android; ARM64)"}
+                    headers={"User-Agent": f"termux-stt-installer/{ver} (Android; ARM64)"}
                 )
                 with urllib.request.urlopen(req, timeout=30) as response:
                     content = response.read()
@@ -319,10 +319,7 @@ class EngineInstaller:
         import site
         import tarfile
         import urllib.request
-        try:
-            from .. import __version__
-        except Exception:
-            __version__ = "1.2.7"
+        ver = _resolve_package_version() or "latest"
 
         PREFIX_LIB.mkdir(parents=True, exist_ok=True)
 
@@ -345,7 +342,7 @@ class EngineInstaller:
             try:
                 req = urllib.request.Request(
                     url,
-                    headers={"User-Agent": f"termux-stt-installer/{__version__} (Android; ARM64)"}
+                    headers={"User-Agent": f"termux-stt-installer/{ver} (Android; ARM64)"}
                 )
                 with urllib.request.urlopen(req, timeout=30) as response:
                     content = response.read()

@@ -8,7 +8,7 @@ __all__ = ["MODEL_REGISTRY", "get_model_info", "list_models", "get_default_model
 
 MODEL_REGISTRY = {
     "whisper": {
-        "tiny": {"url": "https://github.com/uno-km/termux-stt/releases/download/v1.2.11/ggml-tiny.bin", "fallback_url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-tiny.bin", "sha256": "be07e048e1e599ad46341c8d2a135645097a538221678b7acdd1b1919c6e1b21", "size": "75MB", "description": "Whisper Tiny (ggml)"},
+        "tiny": {"url": "https://github.com/uno-km/termux-stt/releases/latest/download/ggml-tiny.bin", "fallback_url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-tiny.bin", "sha256": "be07e048e1e599ad46341c8d2a135645097a538221678b7acdd1b1919c6e1b21", "size": "75MB", "description": "Whisper Tiny (ggml)"},
         "tiny.en": {"url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-tiny.en.bin", "sha256": "c78c4921dd286128114549337d34b2bbec4b638205f3e949131682493f96d65a", "size": "75MB", "description": "Whisper Tiny English (ggml)"},
         "base": {"url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.bin", "sha256": "60ed5bc3dd14eea856493d334349b405782ddcaf00eec4ad1043704778400e77", "size": "142MB", "description": "Whisper Base (ggml)"},
         "base.en": {"url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.en.bin", "sha256": "a34b55c23f94f083e94e8b80430a34c302258c8e77b4ffebc63c1c5259fb3568", "size": "142MB", "description": "Whisper Base English (ggml)"},
