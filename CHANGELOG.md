@@ -5,6 +5,15 @@ All notable changes to termux-stt will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.13] - 2026-09-28
+
+### Fixed & Hardened
+- **Vosk Engine Dependency Auto-Provisioning**:
+  - Automatically verifies and installs essential Python runtime bindings (`cffi>=1.15.0`, `srt>=3.5.0`) required for Vosk STT engine execution on Android Termux.
+- **Manifest Synchronization & Zero-Drift**:
+  - Synchronized package manifests across `pyproject.toml`, `setup.py`, `package.json`, and `termux_stt/__init__.py` to `1.2.13`.
+  - Added explicit runtime dependencies `cffi` and `srt` to package declarations.
+
 ## [1.2.12] - 2026-09-18
 
 ### Changed & Hardened

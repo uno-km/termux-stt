@@ -323,6 +323,14 @@ class EngineInstaller:
 
         PREFIX_LIB.mkdir(parents=True, exist_ok=True)
 
+        # Ensure essential python bindings 'cffi' and 'srt' are present
+        for dep in ["cffi", "srt"]:
+            try:
+                __import__(dep)
+            except ImportError:
+                print(f"[*] Installing vosk dependency '{dep}' via pip...")
+                subprocess.run(["pip", "install", "--no-cache-dir", dep], check=False)
+
         # Locate target site-packages directory
         target_site = None
         for p in site.getsitepackages():

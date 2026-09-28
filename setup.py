@@ -2,13 +2,14 @@ from setuptools import find_packages, setup
 
 setup(
     name="termux-stt",
-    version="1.2.12",
+    version="1.2.13",
     description="Android on-device STT framework for Termux - whisper.cpp, vosk, sherpa-onnx unified",
     author="Eunho Kim (@uno-km)",
     packages=find_packages(),
     python_requires=">=3.8",
     install_requires=[
-        "ameva-runtime>=2.1.0",
+        "cffi>=1.15.0",
+        "srt>=3.5.0",
     ],
     extras_require={
         "dev": ["pytest", "ruff", "mypy"]
