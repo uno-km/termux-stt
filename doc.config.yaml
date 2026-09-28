@@ -2,7 +2,7 @@
 name: "Termux-STT"
 package_name_pypi: "termux-stt"
 package_name_npm: "termux-stt"
-version: "v1.2.14"
+version: "v1.2.15"
 release_name: "Production Release"
 license: "Apache-2.0"
 platform: "Android ARM64 / Termux Bionic"
@@ -477,7 +477,7 @@ advanced_parameters_body: |
   termux-stt transcribe audio.wav --threads 4</code></pre>
 
 changelog:
-  - version: "v1.2.14"
+  - version: "v1.2.15"
     date: "2026-09-28"
     title: "Bionic Zero-Collision Rule & Dual-Flagship Native Vulkan Acceleration"
     type: "Production Release (Latest)"
