@@ -17,8 +17,8 @@ pip install termux-stt
 ```python
 from termux_stt import create_engine
 
-# 1. Initialize Engine (auto-loads native ARM NEON binary & cached model)
-engine = create_engine("whisper", model="tiny", lang="en", threads=4)
+# 1. Initialize Engine with Hybrid GPU-Encoder / CPU-Decoder Acceleration
+engine = create_engine("whisper", model="small", lang="en", threads=4, split_mode=True)
 
 # 2. Transcribe Audio directly into Subtitles
 result = engine.transcribe("samples/jfk_1min.wav")
@@ -35,6 +35,12 @@ for seg in diar_result.segments:
 
 ## Description
 Integrates Whisper.cpp, Vosk, and Sherpa-ONNX with a closed-form pure-Python 128-dimensional X-Vector clustering algorithm that operates in under 80MB RAM with zero cloud egress.
+
+## Hybrid Performance Highlights (Galaxy S25 - Snapdragon 8 Elite)
+
+- **Whisper Small (60s JFK Audio)**: **12.93s** wall-clock time (**21.0% faster than Pure GPU**, **16.5% faster than Pure CPU**).
+- **Whisper Large-v3-Turbo**: **86.52s** wall-clock time (28.5s faster than Pure CPU), with zero host CPU load during the 80s audio encoding stage.
+- Upstream PR submitted to `ggml-org/whisper.cpp` ([PR #4089](https://github.com/ggml-org/whisper.cpp/pull/4089)).
 
 ## Documentation
 - [Official Documentation & API Reference](https://uno-km.vercel.app/lib/stt/)

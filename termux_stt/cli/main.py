@@ -31,6 +31,9 @@ def _run_cli():
     common_parser.add_argument("--beam-size", "-bs", type=int, default=1, help="Beam search beam size (default: 1 for fast mobile greedy decoding)")
     common_parser.add_argument("--translate", action="store_true", help="Translate source audio to English")
     common_parser.add_argument("--extra-args", type=str, default=None, help="Raw CLI arguments passed directly to the engine")
+    common_parser.add_argument("--split-mode", "-sm", "--hybrid", dest="split_mode", action="store_true", default=None, help="Enable hybrid GPU-encoder / CPU-decoder split mode (auto-selected by default on Vulkan)")
+    common_parser.add_argument("--no-split-mode", dest="no_split_mode", action="store_true", help="Disable hybrid split mode and force pure GPU execution")
+    common_parser.add_argument("--optimize-1", dest="optimize_1", action="store_true", help="Enable hybrid split mode with 1 low-power CPU thread for decoding")
     common_parser.add_argument("--verbose", action="store_true", help="Enable verbose logging")
 
     # Install subcommand

@@ -147,6 +147,7 @@ class WhisperEngine(Engine):
                 "ngl": "-ngl" in help_text or "--gpu-layers" in help_text,
                 "dev": "-dev" in help_text or "--device" in help_text,
                 "no_gpu": "-ng" in help_text or "--no-gpu" in help_text,
+                "split_mode": "-sm" in help_text or "--split-mode" in help_text or "--optimize-gpu-cpu" in help_text,
             }
             flags["supports_gpu"] = flags["ngl"] or flags["dev"] or flags["no_gpu"]
             if "ameva" in binary_path and not flags["supports_gpu"]:
@@ -333,14 +334,23 @@ class WhisperEngine(Engine):
 
                     runtime = getattr(self, "runtime", None) or get_runtime()
                     router = getattr(self, "router", None) or SmartRouter(runtime.profile)
+                    split_mode_req = opts.get("split_mode", True)
+                    if opts.get("optimize_1", False):
+                        self.threads = 1
+                        split_mode_req = True
+
                     plan = router.route_for_stt(
                         model_name_or_path=self.model or "",
                         requested_backend="vulkan",
                         requested_threads=self.threads,
+                        split_mode=split_mode_req,
                     )
 
-                    # Bind optimal hardware flags (-dev 0, -t 4) directly from SmartRouter
-                    cmd.extend(plan.cli_flags)
+                    # Bind optimal hardware flags (-dev 0, -sm, -t 4) directly from SmartRouter
+                    flags_to_add = list(plan.cli_flags)
+                    if not self._supports_gpu(binary).get("split_mode", False):
+                        flags_to_add = [f for f in flags_to_add if f != "-sm"]
+                    cmd.extend(flags_to_add)
                     if "-nf" not in cmd and is_termux():
                         cmd.append("-nf")
 

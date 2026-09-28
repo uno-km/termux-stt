@@ -34,6 +34,12 @@ def run_transcribe(args):
         extra_kwargs["translate"] = True
     if getattr(args, "extra_args", None):
         extra_kwargs["extra_args"] = args.extra_args
+    if getattr(args, "split_mode", None) is not None:
+        extra_kwargs["split_mode"] = True
+    elif getattr(args, "no_split_mode", False):
+        extra_kwargs["split_mode"] = False
+    if getattr(args, "optimize_1", False):
+        extra_kwargs["optimize_1"] = True
 
     engine = create_engine(
         engine=args.engine,

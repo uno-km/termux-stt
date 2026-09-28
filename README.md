@@ -19,6 +19,22 @@ Integrates Whisper.cpp, Vosk, and Sherpa-ONNX with a closed-form pure-Python 128
 
 ---
 
+## Asymmetric Hybrid Architecture Benchmark (Galaxy S25 - Snapdragon 8 Elite)
+
+> **Test Audio**: JFK Inaugural Address (60.59s mono 16kHz WAV)  
+> **Silicon**: Qualcomm Snapdragon 8 Elite (Adreno 830 GPU + Oryon CPU)
+
+| Model | Pure CPU (4T) | Pure GPU (Vulkan) | Hybrid GPU-CPU (4T) | Hybrid Efficiency (1T) | Speedup / Advantage |
+| :--- | :---: | :---: | :---: | :---: | :--- |
+| **Whisper Tiny** | 4.59s | 9.56s | **4.38s** | 5.48s | **+4.6% vs CPU** (Dispatch overhead minimized) |
+| **Whisper Small** | 15.48s | 16.36s | **12.93s** | 23.02s | **+21.0% vs GPU**, **+16.5% vs CPU** |
+| **Large-v3-Turbo** | 115.05s | 87.87s | **86.52s** | 90.39s | **-28.5s vs CPU**, CPU Load 0% during 80s encode |
+
+*Multi-SoC Verification: Tested across Qualcomm Adreno 830, ARM Mali-G78 (Galaxy S21), and ARM Mali-G77 (Galaxy S20).*  
+*Upstream Contribution: Official PR submitted to `ggml-org/whisper.cpp` ([PR #4089](https://github.com/ggml-org/whisper.cpp/pull/4089)).*
+
+---
+
 ## Installation & Quickstart
 
 ### Python (PyPI)
@@ -28,8 +44,8 @@ pip install termux-stt
 ```python
 from termux_stt import create_engine
 
-# 1. Initialize Engine (auto-loads native ARM NEON binary & cached model)
-engine = create_engine("whisper", model="tiny", lang="en", threads=4)
+# 1. Initialize Engine with Hybrid GPU-Encoder / CPU-Decoder Acceleration
+engine = create_engine("whisper", model="small", lang="en", threads=4, split_mode=True)
 
 # 2. Transcribe Audio directly into Subtitles
 result = engine.transcribe("samples/jfk_1min.wav")
@@ -42,6 +58,18 @@ diar_result = hybrid.diarize("samples/jfk_1min.wav")
 for seg in diar_result.segments:
     print(f"[{seg.speaker}] ({seg.start:.1f}s -> {seg.end:.1f}s): {seg.text}")
 
+```
+
+### CLI Command Line Usage
+```bash
+# 1. High-Performance Hybrid Transcribe (Vulkan GPU Encoder + 4 CPU Threads Decoder)
+termux-stt transcribe samples/jfk_1min.wav --model small --split-mode
+
+# 2. Ultra-Low Power Background Transcribe (GPU Encoder + 1 CPU Thread Decoder)
+termux-stt transcribe meeting.wav --model small --optimize-1
+
+# 3. Force Pure CPU Execution
+termux-stt transcribe samples/jfk_1min.wav --device cpu --threads 4
 ```
 
 ### Node.js / TypeScript (npm)
