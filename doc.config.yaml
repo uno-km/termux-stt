@@ -2,7 +2,7 @@
 name: "Termux-STT"
 package_name_pypi: "termux-stt"
 package_name_npm: "termux-stt"
-version: "v1.3.0"
+version: "v1.3.1"
 release_name: "Production Release"
 license: "Apache-2.0"
 platform: "Android ARM64 / Termux Bionic"
@@ -484,7 +484,7 @@ advanced_parameters_body: |
   termux-stt transcribe audio.wav --threads 4</code></pre>
 
 changelog:
-  - version: "v1.3.0"
+  - version: "v1.3.1"
     date: "2026-09-29"
     title: "Asymmetric Mobile SoC Hybrid Pipeline (Encoder Vulkan GPU / Decoder CPU SIMD)"
     type: "Production Release (Latest)"
