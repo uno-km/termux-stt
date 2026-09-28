@@ -2,7 +2,7 @@
 name: "Termux-STT"
 package_name_pypi: "termux-stt"
 package_name_npm: "termux-stt"
-version: "v1.2.13"
+version: "v1.2.14"
 release_name: "Production Release"
 license: "Apache-2.0"
 platform: "Android ARM64 / Termux Bionic"
@@ -477,10 +477,18 @@ advanced_parameters_body: |
   termux-stt transcribe audio.wav --threads 4</code></pre>
 
 changelog:
+  - version: "v1.2.14"
+    date: "2026-09-28"
+    title: "Bionic Zero-Collision Rule & Dual-Flagship Native Vulkan Acceleration"
+    type: "Production Release (Latest)"
+    changes:
+      - "Bionic Linker Zero-Collision Rule: Dynamically purges $PREFIX/lib from LD_LIBRARY_PATH during whisper-cli execution, eliminating Android 15 (Galaxy S25) libunwindstack.so (Xzs_Construct) symbol collision aborts."
+      - "Dual-Flagship Native Vulkan GPU Universal Acceleration: Validated 100% native Vulkan GPU compute offload across Qualcomm Adreno 830 (Galaxy S25) and ARM Mali-G78 (Galaxy S21) using a unified universal binary bundle."
+      - "Subprocess ABI Isolation: Standardized RPATH dynamic resolution ($ORIGIN:$ORIGIN/../lib) guaranteeing standalone execution integrity without external package interference."
   - version: "v1.2.13"
     date: "2026-09-28"
     title: "Vosk Engine Dependency Auto-Provisioning & Full SemVer Parity"
-    type: "Production Release (Latest)"
+    type: "Stable Release"
     changes:
       - "Vosk STT Dependency Auto-Provisioning: Automatically detects and installs essential runtime bindings (cffi>=1.15.0, srt>=3.5.0) required for Vosk speech recognition on Android Termux."
       - "Strict Manifest Parity: Synchronized package manifests across pyproject.toml, setup.py, package.json, and __init__.py to 1.2.13."

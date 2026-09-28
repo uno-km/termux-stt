@@ -134,6 +134,11 @@ class WhisperEngine(Engine):
             check_env = SttAdapter.get_execution_environment(base_env=os.environ.copy())
         except Exception:
             check_env = os.environ.copy()
+        if "LD_LIBRARY_PATH" in check_env:
+            prefix = os.environ.get("PREFIX", "/data/data/com.termux/files/usr")
+            prefix_lib = f"{prefix}/lib"
+            parts = [p for p in check_env["LD_LIBRARY_PATH"].split(":") if p and p != prefix_lib]
+            check_env["LD_LIBRARY_PATH"] = ":".join(parts)
 
         try:
             res = run_isolated([binary_path, "-h"], env=check_env)
@@ -218,6 +223,12 @@ class WhisperEngine(Engine):
                     f"[ERROR: AMEVA-STT-E002] AMEVA Vulkan Runtime initialization failed: {e}",
                     code=ErrorCode.VULKAN_DEVICE,
                 ) from e
+
+        # Sanitize LD_LIBRARY_PATH: whisper-cli is self-contained with $ORIGIN and bundled libs.
+        # Injecting Termux /usr/lib causes severe Bionic linker symbol collisions (e.g. libunwindstack Xzs_Construct on Android 15 / S25).
+        if "LD_LIBRARY_PATH" in env:
+            filtered_paths = [p for p in env["LD_LIBRARY_PATH"].split(":") if p and not p.endswith("/usr/lib")]
+            env["LD_LIBRARY_PATH"] = ":".join(filtered_paths)
 
         return env
 
@@ -335,6 +346,11 @@ class WhisperEngine(Engine):
 
                     # Golden Link Order environment & hardware quirks
                     run_env = SttAdapter.get_execution_environment(base_env=os.environ.copy())
+                    if "LD_LIBRARY_PATH" in run_env:
+                        prefix = os.environ.get("PREFIX", "/data/data/com.termux/files/usr")
+                        prefix_lib = f"{prefix}/lib"
+                        parts = [p for p in run_env["LD_LIBRARY_PATH"].split(":") if p and p != prefix_lib]
+                        run_env["LD_LIBRARY_PATH"] = ":".join(parts)
                     if plan.env_overrides:
                         run_env.update(plan.env_overrides)
 

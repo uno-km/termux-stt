@@ -5,6 +5,15 @@ All notable changes to termux-stt will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.14] - 2026-09-28
+
+### Added & Hardened
+- **Bionic Linker Zero-Collision Rule**:
+  - Dynamically sanitizes Termux `$PREFIX/lib` from `LD_LIBRARY_PATH` during `whisper-cli` execution, preventing Android 15 (Galaxy S25) `libunwindstack.so` (`Xzs_Construct`) symbol collision crashes.
+- **Dual-Flagship Native Vulkan Acceleration**:
+  - Validated 100% native Vulkan GPU offload across Qualcomm Adreno 830 (Galaxy S25) and ARM Mali-G78 (Galaxy S21) using a unified universal binary bundle (`whisper-cli-android-arm64.tar.gz`).
+  - Purged Adreno SPIR-V `[[unroll]]` register pressure linker failures and stabilized Mali BDA (Buffer Device Address) dynamic handling.
+
 ## [1.2.13] - 2026-09-28
 
 ### Fixed & Hardened

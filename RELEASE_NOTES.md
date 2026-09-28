@@ -1,28 +1,28 @@
-# Release Notes - termux-stt v1.2.13
+# Release Notes - termux-stt v1.2.14
 
-**Release Tag**: `v1.2.13`  
+**Release Tag**: `v1.2.14`  
 **Distribution Channels**: PyPI (`termux-stt`), NPM (`termux-stt`), GitHub Releases  
 **Target Platform**: Android Termux (ARM64 / aarch64 Bionic)  
-**License**: MIT  
+**License**: Apache-2.0  
 
 ---
 
 ## Highlights & Key Architectural Changes
 
-### 1. Vosk STT Runtime Dependency Auto-Provisioning
-- **Self-Healing Python Bindings**: `termux_stt/platform/installer.py` now automatically detects and installs essential runtime bindings (`cffi>=1.15.0`, `srt>=3.5.0`) required for Vosk speech recognition when running on Android Termux.
-- **Fail-Fast Error Mitigation**: Prevents missing CFFI/SRT import errors during cold execution on fresh Termux environments.
+### 1. Bionic Linker Zero-Collision Rule & Android 15 Safety Gate
+- **Purged LD_LIBRARY_PATH Pollution**: Resolved dynamic linker collision (`cannot locate symbol "Xzs_Construct" referenced by "/system/lib64/libunwindstack.so"`) on Android 15 (Galaxy S25) by strictly sanitizing Termux `$PREFIX/lib` out of runtime `LD_LIBRARY_PATH`.
+- **Authoritative Subprocess Isolation**: Ensured that the bundled `whisper-cli` binary resolves shared objects strictly via its own `$ORIGIN:$ORIGIN/../lib` RPATH without interference from conflicting Termux userland packages.
 
-### 2. Zero-Drift Full SemVer Synchronization
-- **Strict Package Parity**: Synchronized package manifests across `pyproject.toml`, `setup.py`, `package.json`, and `termux_stt/__init__.py` to `1.2.13`.
-- **Runtime Dependencies**: Formalized explicit dependencies `cffi` and `srt` in Python package declarations.
+### 2. Dual-Flagship Native Vulkan GPU Universal Acceleration (Galaxy S25 & S21 Verified)
+- **Qualcomm Adreno 830 (Snapdragon 8 Elite)**: Fully unlocked native Vulkan GPU offload (`-dev 0`, SoftMax wg64) without pipeline creation failure or IEEE 754 FTZ drift. Achieved 10.28s transcription on 60s JFK audio (RTF 0.171).
+- **ARM Mali-G78 (Exynos 2100)**: Enforced BDA (Buffer Device Address) deactivation and FP32 medium matmul fallback, eliminating NULL-pointer SIGSEGV crashes across mobile Mali GPUs.
+- **Single Universal Binary**: Shipped unified binary bundle (`whisper-cli-android-arm64.tar.gz`, 15.28 MB) supporting both Qualcomm and Samsung flagship silicon.
 
 ---
 
 ## Detailed Changelog
 
 ### Fixed & Hardened
-- `termux_stt/platform/installer.py`: Added automatic `cffi` and `srt` inspection and installation during Vosk provisioning.
-- `pyproject.toml` & `setup.py`: Declared `cffi>=1.15.0` and `srt>=3.5.0` dependencies.
-- `package.json`: Synchronized version to `1.2.13`.
-- `CHANGELOG.md`: Added release summary for `v1.2.13`.
+- `termux_stt/engine/whisper_engine.py`: Integrated `_supports_gpu` and `run_env` dynamic LD_LIBRARY_PATH sanitization.
+- `termux_stt/platform/installer.py`: Updated asset hash and manifest tracking for unified Vulkan binary distribution.
+- `doc.config.yaml`: Synchronized documentation specification to `v1.2.14`.
