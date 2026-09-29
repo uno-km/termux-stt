@@ -5,6 +5,14 @@ All notable changes to termux-stt will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.2] - 2026-09-29
+
+### Fixed & Hardened
+- **SmartRouter `-sm` Dynamic Filter**: Automatically suppresses `-sm` (split mode) when the native binary does not declare split mode support in its help manual, preventing unknown option aborts.
+- **Thread Flag `-t` De-Duplication**: Enforces single authoritative `-t` argument passed to `whisper-cli`, eliminating duplicate CLI argument collisions.
+- **Conditional Vulkan Request Logic**: Constrains `requested_backend="vulkan"` strictly to explicit GPU/Vulkan execution requests, ensuring clean pure-CPU execution when `--device cpu` is selected.
+- **Upstream HF Model Registry Alignment**: Synchronized SHA-256 checksums and model endpoints for Whisper quantized GGML models in `registry.py`.
+
 ## [1.3.1] - 2026-09-29
 
 ### Added & Architectural Breakthrough

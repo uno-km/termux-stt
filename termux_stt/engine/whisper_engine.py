@@ -341,7 +341,7 @@ class WhisperEngine(Engine):
 
                     plan = router.route_for_stt(
                         model_name_or_path=self.model or "",
-                        requested_backend="vulkan",
+                        requested_backend="vulkan" if dev_lower in ("gpu", "vulkan") else None,
                         requested_threads=self.threads,
                         split_mode=split_mode_req,
                     )
@@ -350,6 +350,13 @@ class WhisperEngine(Engine):
                     flags_to_add = list(plan.cli_flags)
                     if not self._supports_gpu(binary).get("split_mode", False):
                         flags_to_add = [f for f in flags_to_add if f != "-sm"]
+                    if "-t" in flags_to_add:
+                        t_idx = flags_to_add.index("-t")
+                        new_t = flags_to_add[t_idx + 1]
+                        if "-t" in cmd:
+                            cmd_t_idx = cmd.index("-t")
+                            cmd[cmd_t_idx + 1] = new_t
+                            flags_to_add = flags_to_add[:t_idx] + flags_to_add[t_idx + 2:]
                     cmd.extend(flags_to_add)
                     if "-nf" not in cmd and is_termux():
                         cmd.append("-nf")

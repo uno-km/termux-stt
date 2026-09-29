@@ -19,7 +19,7 @@ def _run_cli():
     common_parser = argparse.ArgumentParser(add_help=False)
     common_parser.add_argument("--engine", type=str, default="whisper", choices=["whisper", "vosk", "hybrid", "sherpa"], help="Engine to use")
     common_parser.add_argument("-m", "--model", type=str, help="Model name or path")
-    common_parser.add_argument("-d", "--device", "--backend", "-b", dest="device", type=str, default="auto", choices=["auto", "gpu", "cpu", "vulkan"], help="Acceleration device backend (auto, gpu, vulkan, cpu)")
+    common_parser.add_argument("-d", "--device", "--backend", "-b", dest="device", type=str, default="auto", choices=["auto", "gpu", "vulkan", "opencl", "cpu"], help="Acceleration device backend (auto, gpu, vulkan, opencl, cpu)")
     common_parser.add_argument("--gpu", dest="device", action="store_const", const="gpu", help="Enable hardware GPU acceleration (alias for -d gpu)")
     common_parser.add_argument("--cpu", dest="device", action="store_const", const="cpu", help="Force CPU compute mode (alias for -d cpu)")
     common_parser.add_argument("--lang", type=str, default="ko", help="Language code")

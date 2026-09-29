@@ -2,7 +2,7 @@
 name: "Termux-STT"
 package_name_pypi: "termux-stt"
 package_name_npm: "termux-stt"
-version: "v1.3.1"
+version: "v1.3.2"
 release_name: "Production Release"
 license: "Apache-2.0"
 platform: "Android ARM64 / Termux Bionic"
@@ -333,6 +333,26 @@ benchmarks_body: |
     </thead>
     <tbody>
       <tr>
+        <td><strong>Galaxy S25 (SD 8 Elite)</strong></td>
+        <td><strong>Whisper Small (Hybrid -sm)</strong></td>
+        <td>244M</td>
+        <td>466 MB</td>
+        <td><strong>12.93s</strong></td>
+        <td><strong>0.2133x (4.7x Faster)</strong></td>
+        <td>48.5 MB</td>
+        <td><span class="status-badge active">PASS (SOTA)</span></td>
+      </tr>
+      <tr>
+        <td><strong>Galaxy S25 (SD 8 Elite)</strong></td>
+        <td><strong>Whisper Korean (Vulkan)</strong></td>
+        <td>74M</td>
+        <td>142 MB</td>
+        <td><strong>8.00s (45s audio)</strong></td>
+        <td><strong>0.1777x (5.6x Faster)</strong></td>
+        <td>42.1 MB</td>
+        <td><span class="status-badge active">100% Ground Truth</span></td>
+      </tr>
+      <tr>
         <td><strong>Galaxy S21 (SD865)</strong></td>
         <td><strong>Whisper Tiny</strong></td>
         <td>39M</td>
@@ -484,6 +504,15 @@ advanced_parameters_body: |
   termux-stt transcribe audio.wav --threads 4</code></pre>
 
 changelog:
+  - version: "v1.3.2"
+    date: "2026-09-29"
+    title: "SmartRouter Capability Filtering & CLI Flag De-Duplication"
+    type: "Production Release (Latest)"
+    changes:
+      - "SmartRouter Dynamic Split-Mode Filtering: Automatically strips -sm flag when the native binary does not declare split mode support in its help output, eliminating unknown option aborts."
+      - "Thread Flag -t De-Duplication: Enforces single authoritative -t parameter passed to whisper-cli, eliminating duplicate argument conflicts."
+      - "Conditional Vulkan Request Logic: Restricts requested_backend='vulkan' strictly to explicit GPU/Vulkan target execution, ensuring pure CPU execution when --device cpu is selected."
+      - "Upstream HF Model Registry Alignment: Synchronized SHA-256 checksums and model endpoints for Whisper quantized GGML models in registry.py."
   - version: "v1.3.1"
     date: "2026-09-29"
     title: "Asymmetric Mobile SoC Hybrid Pipeline (Encoder Vulkan GPU / Decoder CPU SIMD)"
