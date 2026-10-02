@@ -19,6 +19,7 @@ class ModelHub:
 
     @classmethod
     def _get_model_path(cls, engine: str, model_name: str) -> str:
+        shared_dir = os.path.expanduser("~/.cache/termux-ai/models/")
         engine_dir = os.path.join(cls.CACHE_DIR, engine)
         os.makedirs(engine_dir, exist_ok=True)
         # 1. Handle aliases from registry (e.g. turbo -> ggml-large-v3-turbo-q5_0.bin)
@@ -26,11 +27,15 @@ class ModelHub:
         reg = MODEL_REGISTRY.get(engine, {})
         if model_name in reg and "url" in reg[model_name]:
             canon_name = reg[model_name]["url"].split("/")[-1]
+            if os.path.exists(os.path.join(shared_dir, canon_name)):
+                return os.path.join(shared_dir, canon_name)
             canon_path = os.path.join(engine_dir, canon_name)
             if os.path.exists(canon_path):
                 return canon_path
         # If "small" requested and only small-q5_1 exists
         if model_name == "small":
+            if os.path.exists(os.path.join(shared_dir, "ggml-small-q5_1.bin")):
+                return os.path.join(shared_dir, "ggml-small-q5_1.bin")
             q5_path = os.path.join(engine_dir, "ggml-small-q5_1.bin")
             if os.path.exists(q5_path):
                 return q5_path
@@ -38,6 +43,8 @@ class ModelHub:
         filename = model_name
         if engine == "whisper" and not filename.endswith(".bin"):
             filename = f"ggml-{model_name}.bin"
+        if os.path.exists(os.path.join(shared_dir, filename)):
+            return os.path.join(shared_dir, filename)
         return os.path.join(engine_dir, filename)
 
     @classmethod

@@ -147,7 +147,19 @@ class EngineInstaller:
         print("============================================================================" + "\n")
 
     @classmethod
-    def _download_prebuilt_whisper(cls) -> bool:
+    def is_valid_elf(cls, path: Path) -> bool:
+        """Verifies that the target path is a valid ELF executable/library via magic bytes."""
+        try:
+            p = path.resolve() if path.is_symlink() else path
+            if not p.is_file():
+                return False
+            with open(p, "rb") as f:
+                return f.read(4) == b"\x7fELF"
+        except (OSError, PermissionError):
+            return False
+
+    @classmethod
+    def _download_prebuilt_whisper(cls, force: bool = False) -> bool:
         """Attempt to download and stream-extract precompiled ARM64 Bionic whisper-cli binary (~3s)."""
         import io
         import tarfile
@@ -171,7 +183,7 @@ class EngineInstaller:
                 with urllib.request.urlopen(req, timeout=15) as response:
                     content = response.read()
 
-                if not content or len(content) < 100 * 1024:
+                if not content or len(content) < 1024:
                     continue
 
                 # Check if gzip tarball (magic 0x1F, 0x8B)
@@ -193,10 +205,12 @@ class EngineInstaller:
                         shutil.copy2(target_path, PREFIX_BIN / "whisper-cpp")
                         (PREFIX_BIN / "whisper-cpp").chmod(0o755)
 
-                    # Extract any shared libraries to PREFIX_LIB
+                    # Extract shared libraries to PREFIX_LIB (skip if already valid and not force)
                     for so_file in staging_dir.rglob("*.so*"):
                         if so_file.is_file():
                             target_so = PREFIX_LIB / so_file.name
+                            if not force and target_so.is_file() and cls.is_valid_elf(target_so):
+                                continue
                             shutil.copy2(so_file, target_so)
                             try:
                                 target_so.chmod(0o755)
@@ -211,8 +225,8 @@ class EngineInstaller:
                     shutil.copy2(target_path, PREFIX_BIN / "whisper-cpp")
                     (PREFIX_BIN / "whisper-cpp").chmod(0o755)
 
-                # Check if downloaded file is valid executable (>100KB)
-                if target_path.exists() and target_path.stat().st_size > 100 * 1024:
+                # Check if downloaded file is valid ELF executable
+                if target_path.exists() and cls.is_valid_elf(target_path):
                     print(f"[+] Pre-compiled whisper.cpp binary successfully installed to {target_path} (from {url})")
                     return True
                 else:
@@ -228,19 +242,26 @@ class EngineInstaller:
         return False
 
     @classmethod
-    def install_whisper_cpp(cls) -> bool:
+    def install_whisper_cpp(cls, force: bool = False, dedicate: bool = False) -> bool:
         """Install whisper.cpp pre-built ARM64 binary directly from GitHub Releases (~2s)."""
         PREFIX_BIN.mkdir(parents=True, exist_ok=True)
         PREFIX_LIB.mkdir(parents=True, exist_ok=True)
 
-        # Check existing binary
-        for candidate in [PREFIX_BIN / "whisper-cli", PREFIX_BIN / "whisper-cpp"]:
-            if candidate.exists() and os.access(str(candidate), os.X_OK):
-                print(f"[+] whisper.cpp binary is already present at {candidate}.")
+        whisper_bin = PREFIX_BIN / "whisper-cli"
+        if dedicate and whisper_bin.is_symlink():
+            if ".local/share/ameva" in str(whisper_bin.resolve()):
+                print(f"[+] [DEDICATE] AMEVA Runtime managed whisper engine detected. Preserving co-existence (<0.002s).")
                 return True
 
+        # Check existing binary (Skip if healthy)
+        if not force:
+            for candidate in [whisper_bin, PREFIX_BIN / "whisper-cpp"]:
+                if candidate.exists() and cls.is_valid_elf(candidate):
+                    print(f"[+] whisper.cpp binary is already present and verified at {candidate}.")
+                    return True
+
         # Fast Direct Pre-built Stream Download (~2s)
-        if cls._download_prebuilt_whisper():
+        if cls._download_prebuilt_whisper(force=force):
             return True
 
         print("[-] Pre-built whisper binary download failed from release mirrors.")
@@ -248,7 +269,7 @@ class EngineInstaller:
         return False
 
     @classmethod
-    def _download_prebuilt_sherpa(cls) -> bool:
+    def _download_prebuilt_sherpa(cls, force: bool = False) -> bool:
         """Download and stream-extract precompiled sherpa-onnx & onnxruntime binaries (~3s)."""
         import io
         import tarfile
@@ -271,7 +292,7 @@ class EngineInstaller:
                 with urllib.request.urlopen(req, timeout=30) as response:
                     content = response.read()
 
-                if not content or len(content) < 100 * 1024:
+                if not content or len(content) < 1024:
                     continue
 
                 is_tar = content[:2] == b'\x1f\x8b' or url.endswith(".tar.gz")
@@ -289,10 +310,12 @@ class EngineInstaller:
                             except OSError:
                                 pass
 
-                    # Deploy shared libraries (onnxruntime, sherpa-c-api) to PREFIX_LIB
+                    # Deploy shared libraries (onnxruntime, sherpa-c-api) to PREFIX_LIB (skip if healthy and not force)
                     for so_file in staging_dir.rglob("*.so*"):
                         if so_file.is_file():
                             target_so = PREFIX_LIB / so_file.name
+                            if not force and target_so.is_file() and cls.is_valid_elf(target_so):
+                                continue
                             shutil.copy2(so_file, target_so)
                             try:
                                 target_so.chmod(0o755)
@@ -412,16 +435,23 @@ class EngineInstaller:
         return cls._download_prebuilt_vosk()
 
     @classmethod
-    def install_sherpa_onnx(cls, **kwargs) -> bool:
+    def install_sherpa_onnx(cls, force: bool = False, dedicate: bool = False, **kwargs) -> bool:
         """Install prebuilt sherpa-onnx binaries and initialize cache directories."""
         model_dir = XDG_CACHE_HOME / "termux-stt" / "models" / "sherpa"
         model_dir.mkdir(parents=True, exist_ok=True)
-        if shutil.which("sherpa-onnx-offline") or (PREFIX_BIN / "sherpa-onnx-offline").exists():
-            print("[+] sherpa-onnx binary is already present.")
+        sherpa_bin = PREFIX_BIN / "sherpa-onnx-offline"
+
+        if dedicate and sherpa_bin.is_symlink():
+            if ".local/share/ameva" in str(sherpa_bin.resolve()):
+                print("[+] [DEDICATE] AMEVA Runtime managed sherpa engine detected. Preserving co-existence (<0.002s).")
+                return True
+
+        if not force and (shutil.which("sherpa-onnx-offline") or (sherpa_bin.exists() and cls.is_valid_elf(sherpa_bin))):
+            print("[+] sherpa-onnx binary is already present and verified.")
             return True
 
         # Prebuilt binary stream extraction (No mobile source compilation)
-        return cls._download_prebuilt_sherpa()
+        return cls._download_prebuilt_sherpa(force=force)
 
     @classmethod
     def check_engine_installed(cls, engine: str) -> bool:
