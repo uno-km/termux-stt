@@ -66,6 +66,46 @@ main();
 
 ---
 
+## Distributed Clustering & Memory Pooling (AMEVA-Cluster)
+
+Termux-STT natively integrates with **AMEVA-Cluster** (`pip install ameva-cluster`) for distributed large-model speech recognition (e.g. `whisper-large-v3-turbo`) across interconnected mobile fleets.
+
+### 1. Install Cluster Runtime
+```bash
+pip install ameva-cluster
+# or Node.js:
+npm install @ameva/cluster
+```
+
+### 2. Launch Worker Node on Remote Phone
+```bash
+# On remote worker device (e.g. Galaxy A53):
+ameva-cluster worker --port 50052
+```
+
+### 3. Distributed Transcription via Master Node
+```bash
+# Master node sharding Whisper-Large layers across remote phone RAM:
+termux-stt transcribe meeting.wav \
+  --model whisper-large-v3-turbo.bin \
+  --rpc 192.0.2.10:50052,192.0.2.11:50052
+```
+
+```python
+from termux_stt import create_engine
+
+# Python SDK Distributed STT
+engine = create_engine(
+    "whisper",
+    model="large-v3-turbo",
+    cluster_rpc_servers="192.0.2.10:50052,192.0.2.11:50052"
+)
+result = engine.transcribe("meeting.wav")
+print(result.text)
+```
+
+---
+
 ## Official Documentation & Benchmarks
 - [Official Architecture & API Reference](https://uno-km.vercel.app/lib/stt/)
 - [Ecosystem Metrics & Registry Stats](https://uno-km.vercel.app/foundation/metrics)

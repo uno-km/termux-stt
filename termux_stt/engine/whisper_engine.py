@@ -13,6 +13,7 @@ from typing import Any, Dict, Iterator, List, Optional
 from termux_stt.engine.base import Engine, EngineConfig
 from termux_stt.export.result import DiarizedResult, Segment, TranscriptResult
 from termux_stt.platform.process_pool import run_isolated
+from termux_stt.cluster import parse_cluster_rpc_spec, verify_rpc_cluster_nodes
 
 logger = logging.getLogger(__name__)
 
@@ -80,6 +81,7 @@ class WhisperEngine(Engine):
         searched_paths = []
         # 1. Canonical AMEVA Hardware-Accelerated STT binaries (Highest Priority)
         ameva_candidates = [
+            Path.home() / ".local" / "share" / "ameva" / "rpc_llama" / "bin" / "whisper-cli",
             Path.home() / ".local" / "share" / "ameva" / "current" / "stt" / "bin" / "whisper-cli",
             Path("/data/data/com.termux/files/home/.local/share/ameva/current/stt/bin/whisper-cli"),
             Path.home() / ".local" / "bin" / "whisper-cli",
@@ -317,6 +319,18 @@ class WhisperEngine(Engine):
                 cmd.extend(["--grammar", str(opts["grammar"])])
             if opts.get("dtw", False):
                 cmd.append("-dtw")
+
+            # Cluster Distributed Inference Routing & Pre-Flight Verification
+            cluster_rpc = opts.get("cluster_rpc_servers") or opts.get("rpc")
+            if cluster_rpc:
+                parsed_servers = parse_cluster_rpc_spec(cluster_rpc)
+                if parsed_servers:
+                    verify_rpc_cluster_nodes(parsed_servers)
+                    cmd.extend(["--rpc", ",".join(parsed_servers)])
+
+            cluster_ts = opts.get("cluster_tensor_split") or opts.get("tensor_split")
+            if cluster_ts:
+                cmd.extend(["--tensor-split", str(cluster_ts).strip()])
 
             # Hardware Acceleration Routing via ameva-runtime & SmartRouter
             dev_lower = str(self.device or "auto").strip().lower()

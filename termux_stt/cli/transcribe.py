@@ -40,6 +40,16 @@ def run_transcribe(args):
         extra_kwargs["split_mode"] = False
     if getattr(args, "optimize_1", False):
         extra_kwargs["optimize_1"] = True
+    if getattr(args, "rpc", None):
+        extra_kwargs["rpc"] = args.rpc
+    if getattr(args, "tensor_split", None):
+        extra_kwargs["tensor_split"] = args.tensor_split
+    if getattr(args, "cluster_rpc_servers", None):
+        extra_kwargs["cluster_rpc_servers"] = args.cluster_rpc_servers
+    if getattr(args, "cluster_split_mode", None):
+        extra_kwargs["cluster_split_mode"] = args.cluster_split_mode
+    if getattr(args, "cluster_tensor_split", None):
+        extra_kwargs["cluster_tensor_split"] = args.cluster_tensor_split
 
     engine = create_engine(
         engine=args.engine,

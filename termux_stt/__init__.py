@@ -12,7 +12,7 @@ Quick Start
 >>> print(result.text)
 """
 
-__version__ = "1.3.3"
+__version__ = "1.4.0"
 __author__ = 'Eunho Kim (@uno-km)'
 
 
@@ -108,6 +108,14 @@ from .exceptions import (
     ProvisioningError,
     AudioProcessingError,
     InferenceTimeoutError,
+    ClusterConnectionError,
+    ClusterConfigurationError,
+)
+from . import cluster
+from .cluster import (
+    parse_cluster_rpc_spec,
+    verify_rpc_cluster_nodes,
+    verify_rpc_cluster_health,
 )
 from .hardware import detect_hardware, HardwareProfile, resolve_device, is_termux, is_android
 from .downloader import download_model, resolve_model_path, list_models
@@ -129,6 +137,12 @@ __all__ = [
     'ProvisioningError',
     'AudioProcessingError',
     'InferenceTimeoutError',
+    'ClusterConnectionError',
+    'ClusterConfigurationError',
+    'cluster',
+    'parse_cluster_rpc_spec',
+    'verify_rpc_cluster_nodes',
+    'verify_rpc_cluster_health',
     'detect_hardware',
     'HardwareProfile',
     'resolve_device',

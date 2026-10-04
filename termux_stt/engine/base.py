@@ -26,6 +26,10 @@ class EngineConfig:
     quantization: str = 'q5_1'
     num_speakers: int = 0
     custom_model_path: Optional[str] = None
+    cluster_rpc_servers: Optional[Any] = None
+    cluster_split_mode: Optional[str] = None
+    cluster_tensor_split: Optional[str] = None
+    cluster_vram_budget: Optional[Dict[str, int]] = None
     extra: Dict[str, Any] = field(default_factory=dict)
 
     def __init__(
@@ -40,6 +44,10 @@ class EngineConfig:
         quantization: str = 'q5_1',
         num_speakers: int = 0,
         custom_model_path: Optional[str] = None,
+        cluster_rpc_servers: Optional[Any] = None,
+        cluster_split_mode: Optional[str] = None,
+        cluster_tensor_split: Optional[str] = None,
+        cluster_vram_budget: Optional[Dict[str, int]] = None,
         extra: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
     ):
@@ -53,10 +61,24 @@ class EngineConfig:
         self.quantization = quantization
         self.num_speakers = num_speakers
         self.custom_model_path = custom_model_path or kwargs.get('custom_model_path')
+        self.cluster_rpc_servers = cluster_rpc_servers or kwargs.get('cluster_rpc_servers') or kwargs.get('rpc')
+        self.cluster_split_mode = cluster_split_mode or kwargs.get('cluster_split_mode')
+        self.cluster_tensor_split = cluster_tensor_split or kwargs.get('cluster_tensor_split') or kwargs.get('tensor_split')
+        self.cluster_vram_budget = cluster_vram_budget or kwargs.get('cluster_vram_budget')
         self.extra = extra or {}
+        if self.cluster_rpc_servers:
+            self.extra['cluster_rpc_servers'] = self.cluster_rpc_servers
+            self.extra['rpc'] = self.cluster_rpc_servers
+        if self.cluster_split_mode:
+            self.extra['cluster_split_mode'] = self.cluster_split_mode
+        if self.cluster_tensor_split:
+            self.extra['cluster_tensor_split'] = self.cluster_tensor_split
+            self.extra['tensor_split'] = self.cluster_tensor_split
+        if self.cluster_vram_budget:
+            self.extra['cluster_vram_budget'] = self.cluster_vram_budget
         # Merge remaining kwargs into extra
         for k, v in kwargs.items():
-            if k not in {'model_path', 'model_name', 'language', 'num_threads', 'use_vad', 'device'}:
+            if k not in {'model_path', 'model_name', 'language', 'num_threads', 'use_vad', 'device', 'cluster_rpc_servers', 'cluster_split_mode', 'cluster_tensor_split', 'cluster_vram_budget'}:
                 self.extra[k] = v
 
     # Convenience helpers ---------------------------------------------------

@@ -34,6 +34,11 @@ def _run_cli():
     common_parser.add_argument("--split-mode", "-sm", "--hybrid", dest="split_mode", action="store_true", default=None, help="Enable hybrid GPU-encoder / CPU-decoder split mode (auto-selected by default on Vulkan)")
     common_parser.add_argument("--no-split-mode", dest="no_split_mode", action="store_true", help="Disable hybrid split mode and force pure GPU execution")
     common_parser.add_argument("--optimize-1", dest="optimize_1", action="store_true", help="Enable hybrid split mode with 1 low-power CPU thread for decoding")
+    common_parser.add_argument("--rpc", type=str, default=None, help="Distributed RPC server addresses (e.g. '192.168.0.220:50052,192.168.0.253:50052')")
+    common_parser.add_argument("-ts", "--tensor-split", type=str, default=None, help="Fraction of the model to offload across devices (e.g. '50,50' or '60,40')")
+    common_parser.add_argument("--cluster-rpc-servers", type=str, default=None, help="AMEVA cluster RPC server endpoints (comma-separated host:port)")
+    common_parser.add_argument("--cluster-split-mode", type=str, default=None, help="AMEVA cluster split mode")
+    common_parser.add_argument("--cluster-tensor-split", type=str, default=None, help="AMEVA cluster tensor split ratios")
     common_parser.add_argument("--verbose", action="store_true", help="Enable verbose logging")
 
     # Install subcommand
