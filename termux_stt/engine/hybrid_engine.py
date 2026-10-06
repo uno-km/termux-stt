@@ -36,11 +36,12 @@ class HybridEngine(Engine):
     def __init__(self, config: EngineConfig) -> None:
         self.config = config
 
-        # Whisper engine configuration
+        # Whisper engine configuration with device (Vulkan GPU priority)
         whisper_config = EngineConfig(
             engine='whisper',
             model=config.model,
             lang=config.lang,
+            device=config.device,
             threads=config.threads,
             vad=config.vad,
             vad_threshold=config.vad_threshold,
@@ -55,6 +56,8 @@ class HybridEngine(Engine):
         self._diarizer = SherpaDiarizer(
             num_speakers=config.num_speakers or None,
             threshold=0.65,
+            threads=config.threads,
+            device=config.device,
         )
         self._overlap_resolver = OverlapResolver()
 

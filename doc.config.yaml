@@ -2,11 +2,13 @@
 name: "Termux-STT"
 package_name_pypi: "termux-stt"
 package_name_npm: "termux-stt"
-version: "v2.0.1"
+version: "v2.0.2"
 release_name: "Major Upgrade - Neural Diarization & Zero-Vosk Architecture"
 license: "Apache-2.0"
 platform: "Android ARM64 / Termux Bionic"
 github_repo_url: "https://github.com/uno-km/termux-stt"
+homepage_url: "https://uno-km.vercel.app/lib/stt/"
+doc_url: "https://uno-km.vercel.app/lib/stt/"
 
 tagline_en: "Unified On-Device Speech-to-Text & Neural Multi-Speaker Diarization (PyAnnote 3.0 + CAM++ 192d + TS-VAD Overlap Resolver)"
 tagline_ko: "디바이스 리소스를 활용한 통합 온디바이스 음성인식(STT) 및 차세대 신경망 화자 분리(PyAnnote 3.0 + CAM++ 192d + TS-VAD) 프레임워크"
@@ -433,10 +435,19 @@ advanced_parameters_body: |
   </table>
 
 changelog:
+  - version: "v2.0.2"
+    date: "2026-10-06"
+    title: "Vulkan GPU Acceleration & Explicit OpenCL Declaration Protocol (SCRUM-512)"
+    type: "Production Release (Latest)"
+    changes:
+      - "Vulkan GPU Default & Explicit OpenCL Protocol: Enforced Vulkan GPU priority for mobile neural inference, routing to OpenCL exclusively when explicitly declared via --device opencl with zero silent fallback."
+      - "Diarization Multi-Thread Optimization: Injected dynamic multi-threading (--embedding.num-threads=4, --segmentation.num-threads=4) eliminating single-core bottlenecks and slashing latency from 109s to 64s (41% reduction)."
+      - "Hybrid Engine GPU Acceleration: Propagated device and threads parameters directly into WhisperEngine and SherpaDiarizer."
+      - "Full Monorepo SemVer Parity: Synchronized version 2.0.2 across pyproject.toml, package.json, doc.config.yaml, and SDK manifests."
   - version: "v2.0.1"
     date: "2026-10-06"
     title: "Timestamp Interval Display, Benchmark Normalization & Hot-Reload Validation (SCRUM-512)"
-    type: "Production Release (Latest)"
+    type: "Production Release"
     changes:
       - "Timestamp Interval Display: Added format_timestamp formatting to output [Speaker_X] [MM:SS.ss -> MM:SS.ss] for all diarization CLI and transcript exports."
       - "Benchmark Sample Normalization: Standardized official Korean podcast sample to samples/kor_diarization.wav (45.00s 16kHz Mono PCM)."

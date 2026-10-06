@@ -73,9 +73,10 @@ def run_diarize(args):
     ensure_diarization_installed_interactive()
 
     target_engine = getattr(args, "engine", None)
-    if not target_engine or target_engine in ("whisper", "vosk"):
+    if target_engine not in ("sherpa", "hybrid"):
         target_engine = "sherpa"
 
+    req_device = getattr(args, "device", "auto")
     engine = create_engine(
         engine=target_engine,
         model=getattr(args, "model", None) or ("sensevoice-small-int8" if target_engine == "sherpa" else "tiny"),
@@ -83,10 +84,10 @@ def run_diarize(args):
         threads=getattr(args, "threads", None),
         vad=getattr(args, "vad", True),
         num_speakers=getattr(args, "speakers", 2),
-        device=getattr(args, "device", "auto"),
+        device=req_device,
     )
 
-    print(f"[*] Diarizing '{args.file}' using engine='{target_engine}' with {args.speakers} speakers...")
+    print(f"[*] Diarizing '{args.file}' using engine='{target_engine}' (device='{req_device}') with {args.speakers} speakers...")
     result = engine.diarize(args.file, num_speakers=args.speakers)
 
     if args.output:

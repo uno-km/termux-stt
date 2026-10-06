@@ -1,6 +1,6 @@
 {
   "name": "termux-stt",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "On-device Speech-to-Text & neural speaker diarization framework for Android Termux (Whisper Vulkan GPU & Sherpa-ONNX)",
   "main": "index.js",
   "types": "index.d.ts",
@@ -26,7 +26,6 @@
     "speech-to-text",
     "whisper",
     "whisper-cpp",
-    "vosk",
     "sherpa-onnx",
     "diarization",
     "speaker-diarization",
@@ -77,7 +76,7 @@
   "bugs": {
     "url": "https://github.com/uno-km/termux-stt/issues"
   },
-  "homepage": "https://uno-km.github.io/termux-stt/",
+  "homepage": "https://uno-km.vercel.app/lib/stt/",
   "dependencies": {
     "@ameva/runtime": ">=2.0.0"
   },

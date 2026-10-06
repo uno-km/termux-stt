@@ -37,12 +37,16 @@ class SherpaDiarizer:
         embedding_model: str = "3dspeaker-campplus",
         num_speakers: Optional[int] = None,
         threshold: float = 0.65,
+        threads: Optional[int] = None,
+        device: str = "auto",
         provider: str = "cpu",
     ) -> None:
         self.segmentation_model_name = segmentation_model
         self.embedding_model_name = embedding_model
         self.num_speakers = num_speakers
         self.threshold = threshold
+        self.threads = threads or min(os.cpu_count() or 4, 4)
+        self.device = str(device or "auto").strip().lower()
         self.provider = provider
 
     @staticmethod
@@ -134,10 +138,14 @@ class SherpaDiarizer:
                 f"  EngineInstaller.install_diarization()"
             )
 
+        # Determine thread count and acceleration backend
+        num_threads = self.threads or min(os.cpu_count() or 4, 4)
         cmd = [
             binary,
             f"--segmentation.pyannote-model={seg_model}",
             f"--embedding.model={emb_path}",
+            f"--segmentation.num-threads={num_threads}",
+            f"--embedding.num-threads={num_threads}",
             f"--segmentation.provider={self.provider}",
             f"--embedding.provider={self.provider}",
         ]
@@ -149,9 +157,21 @@ class SherpaDiarizer:
 
         cmd.append(wav_path)
 
+        # Configure environment for acceleration backend
+        env = os.environ.copy()
+        if self.device == "opencl":
+            # Explicit OpenCL declaration required by user protocol
+            env["AMEVA_STT_BACKEND"] = "opencl"
+            env["CL_CONTEXT_PLATFORM_DEVICE_TYPE"] = "GPU"
+            env["CL_DEVICE_TYPE"] = "CL_DEVICE_TYPE_GPU"
+            logger.info("Explicit OpenCL acceleration requested for diarization backend")
+        elif self.device in ("vulkan", "gpu", "auto"):
+            # Vulkan is the default GPU backend target
+            env["AMEVA_STT_BACKEND"] = "vulkan"
+
         logger.info("Executing sherpa speaker diarization: %s", " ".join(cmd))
         try:
-            result = run_isolated(cmd)
+            result = run_isolated(cmd, env=env)
             if result.returncode != 0:
                 raise RuntimeError(
                     f"sherpa-onnx-offline-speaker-diarization failed with exit code {result.returncode}: "
