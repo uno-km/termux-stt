@@ -32,6 +32,18 @@ class ModelHub:
             canon_path = os.path.join(engine_dir, canon_name)
             if os.path.exists(canon_path):
                 return canon_path
+            # Check if already extracted
+            for ext in (".tar.bz2", ".tar.gz", ".zip", ".tar"):
+                if canon_name.endswith(ext):
+                    extracted_path = os.path.join(engine_dir, canon_name[:-len(ext)])
+                    if os.path.exists(extracted_path):
+                        return extracted_path
+            # Check if direct model_name exists in engine_dir
+            model_name_path = os.path.join(engine_dir, model_name)
+            if os.path.exists(model_name_path):
+                return model_name_path
+            return canon_path
+
         # If "small" requested and only small-q5_1 exists
         if model_name == "small":
             if os.path.exists(os.path.join(shared_dir, "ggml-small-q5_1.bin")):
@@ -114,12 +126,16 @@ class ModelHub:
     @classmethod
     def ensure_model(cls, engine: str, model_name: str, url: str = "", sha256: str = "") -> str:
         """Get model path, downloading it if necessary."""
-        # 1. Direct local file path support (Custom fine-tuned / BitNet / LLaMA / GGML models)
-        if os.path.exists(model_name) and os.path.isfile(model_name):
+        # 1. Direct local file or directory path support (Custom fine-tuned / ONNX model folders / GGML models)
+        if os.path.exists(model_name):
             return os.path.abspath(model_name)
 
         dest = cls._get_model_path(engine, model_name)
-        if os.path.exists(dest) and os.path.getsize(dest) > 0:
+        if os.path.exists(dest) and (os.path.isdir(dest) or os.path.getsize(dest) > 0):
+            if os.path.isfile(dest):
+                extracted = cls._maybe_extract_archive(dest)
+                if extracted:
+                    return extracted
             if sha256 and not cls.verify_integrity(dest, sha256):
                 print("Model corrupted, redownloading...")
                 return cls.download_model(url, dest, sha256)
@@ -167,13 +183,65 @@ class ModelHub:
         last_err = None
         for cand_url in candidate_urls:
             try:
-                return cls.download_model(cand_url, dest, sha256)
+                downloaded_file = cls.download_model(cand_url, dest, sha256)
+                # Unpack archives if tar.bz2 / tar.gz / zip
+                extracted_dir = cls._maybe_extract_archive(downloaded_file)
+                return extracted_dir or downloaded_file
             except Exception as exc:
                 last_err = exc
                 print(f"[-] Mirror download failed for {cand_url}: {exc}")
                 continue
 
         raise ValueError(f"Failed to download model '{model_name}' from any candidate URL: {last_err}")
+
+    @classmethod
+    def _maybe_extract_archive(cls, archive_path: str) -> Optional[str]:
+        """Extract tar.bz2, tar.gz, or zip archive if not already extracted."""
+        if not archive_path or not os.path.exists(archive_path):
+            return None
+        if os.path.isdir(archive_path):
+            return archive_path
+
+        import tarfile
+        import zipfile
+        base_dir = os.path.dirname(archive_path)
+        archive_name = os.path.basename(archive_path)
+
+        target_folder = None
+        for ext in (".tar.bz2", ".tar.gz", ".zip", ".tar"):
+            if archive_name.endswith(ext):
+                target_folder = archive_name[:-len(ext)]
+                break
+
+        is_tar = tarfile.is_tarfile(archive_path) if os.path.isfile(archive_path) else False
+        is_zip = zipfile.is_zipfile(archive_path) if os.path.isfile(archive_path) else False
+
+        if not target_folder:
+            if is_tar or is_zip:
+                target_folder = archive_name + "-extracted"
+            else:
+                return None
+
+        extract_dest = os.path.join(base_dir, target_folder)
+        if os.path.exists(extract_dest) and os.path.isdir(extract_dest) and os.listdir(extract_dest):
+            return extract_dest
+
+        print(f"Extracting archive {archive_path} to {extract_dest}...")
+        os.makedirs(extract_dest, exist_ok=True)
+        if is_tar or archive_name.endswith((".tar.bz2", ".tar.gz", ".tar")):
+            mode = "r:bz2" if archive_name.endswith(".tar.bz2") else ("r:gz" if archive_name.endswith(".tar.gz") else "r:*")
+            with tarfile.open(archive_path, mode) as tar:
+                tar.extractall(path=extract_dest)
+        elif is_zip or archive_name.endswith(".zip"):
+            with zipfile.ZipFile(archive_path, "r") as zf:
+                zf.extractall(path=extract_dest)
+
+        # If archive had a single top-level folder, point to it
+        entries = os.listdir(extract_dest)
+        if len(entries) == 1 and os.path.isdir(os.path.join(extract_dest, entries[0])):
+            return os.path.join(extract_dest, entries[0])
+
+        return extract_dest
 
     @classmethod
     def list_cached_models(cls) -> List[Dict[str, str]]:

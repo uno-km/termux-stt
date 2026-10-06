@@ -91,7 +91,7 @@ class EngineConfig:
         defaults = {
             'whisper': 'base',
             'vosk': 'small-ko-0.22',
-            'sherpa': 'zipformer-ko',
+            'sherpa': 'sensevoice-small',
             'hybrid': 'base',
         }
         return defaults.get(self.engine, 'base')

@@ -28,10 +28,13 @@ MODEL_REGISTRY = {
         "model-spk-0.4": {"url": "https://alphacephei.com/vosk/models/vosk-model-spk-0.4.zip", "sha256": "", "size": "13MB", "description": "Vosk Speaker Identification"}
     },
     "sherpa": {
-        "zipformer-ko": {"url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-streaming-zipformer-korean-2024-06-24.tar.bz2", "sha256": "", "size": "185MB", "description": "Sherpa ONNX Zipformer Korean"},
-        "sensevoice-small": {"url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-sense-voice-zh-en-ja-ko-yue-2024-07-17.tar.bz2", "sha256": "", "size": "230MB", "description": "SenseVoice Small ONNX Multi-Language"},
-        "3dspeaker-campplus": {"url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-recongition-models/3dspeaker_speech_campplus_sv_zh-cn_16k-common.onnx", "sha256": "", "size": "28MB", "description": "3D Speaker CampPlus Embedding"},
-        "silero-vad": {"url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/silero_vad.onnx", "sha256": "", "size": "2MB", "description": "Silero VAD ONNX Model"}
+        "sensevoice-small": {"url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-sense-voice-zh-en-ja-ko-yue-int8-2024-07-17.tar.bz2", "sha256": "", "size": "163MB", "type": "sense-voice", "description": "SenseVoice Small INT8 ONNX (Non-Autoregressive Ultra-Fast STT)"},
+        "sensevoice-small-int8": {"url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-sense-voice-zh-en-ja-ko-yue-int8-2024-07-17.tar.bz2", "sha256": "", "size": "163MB", "type": "sense-voice", "description": "SenseVoice Small INT8 ONNX (Non-Autoregressive Ultra-Fast STT)"},
+        "sensevoice-small-fp32": {"url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-sense-voice-zh-en-ja-ko-yue-2024-07-17.tar.bz2", "sha256": "", "size": "864MB", "type": "sense-voice", "description": "SenseVoice Small FP32 ONNX"},
+        "zipformer-ko": {"url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-streaming-zipformer-korean-2024-06-24.tar.bz2", "sha256": "", "size": "185MB", "type": "streaming-transducer", "description": "Sherpa ONNX Zipformer Korean Streaming"},
+        "3dspeaker-campplus": {"url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-recongition-models/3dspeaker_speech_campplus_sv_zh-cn_16k-common.onnx", "sha256": "", "size": "28MB", "type": "embedding", "description": "3D Speaker CAM++ Embedding (192-dim)"},
+        "pyannote-segmentation-3-0": {"url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-segmentation-models/sherpa-onnx-pyannote-segmentation-3-0.tar.bz2", "sha256": "", "size": "15MB", "type": "segmentation", "description": "PyAnnote Segmentation 3.0 ONNX"},
+        "silero-vad": {"url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/silero_vad.onnx", "sha256": "", "size": "2MB", "type": "vad", "description": "Silero VAD ONNX Model"}
     }
 }
 

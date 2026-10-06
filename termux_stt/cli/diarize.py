@@ -22,16 +22,22 @@ def resolve_safe_output_path(path: str) -> str:
 
 
 def run_diarize(args):
+    target_engine = getattr(args, "engine", None)
+    if not target_engine or target_engine == "whisper":
+        # Default to sherpa neural diarization for superior multi-speaker accuracy
+        target_engine = "sherpa"
+
     engine = create_engine(
-        engine="hybrid",
-        model=getattr(args, "model", None) or "tiny",
+        engine=target_engine,
+        model=getattr(args, "model", None) or ("sensevoice-small" if target_engine == "sherpa" else "tiny"),
         lang=getattr(args, "lang", "ko"),
         threads=getattr(args, "threads", None),
         vad=getattr(args, "vad", True),
         num_speakers=getattr(args, "speakers", 2),
+        device=getattr(args, "device", "auto"),
     )
 
-    print(f"Diarizing {args.file} with {args.speakers} speakers...")
+    print(f"[*] Diarizing '{args.file}' using engine='{target_engine}' with {args.speakers} speakers...")
     result = engine.diarize(args.file, num_speakers=args.speakers)
 
     if args.output:
