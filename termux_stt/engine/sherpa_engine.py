@@ -27,6 +27,76 @@ class SherpaEngine(Engine):
     def __init__(self, config: EngineConfig) -> None:
         self.config = config
         self.model_name = config.model_name
+        self._recognizer = None
+        self._diarizer = None
+
+    # ------------------------------------------------------------------
+    # In-Memory Resident Acceleration Helpers
+    # ------------------------------------------------------------------
+
+    def _get_recognizer(self) -> Optional[Any]:
+        """Get or lazily initialize resident in-memory sherpa_onnx.OfflineRecognizer."""
+        if self._recognizer is not None:
+            return self._recognizer
+        try:
+            import sherpa_onnx
+            from termux_stt.models.hub import ModelHub
+            model_dir = ModelHub.ensure_model('sherpa', self.model_name)
+            sensevoice_candidates = [
+                os.path.join(model_dir, "model.int8.onnx"),
+                os.path.join(model_dir, "model.onnx"),
+            ]
+            sensevoice_model = next((p for p in sensevoice_candidates if os.path.exists(p)), None)
+            tokens_path = os.path.join(model_dir, "tokens.txt")
+            if sensevoice_model and os.path.exists(tokens_path):
+                threads = self.config.threads or 4
+                self._recognizer = sherpa_onnx.OfflineRecognizer.from_sense_voice(
+                    model=sensevoice_model,
+                    tokens=tokens_path,
+                    num_threads=threads,
+                    language=self.config.language or "auto",
+                    use_itn=True,
+                )
+                logger.info("Initialized resident in-memory Sherpa SenseVoice Recognizer")
+                return self._recognizer
+        except Exception as exc:
+            logger.debug("sherpa_onnx in-memory recognizer init failed (%s), fallback to CLI", exc)
+        return None
+
+    def _get_diarizer(self, num_speakers: int = 2) -> Optional[Any]:
+        """Get or lazily initialize resident in-memory sherpa_onnx.OfflineSpeakerDiarization."""
+        if self._diarizer is not None and getattr(self._diarizer, '_cached_num_speakers', None) == num_speakers:
+            return self._diarizer
+        try:
+            import sherpa_onnx
+            from termux_stt.models.hub import ModelHub
+            seg_dir = ModelHub.ensure_model("sherpa", "pyannote-segmentation-3-0")
+            emb_path = ModelHub.ensure_model("sherpa", "3dspeaker-campplus")
+            seg_model = os.path.join(seg_dir, "model.int8.onnx") if os.path.isdir(seg_dir) else seg_dir
+            if not os.path.exists(seg_model):
+                base_s = seg_dir if os.path.isdir(seg_dir) else os.path.dirname(seg_dir)
+                for root, _, files in os.walk(base_s):
+                    for f in sorted(files):
+                        if f in ("model.int8.onnx", "model.onnx"):
+                            seg_model = os.path.join(root, f)
+                            break
+                    if os.path.exists(seg_model):
+                        break
+
+            pyannote_cfg = sherpa_onnx.OfflineSpeakerSegmentationPyannoteModelConfig(model=seg_model)
+            seg_cfg = sherpa_onnx.OfflineSpeakerSegmentationModelConfig(pyannote=pyannote_cfg, num_threads=self.config.threads or 4)
+            emb_cfg = sherpa_onnx.SpeakerEmbeddingExtractorConfig(model=emb_path, num_threads=self.config.threads or 4)
+            cluster_cfg = sherpa_onnx.FastClusteringConfig(num_clusters=num_speakers if num_speakers > 0 else -1, threshold=0.5)
+            diar_cfg = sherpa_onnx.OfflineSpeakerDiarizationConfig(
+                segmentation=seg_cfg, embedding=emb_cfg, clustering=cluster_cfg
+            )
+            self._diarizer = sherpa_onnx.OfflineSpeakerDiarization(diar_cfg)
+            self._diarizer._cached_num_speakers = num_speakers
+            logger.info("Initialized resident in-memory Sherpa PyAnnote+CAM++ Diarizer")
+            return self._diarizer
+        except Exception as exc:
+            logger.debug("sherpa_onnx in-memory diarizer init failed (%s), fallback to CLI", exc)
+        return None
 
     # ------------------------------------------------------------------
     # Binary location
@@ -112,7 +182,7 @@ class SherpaEngine(Engine):
         return cmd
 
     def transcribe(self, audio_path: str, **kwargs: Any) -> TranscriptResult:
-        """Transcribe an audio file using sherpa-onnx-offline."""
+        """Transcribe an audio file using resident sherpa-onnx or CLI fallback."""
         import os
 
         from termux_stt.audio.preprocessor import preprocess
@@ -121,6 +191,49 @@ class SherpaEngine(Engine):
 
         wav_path = preprocess(audio_path, target_sr=16000, force_mono=True)
         is_temp_wav = os.path.abspath(wav_path) != os.path.abspath(audio_path)
+
+        # 1. High-speed in-memory resident path
+        recognizer = self._get_recognizer()
+        if recognizer is not None:
+            try:
+                import wave
+                import numpy as np
+                with wave.open(wav_path, "rb") as wf:
+                    sr = wf.getframerate()
+                    frames = wf.readframes(wf.getnframes())
+                    samples = np.frombuffer(frames, dtype=np.int16).astype(np.float32) / 32768.0
+                    audio_dur = len(samples) / float(sr)
+
+                stream = recognizer.create_stream()
+                stream.accept_waveform(sr, samples)
+                recognizer.decode_stream(stream)
+                text = stream.result.text.strip()
+                segments = []
+                if hasattr(stream.result, "tokens") and hasattr(stream.result, "timestamps") and stream.result.tokens and stream.result.timestamps:
+                    for i, (tok, ts) in enumerate(zip(stream.result.tokens, stream.result.timestamps)):
+                        tok_clean = tok.strip()
+                        if tok_clean.startswith("<|") and tok_clean.endswith("|>"):
+                            continue
+                        end_ts = stream.result.timestamps[i + 1] if i + 1 < len(stream.result.timestamps) else (ts + 0.3)
+                        segments.append(Segment(start=float(ts), end=float(end_ts), text=tok))
+                if not segments and text:
+                    segments = [Segment(start=0.0, end=audio_dur, text=text)]
+                return TranscriptResult(
+                    text=text,
+                    language=self.config.language,
+                    segments=segments,
+                    duration=audio_dur,
+                )
+            except Exception as in_mem_exc:
+                logger.debug("In-memory transcribe fallback to CLI: %s", in_mem_exc)
+            finally:
+                if is_temp_wav and os.path.exists(wav_path):
+                    try:
+                        os.remove(wav_path)
+                    except OSError:
+                        pass
+
+        # 2. Subprocess CLI fallback path
         model_dir = ModelHub.ensure_model('sherpa', self.model_name)
         binary = self._find_binary()
 
@@ -361,6 +474,76 @@ class SherpaEngine(Engine):
         """
         import os
         from termux_stt.diarization.mapper import SpeakerMapper
+
+        # Fast Path: 100% In-Memory Resident Diarization + STT
+        in_mem_diar = self._get_diarizer(num_speakers=num_speakers)
+        in_mem_rec = self._get_recognizer()
+        if in_mem_diar is not None and in_mem_rec is not None:
+            try:
+                import wave
+                import numpy as np
+                from termux_stt.audio.preprocessor import preprocess
+
+                wav_path = preprocess(audio_path, target_sr=16000, force_mono=True)
+                is_temp_wav = os.path.abspath(wav_path) != os.path.abspath(audio_path)
+                try:
+                    with wave.open(wav_path, "rb") as wf:
+                        sr = wf.getframerate()
+                        frames = wf.readframes(wf.getnframes())
+                        samples = np.frombuffer(frames, dtype=np.int16).astype(np.float32) / 32768.0
+                        audio_dur = len(samples) / float(sr)
+
+                    diar_res = in_mem_diar.process(samples)
+                    raw_segments = diar_res.sort_by_start_time()
+                    speaker_labels = [(s.start, s.end, s.speaker) for s in raw_segments]
+
+                    mapper = SpeakerMapper()
+                    normalized_labels = mapper._normalize_speaker_ids(speaker_labels) if speaker_labels else []
+                    turns = self._group_speaker_turns(normalized_labels) if normalized_labels else []
+
+                    aligned_segments = []
+                    total_text_parts = []
+                    pad = 0.08
+                    for s_start, s_end, spk_id in turns:
+                        idx_s = max(0, int((s_start - pad) * sr))
+                        idx_e = min(len(samples), int((s_end + pad) * sr))
+                        sub_samples = samples[idx_s:idx_e]
+
+                        stream = in_mem_rec.create_stream()
+                        stream.accept_waveform(sr, sub_samples)
+                        in_mem_rec.decode_stream(stream)
+                        txt = stream.result.text.strip()
+                        spk_label = mapper.format_speaker_label(spk_id)
+                        actual_start = max(0.0, s_start - pad)
+                        aligned_segments.append(Segment(
+                            start=actual_start,
+                            end=s_end,
+                            text=txt,
+                            speaker=spk_label,
+                        ))
+                        if txt:
+                            total_text_parts.append(f"[{spk_label}] {txt}")
+
+                    merged_segments = mapper.merge_consecutive(aligned_segments)
+                    speakers = sorted(list({s.speaker for s in merged_segments if s.speaker}))
+                    combined_text = "\n".join(total_text_parts) if total_text_parts else "\n".join(f"[{s.speaker}] {s.text}" for s in merged_segments)
+
+                    return DiarizedResult(
+                        text=combined_text,
+                        language=self.config.language,
+                        segments=merged_segments,
+                        duration=audio_dur,
+                        speakers=speakers,
+                    )
+                finally:
+                    if is_temp_wav and os.path.exists(wav_path):
+                        try:
+                            os.remove(wav_path)
+                        except OSError:
+                            pass
+            except Exception as in_mem_exc:
+                logger.debug("In-memory resident diarization fallback to CLI: %s", in_mem_exc)
+
         from termux_stt.diarization.sherpa_diarizer import SherpaDiarizer
 
         # Step 1: Neural Speaker Diarization
