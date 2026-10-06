@@ -52,12 +52,17 @@ class HybridEngine(Engine):
         from termux_stt.diarization.sherpa_diarizer import SherpaDiarizer
         from termux_stt.diarization.overlap_resolver import OverlapResolver
 
+        speed_mode = config.extra.get("speed_mode", "balanced")
+        window_shift_ratio = config.extra.get("window_shift_ratio", None)
+
         self._whisper = WhisperEngine(whisper_config)
         self._diarizer = SherpaDiarizer(
             num_speakers=config.num_speakers or None,
             threshold=0.65,
             threads=config.threads,
             device=config.device,
+            speed_mode=speed_mode,
+            window_shift_ratio=window_shift_ratio,
         )
         self._overlap_resolver = OverlapResolver()
 
@@ -77,7 +82,7 @@ class HybridEngine(Engine):
         resolve_overlaps: bool = True,
         **kwargs: Any
     ) -> DiarizedResult:
-        """Full hybrid neural pipeline: STT + PyAnnote/CAM++ diarization + TS-VAD overlap resolution.
+        """Full hybrid neural pipeline: Concurrent STT + PyAnnote/CAM++ diarization + TS-VAD overlap resolution.
 
         Parameters
         ----------
@@ -95,6 +100,7 @@ class HybridEngine(Engine):
         DiarizedResult
             Transcript segments with neural ``speaker`` labels assigned.
         """
+        import concurrent.futures
         from termux_stt.audio.preprocessor import preprocess
         from termux_stt.diarization.mapper import SpeakerMapper
 
@@ -103,21 +109,31 @@ class HybridEngine(Engine):
         is_temp_wav = os.path.abspath(wav_path) != os.path.abspath(audio_path)
 
         try:
-            # 2. Neural Diarization (PyAnnote 3.0 + CAM++ 192d)
             num_spk = num_speakers if num_speakers is not None else self.config.num_speakers
-            speaker_labels = []
-            try:
-                speaker_labels = self._diarizer.diarize_audio(wav_path, num_speakers=num_spk)
-            except Exception as exc:
-                if not allow_fallback:
-                    raise RuntimeError(
-                        f"Neural speaker diarization failed: {exc}. "
-                        f"Run 'termux-stt install --engine diarization' to provision models/binaries."
-                    ) from exc
-                logger.warning("Neural diarization failed: %s -> falling back to Speaker_Unknown", exc)
 
-            # 3. Transcribe with Whisper STT
-            transcript_res = self._whisper.transcribe(wav_path, **kwargs)
+            # 2. Concurrently execute Whisper STT (GPU) and Sherpa Diarization (CPU)
+            def _run_diarization() -> list:
+                try:
+                    return self._diarizer.diarize_audio(wav_path, num_speakers=num_spk)
+                except Exception as exc:
+                    if not allow_fallback:
+                        raise RuntimeError(
+                            f"Neural speaker diarization failed: {exc}. "
+                            f"Run 'termux-stt install --engine diarization' to provision models/binaries."
+                        ) from exc
+                    logger.warning("Neural diarization failed: %s -> falling back to Speaker_Unknown", exc)
+                    return []
+
+            def _run_transcription() -> TranscriptResult:
+                return self._whisper.transcribe(wav_path, **kwargs)
+
+            logger.info("Dispatching concurrent dual pipeline: Whisper (GPU) || Sherpa Diarizer (CPU)")
+            with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
+                future_diar = executor.submit(_run_diarization)
+                future_stt = executor.submit(_run_transcription)
+
+                speaker_labels = future_diar.result()
+                transcript_res = future_stt.result()
 
             # 4. Align neural speaker intervals to STT segments
             mapper = SpeakerMapper()

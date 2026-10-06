@@ -173,3 +173,24 @@ def test_sherpa_diarizer_2tier_dispatch(monkeypatch):
     assert len(called_tier1) == 1
     assert len(called_tier2) == 1
 
+
+def test_sherpa_diarizer_speed_modes():
+    from termux_stt.diarization.sherpa_diarizer import SherpaDiarizer
+
+    # 1. balanced default -> 0.25
+    d_balanced = SherpaDiarizer(speed_mode="balanced")
+    assert abs(d_balanced.window_shift_ratio - 0.25) < 1e-4
+
+    # 2. fast -> 0.50
+    d_fast = SherpaDiarizer(speed_mode="fast")
+    assert abs(d_fast.window_shift_ratio - 0.50) < 1e-4
+
+    # 3. accurate -> 0.10
+    d_acc = SherpaDiarizer(speed_mode="accurate")
+    assert abs(d_acc.window_shift_ratio - 0.10) < 1e-4
+
+    # 4. explicit custom window_shift_ratio overrides speed_mode
+    d_custom = SherpaDiarizer(speed_mode="fast", window_shift_ratio=0.18)
+    assert abs(d_custom.window_shift_ratio - 0.18) < 1e-4
+
+

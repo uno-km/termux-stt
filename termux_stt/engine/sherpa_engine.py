@@ -80,10 +80,16 @@ class SherpaEngine(Engine):
                         if f in ("model.int8.onnx", "model.onnx"):
                             seg_model = os.path.join(root, f)
                             break
-                    if os.path.exists(seg_model):
-                        break
+            ratio = 0.25
+            speed_m = self.config.extra.get("speed_mode", "balanced")
+            if speed_m in ("fast", "turbo"):
+                ratio = 0.50
+            elif speed_m in ("accurate", "high"):
+                ratio = 0.10
+            if "window_shift_ratio" in self.config.extra and self.config.extra["window_shift_ratio"] is not None:
+                ratio = float(self.config.extra["window_shift_ratio"])
 
-            pyannote_cfg = sherpa_onnx.OfflineSpeakerSegmentationPyannoteModelConfig(model=seg_model)
+            pyannote_cfg = sherpa_onnx.OfflineSpeakerSegmentationPyannoteModelConfig(model=seg_model, window_shift_ratio=ratio)
             seg_cfg = sherpa_onnx.OfflineSpeakerSegmentationModelConfig(pyannote=pyannote_cfg, num_threads=self.config.threads or 4)
             emb_cfg = sherpa_onnx.SpeakerEmbeddingExtractorConfig(model=emb_path, num_threads=self.config.threads or 4)
             cluster_cfg = sherpa_onnx.FastClusteringConfig(num_clusters=num_speakers if num_speakers > 0 else -1, threshold=0.5)
@@ -557,6 +563,8 @@ class SherpaEngine(Engine):
                 num_speakers=num_speakers,
                 threshold=kwargs.get("threshold", 0.65),
                 provider=self.config.extra.get("provider", "cpu"),
+                speed_mode=self.config.extra.get("speed_mode", "balanced"),
+                window_shift_ratio=self.config.extra.get("window_shift_ratio", None),
             )
             speaker_labels = diarizer.diarize_audio(audio_path, num_speakers=num_speakers)
             logger.info("Neural diarization extracted %d speaker intervals", len(speaker_labels))

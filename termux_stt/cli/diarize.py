@@ -77,6 +77,9 @@ def run_diarize(args):
         target_engine = "sherpa"
 
     req_device = getattr(args, "device", "auto")
+    speed_mode = getattr(args, "speed_mode", "balanced")
+    ratio = getattr(args, "window_shift_ratio", None)
+
     engine = create_engine(
         engine=target_engine,
         model=getattr(args, "model", None) or ("sensevoice-small-int8" if target_engine == "sherpa" else "tiny"),
@@ -85,9 +88,11 @@ def run_diarize(args):
         vad=getattr(args, "vad", True),
         num_speakers=getattr(args, "speakers", 2),
         device=req_device,
+        speed_mode=speed_mode,
+        window_shift_ratio=ratio,
     )
 
-    print(f"[*] Diarizing '{args.file}' using engine='{target_engine}' (device='{req_device}') with {args.speakers} speakers...")
+    print(f"[*] Diarizing '{args.file}' using engine='{target_engine}' (device='{req_device}', speed_mode='{speed_mode}') with {args.speakers} speakers...")
     result = engine.diarize(args.file, num_speakers=args.speakers)
 
     if args.output:

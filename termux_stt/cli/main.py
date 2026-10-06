@@ -69,6 +69,8 @@ def _run_cli():
     parser_diarize.add_argument("file", type=str, help="Path to audio file")
     parser_diarize.add_argument("--speakers", type=int, default=2, help="Number of expected speakers")
     parser_diarize.add_argument("--format", type=str, choices=["text", "json", "rttm"], default="text", help="Output format")
+    parser_diarize.add_argument("--speed-mode", type=str, choices=["accurate", "balanced", "fast"], default="balanced", help="Diarization latency profile: balanced (default, 2.5x speedup), fast (4x speedup), accurate")
+    parser_diarize.add_argument("--window-shift-ratio", type=float, help="Explicit PyAnnote segmentation window shift ratio (0 < ratio <= 1.0)")
     parser_diarize.add_argument("--output", type=str, help="Output file path")
 
     # Models subcommand
