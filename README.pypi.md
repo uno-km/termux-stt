@@ -27,7 +27,7 @@ print("SRT Subtitles:\n", result.to_srt())
 
 # 3. Multi-Speaker Neural Diarization (PyAnnote 3.0 + CAM++ 192d + TS-VAD)
 hybrid = create_engine("hybrid", lang="ko", num_speakers=2)
-diar_result = hybrid.diarize("samples/kor_영어로화자분리.wav")
+diar_result = hybrid.diarize("samples/kor_diarization.wav")
 for seg in diar_result.segments:
     print(f"[{seg.speaker}] ({seg.start:.1f}s -> {seg.end:.1f}s): {seg.text}")
 

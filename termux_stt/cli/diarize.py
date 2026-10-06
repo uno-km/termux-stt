@@ -58,6 +58,16 @@ def ensure_diarization_installed_interactive() -> bool:
     sys.exit(1)
 
 
+def format_timestamp(seconds: float) -> str:
+    """Format seconds into MM:SS.ss or HH:MM:SS.ss string."""
+    h = int(seconds // 3600)
+    m = int((seconds % 3600) // 60)
+    s = seconds % 60
+    if h > 0:
+        return f"{h:02d}:{m:02d}:{s:05.2f}"
+    return f"{m:02d}:{s:05.2f}"
+
+
 def run_diarize(args):
     # Interactive check for diarization models
     ensure_diarization_installed_interactive()
@@ -88,7 +98,9 @@ def run_diarize(args):
         else:
             with open(out_path, "w", encoding="utf-8") as f:
                 for seg in result.segments:
-                    f.write(f"[{seg.speaker}] {seg.text}\n")
+                    t_start = format_timestamp(seg.start)
+                    t_end = format_timestamp(seg.end)
+                    f.write(f"[{seg.speaker}] [{t_start} -> {t_end}] {seg.text}\n")
         print(f"Output saved to {out_path}")
     else:
         if args.format == "rttm":
@@ -97,4 +109,6 @@ def run_diarize(args):
             print(to_json(result))
         else:
             for seg in result.segments:
-                print(f"[{seg.speaker}] {seg.text}")
+                t_start = format_timestamp(seg.start)
+                t_end = format_timestamp(seg.end)
+                print(f"[{seg.speaker}] [{t_start} -> {t_end}] {seg.text}")

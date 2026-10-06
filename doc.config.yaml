@@ -82,7 +82,7 @@ code_example_py: |
 
   # 3. Multi-Speaker Neural Diarization (PyAnnote 3.0 + CAM++ 192d + TS-VAD)
   hybrid = create_engine("hybrid", lang="ko", num_speakers=2)
-  diar_result = hybrid.diarize("samples/kor_영어로화자분리.wav")
+  diar_result = hybrid.diarize("samples/kor_diarization.wav")
   for seg in diar_result.segments:
       print(f"[{seg.speaker}] ({seg.start:.1f}s -> {seg.end:.1f}s): {seg.text}")
 
@@ -100,7 +100,7 @@ code_example_js: |
 
     // 3. Neural Diarization via Hybrid Engine
     const hybrid = createEngine("hybrid", { lang: "ko", numSpeakers: 2 });
-    const diarResult = await hybrid.diarize("samples/kor_영어로화자분리.wav");
+    const diarResult = await hybrid.diarize("samples/kor_diarization.wav");
     for (const seg of diarResult.segments) {
       console.log(`[${seg.speaker}] (${seg.start.toFixed(1)}s -> ${seg.end.toFixed(1)}s): ${seg.text}`);
     }
@@ -165,7 +165,7 @@ quickstart_body: |
     <p><code>termux-stt</code> packages benchmark audio samples in <code>samples/</code>:</p>
     <ul>
       <li><code>samples/jfk_1min.wav</code>: English Speech Benchmark (60.00s, 16kHz Mono)</li>
-      <li><code>samples/kor_영어로화자분리.wav</code>: Korean Real Podcast 2-Speaker Cross-Talk Benchmark (45.00s, 16kHz Mono)</li>
+      <li><code>samples/kor_diarization.wav</code>: Korean Real Podcast 2-Speaker Cross-Talk Benchmark (45.00s, 16kHz Mono)</li>
       <li><code>samples/3_speaker_test.wav</code>: 3-Speaker Multi-Conversation Benchmark (15.00s, 16kHz Mono)</li>
     </ul>
   </div>
@@ -182,7 +182,7 @@ quickstart_body: |
 
   <h3>Recipe 2: Neural Speaker Diarization ("Who Spoke When?")</h3>
   <p>Run high-precision multi-speaker diarization using PyAnnote 3.0 + CAM++ 192d neural embeddings:</p>
-  <pre><code>termux-stt diarize samples/kor_영어로화자분리.wav --speakers 2 --format text</code></pre>
+  <pre><code>termux-stt diarize samples/kor_diarization.wav --speakers 2 --format text</code></pre>
   <p><strong>Sample Output:</strong></p>
   <pre><code>[Speaker 0] (0.0s -> 5.2s): 주변에 얘기를 거의 안 했어요. 제가 사실 그 샀다고 얘기를 안 했어요.
   [Speaker 1] (5.4s -> 6.1s): 왜요?
@@ -200,7 +200,7 @@ quickstart_body: |
   engine = create_engine("hybrid", model="small", lang="ko", num_speakers=2)
 
   # 2. Transcribe and Diarize
-  result = engine.diarize("samples/kor_영어로화자분리.wav")
+  result = engine.diarize("samples/kor_diarization.wav")
 
   for seg in result.segments:
       print(f"[{seg.speaker}] {seg.start:.2f}s - {seg.end:.2f}s: {seg.text}")</code></pre>
@@ -210,7 +210,7 @@ quickstart_body: |
 
   async function diarizeMeeting() {
     const engine = createEngine("hybrid", { model: "small", lang: "ko", numSpeakers: 2 });
-    const result = await engine.diarize("samples/kor_영어로화자분리.wav");
+    const result = await engine.diarize("samples/kor_diarization.wav");
     
     console.log("Speakers:", result.speakers);
     console.log("SRT Subtitles:\n", result.toSrt());
@@ -442,7 +442,7 @@ changelog:
       - "PyAnnote 3.0 & 3D-Speaker CAM++ 192d Integration: Integrated SOTA neural speaker segmentation and Alibaba 3D-Speaker CAM++ 192-dimensional d-vector embeddings."
       - "TS-VAD Overlap Speech Resolution: Built OverlapResolver module to resolve simultaneous cross-talk and overlapping speech interruptions ('왜요?' backchannels) into clean multi-speaker streams."
       - "Target-Aware Lightweight Provisioning: Default installer keeps base whisper STT lightweight, with neural diarization provisioned via 'termux-stt install --engine diarization' or interactive TTY [y/N] prompts."
-      - "Benchmark Sample Suite Expansion: Added real Korean podcast 2-speaker cross-talk benchmark ('samples/kor_영어로화자분리.wav') and 3-speaker benchmark ('samples/3_speaker_test.wav')."
+      - "Benchmark Sample Suite Expansion: Added real Korean podcast 2-speaker cross-talk benchmark ('samples/kor_diarization.wav') and 3-speaker benchmark ('samples/3_speaker_test.wav')."
       - "Full Monorepo SemVer Parity: Synchronized version 2.0.0 across pyproject.toml, package.json, doc.config.yaml, and SDK manifests."
   - version: "v1.3.2"
     date: "2026-09-29"
