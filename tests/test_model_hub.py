@@ -9,8 +9,9 @@ def test_model_registry_completeness():
     assert "whisper" in MODEL_REGISTRY
     assert "tiny" in MODEL_REGISTRY["whisper"]
     assert "large-v3-turbo" in MODEL_REGISTRY["whisper"]
-    assert "vosk" in MODEL_REGISTRY
-    assert "small-ko-0.22" in MODEL_REGISTRY["vosk"]
+    assert "sherpa" in MODEL_REGISTRY
+    assert "3dspeaker-campplus" in MODEL_REGISTRY["sherpa"]
+    assert "pyannote-segmentation-3-0" in MODEL_REGISTRY["sherpa"]
 
 def test_get_model_info():
     info = get_model_info("whisper", "tiny")
@@ -20,7 +21,7 @@ def test_get_model_info():
 
 def test_get_default_model():
     assert get_default_model("whisper") == "tiny"
-    assert get_default_model("vosk") == "small-ko-0.22"
+    assert get_default_model("sherpa") == "sensevoice-small-int8"
 
 def test_model_typo_fuzzy_recommendation():
     """Verify that an unknown model typo raises ValueError with close matches and available model list."""

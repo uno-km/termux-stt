@@ -6,16 +6,16 @@
 [![npm downloads](https://img.shields.io/npm/dm/termux-stt.svg?style=flat-square&color=b91c1c)](https://www.npmjs.com/package/termux-stt)
 [![License](https://img.shields.io/badge/License-Apache_2.0-004499.svg?style=flat-square)](https://github.com/uno-km/termux-stt)
 
-> **디바이스 리소스를 활용한 통합 온디바이스 음성인식(STT) 및 순수 Python 128d X-Vector 화자 분리 프레임워크**  
-> *Unified On-Device Speech-to-Text Utilizing Device Resources & Pure Python 128d X-Vector Speaker Diarization*
+> **디바이스 리소스를 활용한 통합 온디바이스 음성인식(STT) 및 차세대 신경망 화자 분리(PyAnnote 3.0 + CAM++ 192d + TS-VAD) 프레임워크**  
+> *Unified On-Device Speech-to-Text & Neural Multi-Speaker Diarization (PyAnnote 3.0 + CAM++ 192d + TS-VAD Overlap Resolver)*
 
 ---
 
 ## Architecture & Overview
 
-Whisper.cpp, Vosk, Sherpa-ONNX 3대 네이티브 엔진을 통합하고, 닫힌 형태 순수 Python 128차원 X-Vector 클러스터링을 결합하여 80MB 미만의 초경량 메모리로 100% 온디바이스 실시간 음성인식과 화자 분리를 구현합니다.
+Whisper.cpp(네이티브 Vulkan GPU / NEON CPU) 및 Sherpa-ONNX 듀얼 모던 엔진을 통합하고, PyAnnote 3.0 신경망 세그멘테이션, 3D-Speaker CAM++ 192차원 성문 임베딩, TS-VAD 동시 발화(마이크 물림) 분리기를 결합하여 완전 온디바이스 실시간 다중 화자 음성인식을 구현합니다.
 
-Integrates Whisper.cpp, Vosk, and Sherpa-ONNX with a closed-form pure-Python 128-dimensional X-Vector clustering algorithm that operates in under 80MB RAM with zero cloud egress.
+Integrates Whisper.cpp (Native Vulkan GPU / NEON CPU) and Sherpa-ONNX with PyAnnote 3.0 neural segmentation, 3D-Speaker CAM++ 192-dim embeddings, and TS-VAD overlapped speech resolution with zero cloud egress.
 
 ---
 
@@ -28,17 +28,17 @@ pip install termux-stt
 ```python
 from termux_stt import create_engine
 
-# 1. Initialize Engine with Hybrid GPU-Encoder / CPU-Decoder Acceleration
-engine = create_engine("whisper", model="small", lang="en", threads=4, split_mode=True)
+# 1. Initialize Whisper Engine with Vulkan GPU / CPU Hybrid Acceleration
+engine = create_engine("whisper", model="small", lang="ko", threads=4, split_mode=True)
 
 # 2. Transcribe Audio directly into Subtitles
 result = engine.transcribe("samples/jfk_1min.wav")
 print("Transcript:\n", result.text)
 print("SRT Subtitles:\n", result.to_srt())
 
-# 3. 2-Speaker Diarization without PyTorch
-hybrid = create_engine("hybrid", lang="en", num_speakers=2)
-diar_result = hybrid.diarize("samples/jfk_1min.wav")
+# 3. Multi-Speaker Neural Diarization (PyAnnote 3.0 + CAM++ 192d + TS-VAD)
+hybrid = create_engine("hybrid", lang="ko", num_speakers=2)
+diar_result = hybrid.diarize("samples/kor_영어로화자분리.wav")
 for seg in diar_result.segments:
     print(f"[{seg.speaker}] ({seg.start:.1f}s -> {seg.end:.1f}s): {seg.text}")
 
@@ -53,55 +53,22 @@ const { createEngine } = require("termux-stt");
 
 async function main() {
   // 1. Initialize Whisper Engine
-  const engine = createEngine("whisper", { model: "tiny", lang: "en", threads: 4 });
+  const engine = createEngine("whisper", { model: "tiny", lang: "ko", threads: 4 });
 
   // 2. Transcribe Audio
   const result = await engine.transcribe("samples/jfk_1min.wav");
   console.log("Transcript:", result.text);
   console.log("SRT Subtitles:\n", result.toSrt());
+
+  // 3. Neural Diarization via Hybrid Engine
+  const hybrid = createEngine("hybrid", { lang: "ko", numSpeakers: 2 });
+  const diarResult = await hybrid.diarize("samples/kor_영어로화자분리.wav");
+  for (const seg of diarResult.segments) {
+    console.log(`[${seg.speaker}] (${seg.start.toFixed(1)}s -> ${seg.end.toFixed(1)}s): ${seg.text}`);
+  }
 }
 main();
 
-```
-
----
-
-## Distributed Clustering & Memory Pooling (AMEVA-Cluster)
-
-Termux-STT natively integrates with **AMEVA-Cluster** (`pip install ameva-cluster`) for distributed large-model speech recognition (e.g. `whisper-large-v3-turbo`) across interconnected mobile fleets.
-
-### 1. Install Cluster Runtime
-```bash
-pip install ameva-cluster
-# or Node.js:
-npm install @ameva/cluster
-```
-
-### 2. Launch Worker Node on Remote Phone
-```bash
-# On remote worker device (e.g. Galaxy A53):
-ameva-cluster worker --port 50052
-```
-
-### 3. Distributed Transcription via Master Node
-```bash
-# Master node sharding Whisper-Large layers across remote phone RAM:
-termux-stt transcribe meeting.wav \
-  --model whisper-large-v3-turbo.bin \
-  --rpc 192.0.2.10:50052,192.0.2.11:50052
-```
-
-```python
-from termux_stt import create_engine
-
-# Python SDK Distributed STT
-engine = create_engine(
-    "whisper",
-    model="large-v3-turbo",
-    cluster_rpc_servers="192.0.2.10:50052,192.0.2.11:50052"
-)
-result = engine.transcribe("meeting.wav")
-print(result.text)
 ```
 
 ---

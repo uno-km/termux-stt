@@ -23,10 +23,6 @@ MODEL_REGISTRY = {
         "turbo": {"url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-turbo-q5_0.bin", "sha256": "", "size": "560MB", "description": "Whisper Large-v3-Turbo Q5_0 (Alias)"},
         "large-v3": {"url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3.bin", "sha256": "64d182b440b98d5203c4f9bd541544d84c605196c4f7b845dfa11fb23594d1e2", "size": "3.1GB", "description": "Whisper Large-v3 (Full Precision)"},
     },
-    "vosk": {
-        "small-ko-0.22": {"url": "https://alphacephei.com/vosk/models/vosk-model-small-ko-0.22.zip", "sha256": "", "size": "42MB", "description": "Vosk Small Korean"},
-        "model-spk-0.4": {"url": "https://alphacephei.com/vosk/models/vosk-model-spk-0.4.zip", "sha256": "", "size": "13MB", "description": "Vosk Speaker Identification"}
-    },
     "sherpa": {
         "sensevoice-small": {"url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-sense-voice-zh-en-ja-ko-yue-int8-2024-07-17.tar.bz2", "sha256": "", "size": "163MB", "type": "sense-voice", "description": "SenseVoice Small INT8 ONNX (Non-Autoregressive Ultra-Fast STT)"},
         "sensevoice-small-int8": {"url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-sense-voice-zh-en-ja-ko-yue-int8-2024-07-17.tar.bz2", "sha256": "", "size": "163MB", "type": "sense-voice", "description": "SenseVoice Small INT8 ONNX (Non-Autoregressive Ultra-Fast STT)"},
@@ -61,7 +57,6 @@ def get_default_model(engine: str) -> str:
     """Get a default model name for a given engine."""
     defaults = {
         "whisper": "tiny",
-        "vosk": "small-ko-0.22",
-        "sherpa": "zipformer-ko"
+        "sherpa": "sensevoice-small-int8",
     }
     return defaults.get(engine, "")

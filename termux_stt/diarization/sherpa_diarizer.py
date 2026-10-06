@@ -61,7 +61,10 @@ class SherpaDiarizer:
             if p.exists():
                 return str(p)
         raise FileNotFoundError(
-            f"Cannot locate '{name}' executable. Please verify sherpa-onnx installation in Termux."
+            f"Cannot locate '{name}' executable.\n"
+            f"Please run 'termux-stt install --engine diarization' or in Python:\n"
+            f"  from termux_stt.platform.installer import EngineInstaller\n"
+            f"  EngineInstaller.install_diarization()"
         )
 
     def diarize_audio(
@@ -124,7 +127,12 @@ class SherpaDiarizer:
                     break
 
         if not seg_model:
-            raise FileNotFoundError(f"Cannot find segmentation .onnx model in or near: {seg_dir}")
+            raise FileNotFoundError(
+                f"Cannot find segmentation .onnx model in or near: {seg_dir}.\n"
+                f"Please run 'termux-stt install --engine diarization' or in Python:\n"
+                f"  from termux_stt.platform.installer import EngineInstaller\n"
+                f"  EngineInstaller.install_diarization()"
+            )
 
         cmd = [
             binary,

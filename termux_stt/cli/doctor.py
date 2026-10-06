@@ -60,12 +60,15 @@ def run_doctor(args):
     else:
         print(f"{_status_tag('warn')} whisper.cpp engine missing or not in PATH")
 
-    # Check Vosk
+    # Check Neural Diarization (PyAnnote 3.0 + CAM++ 192d)
     try:
-        import vosk  # noqa: F401
-        print(f"{_status_tag('ok')} vosk Python binding is installed")
-    except ImportError:
-        print(f"{_status_tag('warn')} vosk is missing (Install via: pip install vosk)")
+        from termux_stt.platform.installer import EngineInstaller
+        if EngineInstaller.check_diarization_installed():
+            print(f"{_status_tag('ok')} neural diarization models (PyAnnote 3.0 + CAM++) installed")
+        else:
+            print(f"{_status_tag('warn')} neural diarization models missing (Install via: termux-stt install --engine diarization)")
+    except Exception:
+        pass
 
     # Check Sherpa ONNX
     has_sherpa = shutil.which("sherpa-onnx-offline") is not None

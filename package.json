@@ -1,7 +1,7 @@
 {
   "name": "termux-stt",
-  "version": "1.5.0",
-  "description": "On-device Speech-to-Text & speaker diarization framework utilizing device resources for Android Termux",
+  "version": "2.0.0",
+  "description": "On-device Speech-to-Text & neural speaker diarization framework for Android Termux (Whisper Vulkan GPU & Sherpa-ONNX)",
   "main": "index.js",
   "types": "index.d.ts",
   "bin": {

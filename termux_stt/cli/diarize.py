@@ -1,12 +1,14 @@
+import os
+import sys
 from termux_stt import create_engine
 from termux_stt.export.json_export import save_json, to_json
 from termux_stt.export.rttm import save_rttm, to_rttm
+from termux_stt.platform.installer import EngineInstaller
 
 
 def resolve_safe_output_path(path: str) -> str:
     if not path:
         return path
-    import os
     from pathlib import Path
     p = Path(path)
     if str(p).startswith("/tmp") and not os.access("/tmp", os.W_OK):
@@ -21,15 +23,52 @@ def resolve_safe_output_path(path: str) -> str:
     return path
 
 
+def ensure_diarization_installed_interactive() -> bool:
+    """Check if diarization models are installed; prompt user interactively if in TTY."""
+    if EngineInstaller.check_diarization_installed():
+        return True
+
+    print("\n" + "=" * 65)
+    print("[!] Neural Speaker Diarization runtimes / models are not installed.")
+    print("    Required models: PyAnnote 3.0 (~15MB) + 3D-Speaker CAM++ (~28MB)")
+    print("=" * 65)
+
+    if sys.stdin.isatty():
+        try:
+            choice = input("Would you like to download and install them now? [y/N]: ").strip().lower()
+        except (EOFError, KeyboardInterrupt):
+            print("\nOperation cancelled.")
+            sys.exit(1)
+
+        if choice in ("y", "yes"):
+            print("\n[*] Starting full diarization runtime provisioning...")
+            ok = EngineInstaller.install_diarization()
+            if ok:
+                print("[+] Diarization runtimes successfully installed! Resuming operation...\n")
+                return True
+            else:
+                print("[-] Failed to provision diarization runtimes.")
+                sys.exit(1)
+
+    print("\n[-] Error: Diarization models are missing.")
+    print("    To install them manually, run:")
+    print("        termux-stt install --engine diarization")
+    print("    or full install:")
+    print("        termux-stt install --all\n")
+    sys.exit(1)
+
+
 def run_diarize(args):
+    # Interactive check for diarization models
+    ensure_diarization_installed_interactive()
+
     target_engine = getattr(args, "engine", None)
-    if not target_engine or target_engine == "whisper":
-        # Default to sherpa neural diarization for superior multi-speaker accuracy
+    if not target_engine or target_engine in ("whisper", "vosk"):
         target_engine = "sherpa"
 
     engine = create_engine(
         engine=target_engine,
-        model=getattr(args, "model", None) or ("sensevoice-small" if target_engine == "sherpa" else "tiny"),
+        model=getattr(args, "model", None) or ("sensevoice-small-int8" if target_engine == "sherpa" else "tiny"),
         lang=getattr(args, "lang", "ko"),
         threads=getattr(args, "threads", None),
         vad=getattr(args, "vad", True),

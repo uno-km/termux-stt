@@ -17,7 +17,7 @@ def _run_cli():
 
     # Common parent parser for shared arguments
     common_parser = argparse.ArgumentParser(add_help=False)
-    common_parser.add_argument("--engine", type=str, default="whisper", choices=["whisper", "vosk", "hybrid", "sherpa"], help="Engine to use")
+    common_parser.add_argument("--engine", type=str, default="whisper", choices=["whisper", "hybrid", "sherpa"], help="Engine to use")
     common_parser.add_argument("-m", "--model", type=str, help="Model name or path")
     common_parser.add_argument("-d", "--device", "--backend", "-b", dest="device", type=str, default="auto", choices=["auto", "gpu", "vulkan", "opencl", "cpu"], help="Acceleration device backend (auto, gpu, vulkan, opencl, cpu)")
     common_parser.add_argument("--gpu", dest="device", action="store_const", const="gpu", help="Enable hardware GPU acceleration (alias for -d gpu)")
@@ -42,8 +42,11 @@ def _run_cli():
     common_parser.add_argument("--verbose", action="store_true", help="Enable verbose logging")
 
     # Install subcommand
-    parser_install = subparsers.add_parser("install", help="1-Click automatic installer for all native STT engines (Whisper, Sherpa-ONNX, Vosk)")
+    parser_install = subparsers.add_parser("install", help="1-Click automatic installer for native STT engines and neural diarization")
     parser_install.add_argument("-y", "--yes", action="store_true", help="Non-interactive mode flag (retained for script compatibility)")
+    parser_install.add_argument("--engine", choices=["whisper", "sherpa", "diarization", "all"], default=None, help="Engine/component to install")
+    parser_install.add_argument("--diarization", action="store_true", help="Provision PyAnnote 3.0 & CAM++ diarization models")
+    parser_install.add_argument("--all", action="store_true", help="Provision all engines, models, and diarization runtimes")
 
     # Demo subcommand
     parser_demo = subparsers.add_parser("demo", parents=[common_parser], help="Run zero-configuration STT demo with standard benchmark audio")

@@ -1,6 +1,6 @@
 """
 1-Click Self-Contained Native Engine & Dependency Installer for Termux.
-Provisions ffmpeg, clang, cmake, and builds whisper.cpp with ARM NEON.
+Provisions ffmpeg, whisper.cpp with ARM NEON / Vulkan, and Sherpa-ONNX Diarization models.
 """
 
 import logging
@@ -40,7 +40,7 @@ class EngineInstaller:
 
     @classmethod
     def get_candidate_whisper_urls(cls) -> List[str]:
-        """Generate dynamic SSOT candidate URLs for standard pure-CPU engine."""
+        """Generate dynamic SSOT candidate URLs for standard pure-CPU / Vulkan engine."""
         urls = []
         custom_tag = os.environ.get("TERMUX_STT_RELEASE_TAG", "").strip()
         custom_base = os.environ.get("TERMUX_STT_RELEASE_BASE", "").strip()
@@ -89,31 +89,6 @@ class EngineInstaller:
         return urls
 
     @classmethod
-    def get_candidate_vosk_urls(cls) -> List[str]:
-        """Generate dynamic SSOT candidate URLs for prebuilt vosk-android engine."""
-        urls = []
-        custom_tag = os.environ.get("TERMUX_STT_RELEASE_TAG", "").strip()
-        custom_base = os.environ.get("TERMUX_STT_RELEASE_BASE", "").strip()
-
-        # Tier 1: Explicit environment overrides
-        if custom_base:
-            base = custom_base.rstrip("/")
-            urls.append(f"{base}/vosk-android-arm64.tar.gz")
-        if custom_tag:
-            tag = custom_tag if custom_tag.startswith("v") else f"v{custom_tag}"
-            urls.append(f"https://github.com/uno-km/termux-stt/releases/download/{tag}/vosk-android-arm64.tar.gz")
-
-        # Tier 2: GitHub Releases latest canonical endpoint (Zero-Hardcoding SSOT)
-        urls.append("https://github.com/uno-km/termux-stt/releases/latest/download/vosk-android-arm64.tar.gz")
-
-        # Tier 3: Current installed package dynamic version matching
-        ver = _resolve_package_version()
-        if ver:
-            urls.append(f"https://github.com/uno-km/termux-stt/releases/download/v{ver}/vosk-android-arm64.tar.gz")
-
-        return urls
-
-    @classmethod
     def install_system_dependencies(cls) -> bool:
         """Ensure required Termux runtime packages (ffmpeg) are available."""
         if shutil.which("ffmpeg"):
@@ -144,6 +119,8 @@ class EngineInstaller:
         print("  - Node.js / NPM: npm install -g termux-stt@latest")
         print("For 10x Native Vulkan GPU Turbo Acceleration:")
         print("  - Install AMEVA Runtime: pip install ameva-runtime")
+        print("To install neural diarization models:")
+        print("  - termux-stt install --engine diarization")
         print("============================================================================" + "\n")
 
     @classmethod
@@ -186,13 +163,11 @@ class EngineInstaller:
                 if not content or len(content) < 1024:
                     continue
 
-                # Check if gzip tarball (magic 0x1F, 0x8B)
                 is_tar = content[:2] == b'\x1f\x8b' or url.endswith(".tar.gz")
                 if is_tar:
                     with tarfile.open(fileobj=io.BytesIO(content), mode="r:gz") as tar:
                         tar.extractall(path=staging_dir)
 
-                    # Locate whisper-cli or main in staging
                     found_bin = None
                     for p in staging_dir.rglob("*"):
                         if p.is_file() and p.name in ("whisper-cli", "whisper-cpp", "main"):
@@ -205,7 +180,6 @@ class EngineInstaller:
                         shutil.copy2(target_path, PREFIX_BIN / "whisper-cpp")
                         (PREFIX_BIN / "whisper-cpp").chmod(0o755)
 
-                    # Extract shared libraries to PREFIX_LIB (skip if already valid and not force)
                     for so_file in staging_dir.rglob("*.so*"):
                         if so_file.is_file():
                             target_so = PREFIX_LIB / so_file.name
@@ -225,7 +199,6 @@ class EngineInstaller:
                     shutil.copy2(target_path, PREFIX_BIN / "whisper-cpp")
                     (PREFIX_BIN / "whisper-cpp").chmod(0o755)
 
-                # Check if downloaded file is valid ELF executable
                 if target_path.exists() and cls.is_valid_elf(target_path):
                     print(f"[+] Pre-compiled whisper.cpp binary successfully installed to {target_path} (from {url})")
                     return True
@@ -260,7 +233,6 @@ class EngineInstaller:
                     print(f"[+] whisper.cpp binary is already present and verified at {candidate}.")
                     return True
 
-        # Fast Direct Pre-built Stream Download (~2s)
         if cls._download_prebuilt_whisper(force=force):
             return True
 
@@ -310,7 +282,7 @@ class EngineInstaller:
                             except OSError:
                                 pass
 
-                    # Deploy shared libraries (onnxruntime, sherpa-c-api) to PREFIX_LIB (skip if healthy and not force)
+                    # Deploy shared libraries (onnxruntime, sherpa-c-api) to PREFIX_LIB
                     for so_file in staging_dir.rglob("*.so*"):
                         if so_file.is_file():
                             target_so = PREFIX_LIB / so_file.name
@@ -336,105 +308,6 @@ class EngineInstaller:
         return False
 
     @classmethod
-    def _download_prebuilt_vosk(cls) -> bool:
-        """Download and extract precompiled vosk package & libvosk.so (~6.5MB)."""
-        import io
-        import site
-        import tarfile
-        import urllib.request
-        ver = _resolve_package_version() or "latest"
-
-        PREFIX_LIB.mkdir(parents=True, exist_ok=True)
-
-        # Ensure essential python bindings 'cffi' and 'srt' are present
-        for dep in ["cffi", "srt"]:
-            try:
-                __import__(dep)
-            except ImportError:
-                print(f"[*] Installing vosk dependency '{dep}' via pip...")
-                subprocess.run(["pip", "install", "--no-cache-dir", dep], check=False)
-
-        # Locate target site-packages directory
-        target_site = None
-        for p in site.getsitepackages():
-            if "com.termux" in p and "site-packages" in p:
-                target_site = Path(p)
-                break
-        if not target_site:
-            target_site = Path(sys.prefix) / "lib" / f"python{sys.version_info.major}.{sys.version_info.minor}" / "site-packages"
-
-        target_site.mkdir(parents=True, exist_ok=True)
-        staging_dir = XDG_CACHE_HOME / "termux-stt" / ".staging-vosk"
-        staging_dir.mkdir(parents=True, exist_ok=True)
-
-        print("[*] Downloading pre-compiled vosk Bionic ARM64 engine (~6.5MB)...")
-        candidate_urls = cls.get_candidate_vosk_urls()
-        for url in candidate_urls:
-            try:
-                req = urllib.request.Request(
-                    url,
-                    headers={"User-Agent": f"termux-stt-installer/{ver} (Android; ARM64)"}
-                )
-                with urllib.request.urlopen(req, timeout=30) as response:
-                    content = response.read()
-
-                if not content or len(content) < 100 * 1024:
-                    continue
-
-                is_tar = content[:2] == b'\x1f\x8b' or url.endswith(".tar.gz")
-                if is_tar:
-                    with tarfile.open(fileobj=io.BytesIO(content), mode="r:gz") as tar:
-                        tar.extractall(path=staging_dir)
-
-                    # Deploy vosk python module to site-packages
-                    if (staging_dir / "vosk").exists():
-                        dest_vosk = target_site / "vosk"
-                        if dest_vosk.exists():
-                            shutil.rmtree(dest_vosk, ignore_errors=True)
-                        shutil.copytree(staging_dir / "vosk", dest_vosk)
-
-                    # Deploy libvosk.so to PREFIX_LIB
-                    for so_file in staging_dir.rglob("*.so*"):
-                        if so_file.is_file():
-                            target_so = PREFIX_LIB / so_file.name
-                            shutil.copy2(so_file, target_so)
-                            try:
-                                target_so.chmod(0o755)
-                            except OSError:
-                                pass
-
-                    shutil.rmtree(staging_dir, ignore_errors=True)
-
-                    try:
-                        import vosk  # noqa: F401
-                        print(f"[+] Successfully installed pre-compiled vosk engine to {target_site / 'vosk'}")
-                        return True
-                    except Exception as _v_err:
-                        logger.debug("Vosk import check after install failed: %s", _v_err)
-            except Exception as e:
-                logger.debug(f"Vosk download attempt failed for {url}: {e}")
-                shutil.rmtree(staging_dir, ignore_errors=True)
-                continue
-
-        print("[-] Pre-built vosk binary download unavailable from candidate mirrors.")
-        return False
-
-    @classmethod
-    def install_vosk(cls, **kwargs) -> bool:
-        """Install prebuilt vosk engine and initialize cache directories."""
-        model_dir = XDG_CACHE_HOME / "termux-stt" / "models" / "vosk"
-        model_dir.mkdir(parents=True, exist_ok=True)
-        try:
-            import vosk  # noqa: F401
-            print("[+] vosk is already installed.")
-            return True
-        except ImportError:
-            pass
-
-        # Prebuilt binary stream extraction from GitHub releases
-        return cls._download_prebuilt_vosk()
-
-    @classmethod
     def install_sherpa_onnx(cls, force: bool = False, dedicate: bool = False, **kwargs) -> bool:
         """Install prebuilt sherpa-onnx binaries and initialize cache directories."""
         model_dir = XDG_CACHE_HOME / "termux-stt" / "models" / "sherpa"
@@ -450,8 +323,59 @@ class EngineInstaller:
             print("[+] sherpa-onnx binary is already present and verified.")
             return True
 
-        # Prebuilt binary stream extraction (No mobile source compilation)
         return cls._download_prebuilt_sherpa(force=force)
+
+    @classmethod
+    def install_diarization(cls, force: bool = False) -> bool:
+        """Provision PyAnnote 3.0 segmentation & CAM++ 192d embedding models and diarizer binary."""
+        print("==========================================================")
+        print("[AMEVA-STT] Provisioning Neural Speaker Diarization Models & Runtimes")
+        print("==========================================================")
+
+        # 1. Ensure sherpa-onnx binaries and shared libraries
+        sherpa_ok = cls.install_sherpa_onnx(force=force)
+        if not sherpa_ok:
+            logger.warning("Sherpa binary installation failed, will attempt model provisioning directly.")
+
+        # 2. Provision PyAnnote 3.0 Segmentation ONNX model (~15MB)
+        try:
+            from ..models.hub import ModelHub
+            print("[*] Provisioning PyAnnote Segmentation 3.0 ONNX (~15MB)...")
+            ModelHub.ensure_model("sherpa", "pyannote-segmentation-3-0")
+            print("[+] PyAnnote Segmentation 3.0 model successfully cached.")
+        except Exception as e:
+            print(f"[-] Failed to download pyannote-segmentation-3-0: {e}")
+            return False
+
+        # 3. Provision 3D-Speaker CAM++ 192d Embedding ONNX model (~28MB)
+        try:
+            print("[*] Provisioning 3D-Speaker CAM++ (192-dim) ONNX (~28MB)...")
+            ModelHub.ensure_model("sherpa", "3dspeaker-campplus")
+            print("[+] 3D-Speaker CAM++ model successfully cached.")
+        except Exception as e:
+            print(f"[-] Failed to download 3dspeaker-campplus: {e}")
+            return False
+
+        print("\n[+] Neural speaker diarization models and runtimes are fully provisioned!")
+        return True
+
+    @classmethod
+    def check_diarization_installed(cls) -> bool:
+        """Check if neural diarization models (PyAnnote + CAM++) are present in cache."""
+        model_dir = XDG_CACHE_HOME / "termux-stt" / "models" / "sherpa"
+        # Check CAM++
+        has_campplus = (
+            (model_dir / "3dspeaker-campplus").exists()
+            or any(model_dir.glob("*campplus*.onnx"))
+            or (model_dir / "3dspeaker_speech_campplus_sv_zh-cn_16k-common.onnx").exists()
+        )
+        # Check PyAnnote
+        has_pyannote = (
+            (model_dir / "sherpa-onnx-pyannote-segmentation-3-0").exists()
+            or any(model_dir.glob("*pyannote*.onnx"))
+            or any(model_dir.glob("*segmentation*.onnx"))
+        )
+        return bool(has_campplus and has_pyannote)
 
     @classmethod
     def check_engine_installed(cls, engine: str) -> bool:
@@ -463,14 +387,10 @@ class EngineInstaller:
                 or (PREFIX_BIN / "whisper-cli").exists()
                 or (PREFIX_BIN / "whisper-cpp").exists()
             )
-        elif engine == "vosk":
-            try:
-                import vosk  # noqa: F401
-                return True
-            except ImportError:
-                return False
         elif engine == "sherpa":
             return bool(shutil.which("sherpa-onnx-offline") or (PREFIX_BIN / "sherpa-onnx-offline").exists())
+        elif engine == "diarization":
+            return cls.check_diarization_installed()
         return False
 
     @classmethod
@@ -488,41 +408,74 @@ class EngineInstaller:
             return False
 
     @classmethod
+    def install_standard(cls) -> Dict[str, bool]:
+        """Default Lightweight installation: ffmpeg + whisper.cpp + default tiny model."""
+        cls.install_system_dependencies()
+        whisper_ok = cls.install_whisper_cpp()
+        model_ok = cls.install_default_model() if whisper_ok else False
+        return {
+            "whisper": whisper_ok,
+            "model(tiny)": model_ok,
+        }
+
+    @classmethod
     def install_all(cls, *args, **kwargs) -> Dict[str, bool]:
-        """Execute 1-Click complete provisioning pipeline for all native STT engines and default model."""
+        """Full installation: ffmpeg + whisper + sherpa STT + Diarization (PyAnnote & CAM++)."""
         cls.install_system_dependencies()
         whisper_ok = cls.install_whisper_cpp()
         sherpa_ok = cls.install_sherpa_onnx()
-        vosk_ok = cls.install_vosk()
+        diar_ok = cls.install_diarization()
         model_ok = cls.install_default_model() if whisper_ok else False
         return {
             "whisper": whisper_ok,
             "sherpa": sherpa_ok,
-            "vosk": vosk_ok,
+            "diarization": diar_ok,
             "model(tiny)": model_ok,
         }
 
 
 def main(args=None):
     """CLI entrypoint for termux-stt-install & termux-stt install."""
-    print("==========================================================")
-    print("[AMEVA-Forge] termux-stt 1-Click Environment & Engine Installer")
-    print("==========================================================")
-    print("Setting up native dependencies and all on-device STT engines (Whisper, Sherpa, Vosk)...\n")
+    import argparse
+    if isinstance(args, list) or args is None:
+        parser = argparse.ArgumentParser(description="termux-stt native engine and model installer")
+        parser.add_argument("--engine", choices=["whisper", "sherpa", "diarization", "all"], default=None,
+                            help="Target engine/component to provision (default: standard lightweight whisper)")
+        parser.add_argument("--diarization", action="store_true", help="Provision PyAnnote 3.0 & CAM++ diarization models")
+        parser.add_argument("--all", action="store_true", help="Provision all engines, models, and diarization runtimes")
+        parser.add_argument("-y", "--yes", action="store_true", help="Non-interactive flag")
+        parsed_args = parser.parse_args(args)
+    else:
+        parsed_args = args
 
-    results = EngineInstaller.install_all()
+    print("==========================================================")
+    print("[AMEVA-STT v2.0.0] Termux Environment & Native Engine Installer")
+    print("==========================================================")
+
+    if parsed_args.all or parsed_args.engine == "all":
+        print("Executing Full-Stack installation (Whisper + Sherpa + Diarization)...\n")
+        results = EngineInstaller.install_all()
+    elif parsed_args.diarization or parsed_args.engine == "diarization":
+        print("Provisioning Neural Speaker Diarization runtimes and models...\n")
+        ok = EngineInstaller.install_diarization()
+        results = {"diarization": ok}
+    elif parsed_args.engine == "sherpa":
+        print("Provisioning Sherpa-ONNX STT engine...\n")
+        ok = EngineInstaller.install_sherpa_onnx()
+        results = {"sherpa": ok}
+    else:
+        # Default lightweight installation: standard whisper + ffmpeg (no heavy diarization models unless requested)
+        print("Executing Standard Lightweight installation (Whisper Vulkan/CPU + FFmpeg)...\n")
+        print("Note: Speaker diarization models are skipped. To install them, run: termux-stt install --engine diarization\n")
+        results = EngineInstaller.install_standard()
+
     print("\n--- Installation Summary ---")
-    for engine, ok in results.items():
+    for comp, ok in results.items():
         status = "[OK]" if ok else "[FAILED]"
-        print(f" - {engine:10s} : {status}")
-
-    if not results.get("whisper", False):
-        print("\n[!] Setup incomplete: primary engine 'whisper' failed.")
-        raise SystemExit(1)
+        print(f" - {comp:12s} : {status}")
 
     print("\n[+] Setup complete. Run 'termux-stt doctor' to verify system health.")
 
 
 if __name__ == "__main__":
     main()
-

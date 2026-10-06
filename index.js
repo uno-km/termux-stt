@@ -1,10 +1,10 @@
 /**
- * termux-stt Node.js entry point
+ * termux-stt Node.js entry point (v2.0.0)
  */
 
 const { Engine, TranscriptResult, Segment, formatTime } = require('./lib/engine');
 const { WhisperEngine } = require('./lib/whisper');
-const { VoskEngine } = require('./lib/vosk');
+const { SherpaEngine } = require('./lib/sherpa');
 const { HybridEngine } = require('./lib/hybrid');
 
 function createEngine(engineName = 'whisper', options = {}) {
@@ -12,12 +12,14 @@ function createEngine(engineName = 'whisper', options = {}) {
   switch (name) {
     case 'whisper':
       return new WhisperEngine(options);
-    case 'vosk':
-      return new VoskEngine(options);
+    case 'sherpa':
+      return new SherpaEngine(options);
     case 'hybrid':
       return new HybridEngine(options);
+    case 'vosk':
+      throw new Error("Vosk has been deprecated and completely removed in v2.0.0. Please use 'sherpa' (SenseVoice) or 'whisper'.");
     default:
-      throw new Error(`Unknown engine: ${engineName}. Available: whisper, vosk, hybrid`);
+      throw new Error(`Unknown engine: ${engineName}. Available: whisper, sherpa, hybrid`);
   }
 }
 
@@ -41,7 +43,7 @@ module.exports = {
   TranscriptResult,
   Segment,
   WhisperEngine,
-  VoskEngine,
+  SherpaEngine,
   HybridEngine,
   formatTime
 };

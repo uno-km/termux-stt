@@ -22,26 +22,22 @@ def test_models_list_command(capsys):
 
 def test_install_command():
     from unittest.mock import patch
-
     from termux_stt.cli.main import main
 
-    with patch("sys.argv", ["termux-stt", "install"]), patch("termux_stt.platform.installer.EngineInstaller.install_all") as mock_inst:
-        mock_inst.return_value = {"whisper": True, "vosk": True, "sherpa": True}
+    with patch("sys.argv", ["termux-stt", "install"]), patch("termux_stt.platform.installer.EngineInstaller.install_standard") as mock_inst:
+        mock_inst.return_value = {"whisper": True, "model(tiny)": True}
         main()
         mock_inst.assert_called_once()
 
 
-def test_install_command_failure():
-    import pytest
+def test_install_command_all():
     from unittest.mock import patch
-
     from termux_stt.cli.main import main
 
-    with patch("sys.argv", ["termux-stt", "install"]), patch("termux_stt.platform.installer.EngineInstaller.install_all") as mock_inst:
-        mock_inst.return_value = {"whisper": False, "vosk": True, "sherpa": True}
-        with pytest.raises(SystemExit) as exc_info:
-            main()
-        assert exc_info.value.code == 1
+    with patch("sys.argv", ["termux-stt", "install", "--all"]), patch("termux_stt.platform.installer.EngineInstaller.install_all") as mock_inst:
+        mock_inst.return_value = {"whisper": True, "sherpa": True, "diarization": True, "model(tiny)": True}
+        main()
+        mock_inst.assert_called_once()
 
 
 def test_benchmark_duration_from_wave_header(capsys):

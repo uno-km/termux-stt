@@ -45,7 +45,7 @@ export class WhisperEngine extends Engine {
   diarize(audioPath: string, numSpeakers?: number): Promise<TranscriptResult>;
 }
 
-export class VoskEngine extends Engine {
+export class SherpaEngine extends Engine {
   transcribe(audioPath: string, options?: any): Promise<TranscriptResult>;
   diarize(audioPath: string, numSpeakers?: number): Promise<TranscriptResult>;
 }
@@ -56,8 +56,13 @@ export class HybridEngine extends Engine {
 }
 
 export function createEngine(
-  engineName?: 'whisper' | 'vosk' | 'hybrid' | string,
+  engineName?: 'whisper' | 'sherpa' | 'hybrid' | string,
   options?: EngineOptions
 ): Engine;
 
-export function formatTime(seconds: number, separator?: string): string;
+export class TermuxSTT {
+  engine: Engine;
+  constructor(options?: EngineOptions & { engine?: string });
+  transcribe(filePath: string, options?: any): Promise<TranscriptResult>;
+  diarize(filePath: string, options?: any): Promise<TranscriptResult>;
+}

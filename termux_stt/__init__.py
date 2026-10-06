@@ -1,18 +1,18 @@
 """
-termux-stt ??Android on-device STT framework for Termux.
+termux-stt - Android on-device STT & Neural Diarization framework for Termux.
 
-Unified interface for whisper.cpp, vosk, and sherpa-onnx with built-in
-speaker diarization, real-time microphone streaming, and hybrid pipelines.
+Unified interface for Whisper.cpp (Vulkan GPU/CPU) and Sherpa-ONNX (SenseVoice)
+with neural speaker diarization (PyAnnote 3.0 + CAM++ 192d) and TS-VAD overlap resolution.
 
 Quick Start
 -----------
 >>> from termux_stt import create_engine
->>> engine = create_engine("whisper", model="base", lang="ko")
+>>> engine = create_engine("whisper", model="small", lang="ko")
 >>> result = engine.transcribe("meeting.wav")
 >>> print(result.text)
 """
 
-__version__ = "1.5.1"
+__version__ = "2.0.0"
 __author__ = 'Eunho Kim (@uno-km)'
 
 

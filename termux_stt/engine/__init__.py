@@ -12,10 +12,9 @@ class EngineRegistry:
     """Registry that maps engine names to their concrete Engine subclasses.
 
     Supported engine names:
-        - ``"whisper"`` — whisper.cpp subprocess wrapper
-        - ``"vosk"``    — Vosk CFFI/ctypes wrapper
-        - ``"sherpa"``  — Sherpa-ONNX subprocess wrapper
-        - ``"hybrid"``  — Vosk X-Vector + Whisper STT hybrid pipeline
+        - ``"whisper"`` — whisper.cpp subprocess wrapper (Vulkan GPU/CPU)
+        - ``"sherpa"``  — Sherpa-ONNX subprocess wrapper (SenseVoice / Conformer)
+        - ``"hybrid"``  — PyAnnote 3.0 + CAM++ 192d Diarization + Whisper STT hybrid pipeline
     """
 
     _engines: Dict[str, Type[Engine]] = {}
@@ -54,6 +53,11 @@ class EngineRegistry:
         cls._ensure_builtin_engines()
 
         name_lower = engine_name.lower()
+        if name_lower == "vosk":
+            raise ValueError(
+                "Engine 'vosk' has been deprecated and completely removed in v2.0.0. "
+                "Please use 'sherpa' (SenseVoice non-autoregressive ultra-fast STT) or 'whisper'."
+            )
         if name_lower not in cls._engines:
             if name_lower in cls._engine_import_errors:
                 cause = cls._engine_import_errors[name_lower]
@@ -99,7 +103,7 @@ class EngineRegistry:
 
     @classmethod
     def _ensure_builtin_engines(cls) -> None:
-        """Lazily register the four built-in engines while capturing import errors."""
+        """Lazily register built-in engines while capturing import errors."""
         if cls._builtins_loaded:
             return
         cls._builtins_loaded = True
@@ -110,13 +114,6 @@ class EngineRegistry:
         except Exception as exc:
             logger.debug("Failed to register builtin engine 'whisper': %s", exc)
             cls._engine_import_errors['whisper'] = exc
-
-        try:
-            from .vosk_engine import VoskEngine
-            cls.register('vosk', VoskEngine)
-        except Exception as exc:
-            logger.debug("Failed to register builtin engine 'vosk': %s", exc)
-            cls._engine_import_errors['vosk'] = exc
 
         try:
             from .sherpa_engine import SherpaEngine
