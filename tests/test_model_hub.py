@@ -20,7 +20,7 @@ def test_get_model_info():
     assert info["size"] == "75MB"
 
 def test_get_default_model():
-    assert get_default_model("whisper") == "tiny"
+    assert get_default_model("whisper") == "small"
     assert get_default_model("sherpa") == "sensevoice-small-int8"
 
 def test_model_typo_fuzzy_recommendation():
@@ -45,3 +45,21 @@ def test_verify_integrity_checksum(tmp_path):
     correct_sha = hashlib.sha256(content).hexdigest()
     assert ModelHub.verify_integrity(str(dummy_file), correct_sha) is True
     assert ModelHub.verify_integrity(str(dummy_file), "wrong_checksum") is False
+
+
+def test_ensure_model_interactive_already_installed(monkeypatch):
+    monkeypatch.setattr(ModelHub, "check_model_installed", lambda eng, mod: True)
+    assert ModelHub.ensure_model_interactive("whisper", "small") is True
+
+
+def test_ensure_model_interactive_non_tty_auto_download(monkeypatch):
+    called = []
+    monkeypatch.setattr(ModelHub, "check_model_installed", lambda eng, mod: False)
+    monkeypatch.setattr(ModelHub, "ensure_model", lambda eng, mod: called.append((eng, mod)))
+    import sys
+    monkeypatch.setattr(sys.stdin, "isatty", lambda: False)
+
+    res = ModelHub.ensure_model_interactive("whisper", "small")
+    assert res is True
+    assert called == [("whisper", "small")]
+

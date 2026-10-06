@@ -60,6 +60,61 @@ class ModelHub:
         return os.path.join(engine_dir, filename)
 
     @classmethod
+    def check_model_installed(cls, engine: str, model_name: str) -> bool:
+        """Check whether a model is already downloaded locally."""
+        if not model_name:
+            return False
+        if os.path.exists(model_name):
+            return True
+        path = cls._get_model_path(engine, model_name)
+        return os.path.exists(path) and (os.path.isdir(path) or os.path.getsize(path) > 0)
+
+    @classmethod
+    def ensure_model_interactive(cls, engine: str, model_name: str) -> bool:
+        """Prompt user interactively to download model if missing, or auto-download."""
+        if cls.check_model_installed(engine, model_name):
+            return True
+
+        from .registry import get_model_info
+        info = {}
+        try:
+            reg_key = model_name.replace("ggml-", "").replace(".bin", "").strip()
+            info = get_model_info(engine, reg_key)
+        except Exception:
+            pass
+
+        size_str = info.get("size", "Unknown size")
+        desc_str = info.get("description", model_name)
+
+        print("\n" + "=" * 65)
+        print(f"[!] Target model '{model_name}' for engine '{engine}' is not downloaded yet.")
+        print(f"    - Approximate Size: ~{size_str}")
+        print(f"    - Description: {desc_str}")
+        print("=" * 65)
+
+        import sys
+        if sys.stdin.isatty():
+            try:
+                choice = input(f"Would you like to download '{model_name}' now? [Y/n]: ").strip().lower()
+            except (EOFError, KeyboardInterrupt):
+                print("\nOperation cancelled.")
+                sys.exit(1)
+
+            if choice in ("", "y", "yes"):
+                print(f"\n[*] Starting download for '{model_name}'...")
+                cls.ensure_model(engine, model_name)
+                print(f"[+] Model '{model_name}' successfully provisioned!\n")
+                return True
+            else:
+                print(f"\n[-] Model download skipped. To download manually, run:")
+                print(f"    termux-stt models download {engine} --model {model_name}\n")
+                sys.exit(1)
+        else:
+            print(f"[*] Non-interactive environment detected. Auto-provisioning model '{model_name}'...")
+            cls.ensure_model(engine, model_name)
+            return True
+
+    @classmethod
     def verify_integrity(cls, path: str, expected_sha256: str) -> bool:
         """Verify SHA256 checksum of a file."""
         if not os.path.exists(path) or not expected_sha256:

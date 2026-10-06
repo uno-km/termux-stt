@@ -51,9 +51,16 @@ def run_transcribe(args):
     if getattr(args, "cluster_tensor_split", None):
         extra_kwargs["cluster_tensor_split"] = args.cluster_tensor_split
 
+    from termux_stt.models.hub import ModelHub
+    from termux_stt.models.registry import get_default_model
+
+    target_engine = getattr(args, "engine", "whisper")
+    target_model = getattr(args, "model", None) or get_default_model(target_engine)
+    ModelHub.ensure_model_interactive(target_engine, target_model)
+
     engine = create_engine(
-        engine=args.engine,
-        model=args.model,
+        engine=target_engine,
+        model=target_model,
         device=getattr(args, "device", "auto"),
         lang=args.lang or "ko",
         threads=args.threads,

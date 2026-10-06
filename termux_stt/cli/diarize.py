@@ -74,7 +74,15 @@ def run_diarize(args):
 
     target_engine = getattr(args, "engine", None)
     if target_engine not in ("sherpa", "hybrid"):
-        target_engine = "sherpa"
+        target_engine = "hybrid"
+
+    default_model = "sensevoice-small-int8" if target_engine == "sherpa" else "small"
+    target_model = getattr(args, "model", None) or default_model
+
+    # Interactive check / prompt for STT model
+    from termux_stt.models.hub import ModelHub
+    stt_engine_for_model = "sherpa" if target_engine == "sherpa" else "whisper"
+    ModelHub.ensure_model_interactive(stt_engine_for_model, target_model)
 
     req_device = getattr(args, "device", "auto")
     speed_mode = getattr(args, "speed_mode", "balanced")
@@ -82,7 +90,7 @@ def run_diarize(args):
 
     engine = create_engine(
         engine=target_engine,
-        model=getattr(args, "model", None) or ("sensevoice-small-int8" if target_engine == "sherpa" else "tiny"),
+        model=target_model,
         lang=getattr(args, "lang", "ko"),
         threads=getattr(args, "threads", None),
         vad=getattr(args, "vad", True),
@@ -92,7 +100,7 @@ def run_diarize(args):
         window_shift_ratio=ratio,
     )
 
-    print(f"[*] Diarizing '{args.file}' using engine='{target_engine}' (device='{req_device}', speed_mode='{speed_mode}') with {args.speakers} speakers...")
+    print(f"[*] Diarizing '{args.file}' using engine='{target_engine}' (model='{target_model}', device='{req_device}', speed_mode='{speed_mode}') with {args.speakers} speakers...")
     result = engine.diarize(args.file, num_speakers=args.speakers)
 
     if args.output:

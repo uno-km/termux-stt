@@ -56,7 +56,8 @@ def list_models(engine: Optional[str] = None) -> List[Dict[str, Any]]:
 def get_default_model(engine: str) -> str:
     """Get a default model name for a given engine."""
     defaults = {
-        "whisper": "tiny",
+        "whisper": "small",
+        "hybrid": "small",
         "sherpa": "sensevoice-small-int8",
     }
-    return defaults.get(engine, "")
+    return defaults.get(engine, "small")
