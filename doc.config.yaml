@@ -2,7 +2,7 @@
 name: "Termux-STT"
 package_name_pypi: "termux-stt"
 package_name_npm: "termux-stt"
-version: "v2.0.0"
+version: "v2.0.1"
 release_name: "Major Upgrade - Neural Diarization & Zero-Vosk Architecture"
 license: "Apache-2.0"
 platform: "Android ARM64 / Termux Bionic"
@@ -433,10 +433,19 @@ advanced_parameters_body: |
   </table>
 
 changelog:
+  - version: "v2.0.1"
+    date: "2026-10-06"
+    title: "Timestamp Interval Display, Benchmark Normalization & Hot-Reload Validation (SCRUM-512)"
+    type: "Production Release (Latest)"
+    changes:
+      - "Timestamp Interval Display: Added format_timestamp formatting to output [Speaker_X] [MM:SS.ss -> MM:SS.ss] for all diarization CLI and transcript exports."
+      - "Benchmark Sample Normalization: Standardized official Korean podcast sample to samples/kor_diarization.wav (45.00s 16kHz Mono PCM)."
+      - "Real-Device 2-vs-3 Speaker & Hot-Reload Benchmark: Validated Galaxy A35 (Exynos 1380) with 2.48s hot-reload acceleration and precise cross-talk decoupling."
+      - "Version Alignment: Bumped version across pyproject.toml, package.json, doc.config.yaml, and SDK manifests to 2.0.1."
   - version: "v2.0.0"
     date: "2026-10-06"
     title: "Major Upgrade: Next-Gen Neural Diarization & Vosk Deprecation (SCRUM-512)"
-    type: "Major Release (Latest)"
+    type: "Major Release"
     changes:
       - "Complete Vosk Legacy Deprecation: Fully purged legacy Vosk Kaldi bindings, xvector engine, and outdated dependencies from Python SDK, Node.js, CLI, and installer."
       - "PyAnnote 3.0 & 3D-Speaker CAM++ 192d Integration: Integrated SOTA neural speaker segmentation and Alibaba 3D-Speaker CAM++ 192-dimensional d-vector embeddings."
