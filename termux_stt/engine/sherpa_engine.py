@@ -480,18 +480,23 @@ class SherpaEngine(Engine):
         in_mem_rec = self._get_recognizer()
         if in_mem_diar is not None and in_mem_rec is not None:
             try:
-                import wave
-                import numpy as np
                 from termux_stt.audio.preprocessor import preprocess
+                from termux_stt.diarization.sherpa_diarizer import SherpaDiarizer
 
                 wav_path = preprocess(audio_path, target_sr=16000, force_mono=True)
                 is_temp_wav = os.path.abspath(wav_path) != os.path.abspath(audio_path)
                 try:
-                    with wave.open(wav_path, "rb") as wf:
-                        sr = wf.getframerate()
-                        frames = wf.readframes(wf.getnframes())
-                        samples = np.frombuffer(frames, dtype=np.int16).astype(np.float32) / 32768.0
-                        audio_dur = len(samples) / float(sr)
+                    sr = 16000
+                    try:
+                        import numpy as np
+                        import wave
+                        with wave.open(wav_path, "rb") as wf:
+                            sr = wf.getframerate()
+                            frames = wf.readframes(wf.getnframes())
+                            samples = np.frombuffer(frames, dtype=np.int16).astype(np.float32) / 32768.0
+                    except (ImportError, ModuleNotFoundError):
+                        samples = SherpaDiarizer._load_audio_samples(wav_path)
+                    audio_dur = len(samples) / float(sr)
 
                     diar_res = in_mem_diar.process(samples)
                     raw_segments = diar_res.sort_by_start_time()

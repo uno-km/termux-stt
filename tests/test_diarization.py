@@ -82,3 +82,94 @@ def test_speaker_mapper_empty_labels_fallback_unknown():
     assert aligned[0].speaker == "Speaker_Unknown"
     assert aligned[1].speaker == "Speaker_Unknown"
     assert aligned[2].speaker == "Speaker_Unknown"
+
+
+def test_sherpa_diarizer_strict_opencl_protocol():
+    from termux_stt.diarization.sherpa_diarizer import SherpaDiarizer
+
+    # 1. Explicit opencl -> opencl provider allowed
+    d_opencl = SherpaDiarizer(device="opencl")
+    assert d_opencl._determine_provider() == "opencl"
+
+    # 2. vulkan / gpu -> vulkan provider (never silently opencl)
+    d_vulkan = SherpaDiarizer(device="vulkan")
+    assert d_vulkan._determine_provider() == "vulkan"
+    assert d_vulkan._determine_provider() != "opencl"
+
+    d_gpu = SherpaDiarizer(device="gpu")
+    assert d_gpu._determine_provider() == "vulkan"
+    assert d_gpu._determine_provider() != "opencl"
+
+    # 3. auto / cpu -> cpu provider (never opencl)
+    d_auto = SherpaDiarizer(device="auto")
+    assert d_auto._determine_provider() == "cpu"
+    assert d_auto._determine_provider() != "opencl"
+
+    d_cpu = SherpaDiarizer(device="cpu")
+    assert d_cpu._determine_provider() == "cpu"
+    assert d_cpu._determine_provider() != "opencl"
+
+
+def test_sherpa_diarizer_audio_sample_loader(tmp_path):
+    import array
+    import wave
+    from termux_stt.diarization.sherpa_diarizer import SherpaDiarizer
+
+    wav_file = str(tmp_path / "test_16k_mono.wav")
+    sr = 16000
+    # Create 100 samples: half 0, half max int16 (32767)
+    raw_data = array.array("h", [0] * 50 + [32767] * 50).tobytes()
+
+    with wave.open(wav_file, "wb") as wf:
+        wf.setnchannels(1)
+        wf.setsampwidth(2)
+        wf.setframerate(sr)
+        wf.writeframes(raw_data)
+
+    samples = SherpaDiarizer._load_audio_samples(wav_file)
+    assert len(samples) == 100
+    assert abs(samples[0] - 0.0) < 1e-5
+    assert abs(samples[75] - (32767 / 32768.0)) < 1e-4
+
+
+def test_sherpa_diarizer_2tier_dispatch(monkeypatch):
+    from termux_stt.diarization.sherpa_diarizer import SherpaDiarizer
+
+    diarizer = SherpaDiarizer()
+    monkeypatch.setattr("termux_stt.diarization.sherpa_diarizer.preprocess", lambda p, **kw: p)
+    monkeypatch.setattr(diarizer, "_resolve_models", lambda: ("/mock/seg.onnx", "/mock/emb.onnx"))
+
+    # Test 1: Tier 1 success
+    called_tier1 = []
+    called_tier2 = []
+
+    def mock_tier1(wav, num_spk, seg, emb):
+        called_tier1.append(True)
+        return [(0.0, 1.5, 0), (1.5, 3.0, 1)]
+
+    def mock_tier2(wav, num_spk, seg, emb):
+        called_tier2.append(True)
+        return [(0.0, 1.5, 0), (1.5, 3.0, 1)]
+
+    monkeypatch.setattr(diarizer, "_diarize_in_process", mock_tier1)
+    monkeypatch.setattr(diarizer, "_diarize_subprocess", mock_tier2)
+
+    res = diarizer.diarize_audio("/mock/test.wav", num_speakers=2)
+    assert len(res) == 2
+    assert len(called_tier1) == 1
+    assert len(called_tier2) == 0
+
+    # Test 2: Tier 1 fails (ImportError) -> falls back to Tier 2
+    called_tier1.clear()
+    called_tier2.clear()
+
+    def mock_tier1_fail(wav, num_spk, seg, emb):
+        called_tier1.append(True)
+        raise ImportError("No sherpa_onnx")
+
+    monkeypatch.setattr(diarizer, "_diarize_in_process", mock_tier1_fail)
+    res2 = diarizer.diarize_audio("/mock/test.wav", num_speakers=2)
+    assert len(res2) == 2
+    assert len(called_tier1) == 1
+    assert len(called_tier2) == 1
+
